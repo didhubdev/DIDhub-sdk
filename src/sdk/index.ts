@@ -12,10 +12,20 @@ class DIDhubSDK implements IDIDhubSDK {
 
     private batchRegisterContract: BatchRegister;
 
+    private secret: string;
+
     public did: IBatchRegister;
     
+    /**
+     * @dev instantiate the didhub sdk
+     * 
+     * @param chain  the chain name, i.e. BSC, ETHEREUM
+     * @param secret the secret a 32 bytes hex string
+     * @param provider a signer that can sign and send transactions
+     */
     public constructor(
         chain: string = "ETHEREUM",
+        secret: string,
         provider: any
     ) {
 
@@ -25,8 +35,13 @@ class DIDhubSDK implements IDIDhubSDK {
             chain,
             this.ethersProvider
         );
+
+        this.secret = secret;
         
-        this.did = batchRegistration(this.batchRegisterContract);
+        this.did = batchRegistration(
+            this.batchRegisterContract,
+            this.secret
+        );
     }
 
 }

@@ -8,9 +8,8 @@ import { ZERO_ADDRESS } from 'config';
 
 export const batchRegistration = (
     batchRegisterContract: BatchRegister,
+    secret: string
 ) => {
-
-    const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
     /**
      * @dev get the commitment hashes for the domains, grouped by project
