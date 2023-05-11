@@ -24,14 +24,14 @@ export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStr
             domainInfo[contractAddress].push(
                 {
                     name: name,
-                    duration: domain.duration
+                    duration: domain.duration ? domain.duration : 0
                 }
             );
         } else {
             domainInfo[contractAddress] = [
                 {
                     name: name,
-                    duration: domain.duration
+                    duration: domain.duration ? domain.duration : 0
                 }
             ]
         }
@@ -53,8 +53,8 @@ export const getRegistrationInfo = (
     domains: IDomainInfo[],
     owner: string,
     secret: string,
-    paymentToken?: string,
-    paymentMax?: string
+    paymentToken: string = "",
+    paymentMax: string = "0"
 ): RegistrationInfoStruct[] => {
 
     let wrappedDomains = wrapDomain(domains);

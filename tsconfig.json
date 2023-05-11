@@ -1,4 +1,5 @@
 {
+    "extends": "fastify-tsconfig",
     "compilerOptions": {
       "outDir": "dist",
       "experimentalDecorators": true,
