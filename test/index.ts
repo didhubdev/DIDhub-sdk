@@ -18,3 +18,10 @@ const domains = [
     }
 ];
 const margin = 3; // 3%
+const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
+// =============================================================================
+
+// get commitment status
+const commitmentStatus = await sdk.did.batchCheckCommitment(domains);
+
+

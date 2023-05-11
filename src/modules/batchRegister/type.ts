@@ -1,4 +1,4 @@
-import { CommitmentInfoStructOutput, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
 import { BigNumber, ContractTransaction } from 'ethers';
 
 export interface IDomainInfo {
@@ -19,6 +19,7 @@ export interface IBatchRegister {
     batchCommit: (commitmentInfos: CommitmentInfoStructOutput[]) => Promise<ContractTransaction>;
     batchCheckAvailability: (domains: IDomainInfo[]) => Promise<boolean[]>;
     getTotalPrice: (domains: IDomainInfo[], paymentToken: string) => Promise<BigNumber[]>;
+    getIndividualPrice: (domains: IDomainInfo[], paymentToken: string) => Promise<DomainPriceInfoStruct[]>;
     getPriceWithMargin: (domains: IDomainInfo[], paymentToken: string, margin: number) => Promise<IRegistrationData>;
     checkPurchaseConditions: (
         domains: IDomainInfo[],

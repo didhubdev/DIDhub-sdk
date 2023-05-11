@@ -1,7 +1,7 @@
 import { BatchRegister } from './../../contracts/didhub';
 import { ERC20__factory } from 'contracts/tokens';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
-import { IDomainInfo } from './type';
+import { IBatchRegister, IDomainInfo } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult } from 'utils';
 import { BigNumber, ContractTransaction } from 'ethers';
 import { ZERO_ADDRESS } from 'config';
@@ -9,7 +9,7 @@ import { ZERO_ADDRESS } from 'config';
 export const batchRegistration = (
     batchRegisterContract: BatchRegister,
     secret: string
-) => {
+): IBatchRegister => {
 
     /**
      * @dev get the commitment hashes for the domains, grouped by project
