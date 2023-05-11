@@ -1,0 +1,73 @@
+import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
+import { IDomainInfo } from './type';
+
+export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStruct[]>  => {
+    let domainInfo: Record<string, DomainInfoStruct[]> = {};
+
+    domains.forEach((domain) => {
+        let collectionInfo = domain.collectionInfo;
+        let contractAddress = collectionInfo.split(":").slice(1).join(":");
+        let fullName = domain.nameKey.split(":")[1];
+        let nameStr = fullName.split(".");
+        let name = nameStr[nameStr.length - 1];
+        
+        if (domainInfo[contractAddress]) {
+            domainInfo[contractAddress].push(
+                {
+                    name: name,
+                    duration: domain.duration
+                }
+            );
+        } else {
+            domainInfo[contractAddress] = [
+                {
+                    name: name,
+                    duration: domain.duration
+                }
+            ]
+        }
+    });
+    return domainInfo;
+}
+
+export const getRegistrationInfo = (
+    domains: IDomainInfo[],
+    owner: string,
+    secret: string,
+    paymentToken?: string,
+    paymentMax?: string
+): RegistrationInfoStruct[] => {
+
+    let wrappedDomains = wrapDomain(domains);
+    let registrationInfoStructs: RegistrationInfoStruct[] = [];
+    Object.keys(wrappedDomains).forEach((contractAddress) => {
+        registrationInfoStructs.push({
+            project: contractAddress,
+            domains: wrappedDomains[contractAddress],
+            paymentMax: paymentMax,
+            paymentToken: paymentToken,
+            owner: owner,
+            secret: secret,
+            params: ""
+        });
+    });
+
+    return registrationInfoStructs;
+}
+
+export const getPriceRequest = (
+    domains: IDomainInfo[]
+): PriceRequestStruct[] => {
+
+    let wrappedDomains = wrapDomain(domains);
+    let priceRequestStructs: PriceRequestStruct[] = [];
+    Object.keys(wrappedDomains).forEach((contractAddress) => {
+        priceRequestStructs.push({
+            project: contractAddress,
+            domains: wrappedDomains[contractAddress]
+        });
+    });
+    return priceRequestStructs;
+}
+
+
