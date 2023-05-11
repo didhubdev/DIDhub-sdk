@@ -42,6 +42,7 @@ class DIDhubSDK implements IDIDhubSDK {
             this.batchRegisterContract,
             this.secret
         );
+        
     }
 
 }

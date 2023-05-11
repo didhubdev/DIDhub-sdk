@@ -1,3 +1,5 @@
 
 export { DIDhubSDK } from "./sdk";
-export { IBatchRegister, IDomainInfo, IRegistrationData } from "./modules/batchRegister/type";
+
+export * from "./sdk/type";
+export * from "./modules/batchRegister/type";
