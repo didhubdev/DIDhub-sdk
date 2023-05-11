@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "outDir": "dist",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "strictPropertyInitialization": false,
+      "noUnusedLocals": false,
+      "resolveJsonModule": true,
+      "moduleResolution": "node",
+      "baseUrl": "./src/",
+      "target": "es2018",
+      "types": [ "node" ],
+      "typeRoots": [ "../node_modules/@types" ]
+    },
+    "include": ["src/**/**/*.ts"]
+  }

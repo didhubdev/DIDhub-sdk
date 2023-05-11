@@ -1,0 +1,31 @@
+{
+  "name": "@didhubdev/sdk",
+  "version": "0.0.1",
+  "description": "The didhub sdk for interacting with the didhub smart contracts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+   "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "clean": "rm -rf ./dist/*",
+    "build": "npm run clean && tsc",
+    "pub": " npm version patch && npm run build && npm publish --access private",
+    "commitpub": "git add . && git commit -am \"Updates\" && npm version patch && npm run build && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/didhubdev/didhub-sdk.git"
+  },
+  "keywords": [
+    "didhub",
+    "domain",
+    "web3"
+  ],
+  "author": "henrywfyeung",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/didhubdev/didhub-sdk/issues"
+  },
+  "homepage": "https://github.com/didhubdev/didhub-sdk#readme"
+}
