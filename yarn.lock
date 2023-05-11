@@ -9,16 +9,6 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@didhubdev/sdk@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.4.tgz#7fbd71e4e59ca6d10b97a10c91368fea417ebf2b"
-  integrity sha512-D4uiigQGUPveZ+ZVeDgMcwA68GSa9rU59jhZpx8P+Hu9xGtjM+BNWzgEZ8zf06bwvtTNPoilqGSxobxf2DXiAg==
-  dependencies:
-    "@didhubdev/sdk" "^0.0.3"
-    "@ethersproject/providers" "^5.7.2"
-    ethers "5.6.1"
-    ts-node "^10.4.1"
-
 "@didhubdev/sdk@0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.5.tgz#71cf9083c4952f5a5449c59d9e6fe67990f95085"
@@ -29,21 +19,12 @@
     ethers "5.6.1"
     ts-node "^10.4.1"
 
-"@didhubdev/sdk@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.2.tgz#503b4bdf941026299cd61be742054f826ac1b3d9"
-  integrity sha512-Wjop5HN1dkXTGAd739xT/I7u3+UUpd9w2wWgfkc0fd/Rz1HEPLYGolxqlQd8NZQvOiCZoRrL8Y7C4CYeffEK9A==
+"@didhubdev/sdk@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.6.tgz#f4200811bc080b5adc549741349b1b69fe619e0a"
+  integrity sha512-/uleyhF8T1uvVrFPl9heveT0PoVeP0aiBqiUIvCo9tJgsFzuOpo/ujMIfeBS6Mb7GIehh1RyBKOZE62tU/Dnrg==
   dependencies:
-    "@ethersproject/providers" "^5.7.2"
-    ethers "5.6.1"
-    ts-node "^10.4.1"
-
-"@didhubdev/sdk@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.3.tgz#a27083e6c352365f9c353057f978cdffb314cf55"
-  integrity sha512-6zplEPsjvsCu3uryT0AykNWQkfBNUL3qjuNH7CpjCh6KsDz9nWZYrEXAaFkZnrflSr/JcpulDc/omuU407kUag==
-  dependencies:
-    "@didhubdev/sdk" "^0.0.2"
+    "@didhubdev/sdk" "0.0.5"
     "@ethersproject/providers" "^5.7.2"
     ethers "5.6.1"
     ts-node "^10.4.1"
