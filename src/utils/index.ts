@@ -1,6 +1,15 @@
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
 
+interface SelectField<T> {
+    [key: string]: T;
+}
+
+interface ResultStruct<T> extends SelectField<T> {
+    project: string;
+    [key: string]: any;
+}
+
 export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStruct[]>  => {
     let domainInfo: Record<string, DomainInfoStruct[]> = {};
 
@@ -28,6 +37,16 @@ export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStr
         }
     });
     return domainInfo;
+}
+
+export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[], field: string ): T[] => {
+    // unwrap results to list
+    let unwrappedList: T[] = [];
+    domains.forEach(d=>{
+        let project = d.collectionInfo.split(":").slice(1).join(":");
+        unwrappedList.push(result.filter(c=>c.project==project)[0][field].shift());
+    })
+    return unwrappedList;
 }
 
 export const getRegistrationInfo = (

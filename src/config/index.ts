@@ -1,9 +1,10 @@
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 export const CONTRACTS = {
     "DIDHUB": {
         "BATCH_REGISTER": {
-            "BSC": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+            "BSC": "0x3Fc612F8EfF00870f3044FFd38AF26CAE951968E"
         }
     }
 }
