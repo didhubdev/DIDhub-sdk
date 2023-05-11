@@ -5,8 +5,6 @@ const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL!)
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 
-const sdk = new DIDhubSDK("BSC", signer);
-
 // batch register with native token
 
 // input params =================================================================
@@ -20,6 +18,9 @@ const domains = [
 const margin = 3; // 3%
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 // =============================================================================
+
+// instantiate SDK
+const sdk = new DIDhubSDK("BSC", secret, signer);
 
 // get commitment status
 const commitmentStatus = await sdk.did.batchCheckCommitment(domains);
