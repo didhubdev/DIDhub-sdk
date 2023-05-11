@@ -4,9 +4,8 @@ import { getBatchRegisterContract, BatchRegister } from "contracts/didhub";
 
 import { batchRegistration } from "modules/batchRegister";
 import { IBatchRegister } from "modules/batchRegister/type";
-import { IDIDhubSDK } from "./type";
 
-class DIDhubSDK implements IDIDhubSDK{
+class DIDhubSDK {
 
     private ethersProvider: ethers.providers.Web3Provider;
 

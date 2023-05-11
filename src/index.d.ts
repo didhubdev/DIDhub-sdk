@@ -1,0 +1,1 @@
+export { DIDhubSDK } from "./sdk";

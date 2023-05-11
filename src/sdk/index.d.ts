@@ -1,5 +1,5 @@
 import { IBatchRegister } from '../modules/batchRegister/type';
 
-export interface IDIDhubSDK {
+export interface DIDhubSDK {
     did: IBatchRegister;
 }
