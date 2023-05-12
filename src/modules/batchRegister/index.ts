@@ -116,7 +116,7 @@ export const batchRegistration: IBatchRegistration = (
     const checkPurchaseConditions = async (
         domains: IDomainInfo[],
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ): Promise<IPurchaseCheck> => {
         
         let errorList: string[] = [];

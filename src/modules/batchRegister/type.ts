@@ -107,7 +107,7 @@ export interface IBatchRegister {
     checkPurchaseConditions: (
         domains: IDomainInfo[],
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ) => Promise<IPurchaseCheck>;
 
     /**
@@ -119,7 +119,7 @@ export interface IBatchRegister {
      */
     approveERC20Tokens: (
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ) => Promise<ContractTransaction | null>;
 
     /**
@@ -133,7 +133,7 @@ export interface IBatchRegister {
     batchRegister: (
         requests: RegistrationInfoStruct[],
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ) => Promise<ContractTransaction>;
 }
 
