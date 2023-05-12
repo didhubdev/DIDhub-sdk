@@ -33,6 +33,9 @@ class DIDhubSDK implements IDIDhubSDK {
             provider as providers.JsonRpcSigner
         );
 
+        console.log("check contract");
+        console.log(this.batchRegisterContract.signer);
+
         this.secret = secret;
         
         this.did = batchRegistration(
