@@ -44,9 +44,10 @@ class DIDhubSDK implements IDIDhubSDK {
         );
         
     }
-    
+
+
     get register(): IBatchRegister {
-        return this.did;
+        return this.did as IBatchRegister;
     }
 
 }
