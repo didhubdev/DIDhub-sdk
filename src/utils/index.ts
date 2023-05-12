@@ -47,10 +47,9 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     domains.forEach(d=>{
         let project = d.collectionInfo.split(":").slice(1).join(":").toLowerCase();
         result.forEach(r=>{
-            if (project = r.project.toLowerCase()) {
-                let fieldResults = r[field];
-                unwrappedList.push(fieldResults.shift());
-                r.field = fieldResults;
+            if (project == r.project.toLowerCase()) {
+                unwrappedList.push(r[field][0]);
+                r.field = r[field].length > 0 ? r[field].slice(1) : [];
             }
         });
     })
