@@ -107,7 +107,7 @@ export const batchRegistration: IBatchRegistration = (
         return {
             requests: requests,
             paymentToken: paymentToken,
-            paymentMax: totalPrice.toString
+            paymentMax: totalPrice
         }
     }
 
