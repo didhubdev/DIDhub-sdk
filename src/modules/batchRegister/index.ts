@@ -1,7 +1,7 @@
 import { BatchRegister } from './../../contracts/didhub';
 import { ERC20__factory } from 'contracts/tokens';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
-import { IBatchRegister, IDomainInfo, IBatchRegistration } from './type';
+import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult } from 'utils';
 import { BigNumber, ContractTransaction } from 'ethers';
 import { ZERO_ADDRESS } from 'config';
@@ -10,7 +10,7 @@ export const batchRegistration: IBatchRegistration = (
     batchRegisterContract: BatchRegister,
     secret: string
 ): IBatchRegister => {
-    
+
     const batchMakeCommitments = async (
         domains: IDomainInfo[]
     ): Promise<CommitmentInfoStructOutput[]> => {
@@ -36,16 +36,6 @@ export const batchRegistration: IBatchRegistration = (
         return tx;
     }
 
-    /**
-     * @dev check the status of the commitment
-     *  0: not exist, requires commit
-     *  1: available but before minCommitmentAge
-     *  2: available and after minCommitmentAge and before maxCommitmentAge, or does not require commitment
-     *  3: available and after maxCommitmentAge, requires commit
-     * 
-     * @param domains The list of domains to check
-     * @returns The list of status of the domains
-     */
     const batchCheckCommitment = async (
         domains: IDomainInfo[]
     ): Promise<number[]> => {
@@ -57,13 +47,6 @@ export const batchRegistration: IBatchRegistration = (
         return commitmentStatus;
     }
 
-    /**
-     * @dev check the availability status of the domain
-     * 
-     * @param domains The list of domains to check
-     * 
-     * @returns The list of status of the domains
-     */
     const batchCheckAvailability = async (
         domains: IDomainInfo[]
     ): Promise<boolean[]> => {
@@ -82,13 +65,6 @@ export const batchRegistration: IBatchRegistration = (
         return availabilityStatus;
     }
 
-    /**
-     * 
-     * @dev get total price of the domains summed by project
-     * 
-     * @param domains The list of domains to check
-     * @returns The list of total price of the domains summed by project
-     */
     const getTotalPrice = async (
         domains: IDomainInfo[],
         paymentToken: string
@@ -101,13 +77,6 @@ export const batchRegistration: IBatchRegistration = (
         return totalPrice;
     }
 
-    /**
-     * @dev get individual price of the domains
-     * 
-     * @param domains The list of domains to check
-     * 
-     * @returns The list of individual price of each domains
-     */
     const getIndividualPrice = async (
         domains: IDomainInfo[]
     ): Promise<DomainPriceInfoStruct[]> => {
@@ -119,15 +88,6 @@ export const batchRegistration: IBatchRegistration = (
         return priceList;
     }
 
-    /**
-     * @dev Get the price data necessary for batch register with a specific margin apply
-     * 
-     * @param domains The list of domains to check 
-     * @params paymentToken The address of the payment token
-     * @params margin The margin to apply in percentage, i.e. 3 for 3%
-     * 
-     * @returns The price data necessary for batch register
-     */
     const getPriceWithMargin = async (
         domains: IDomainInfo[],
         paymentToken: string,
@@ -151,38 +111,33 @@ export const batchRegistration: IBatchRegistration = (
         }
     }
 
-    /**
-     * @dev Check whether the domain is ready for registration. Examine based on the token balance of the signer, 
-     * whether the token approval is sufficient, the commitment status, and the availability status
-     * 
-     * @param domains The list of domains to register
-     * @param paymentToken The address of the payment token
-     * @param paymentMax The maximum amount of payment token to be used, for registering all domains
-     */
     const checkPurchaseConditions = async (
         domains: IDomainInfo[],
         paymentToken: string,
         paymentMax: string
-    ): Promise<boolean> => {
+    ): Promise<IPurchaseCheck> => {
+        
+        let errorList: string[] = [];
+        
         const signerAddress = await batchRegisterContract.signer.getAddress();
 
         // check total price and balance is sufficient
         if (paymentToken == ZERO_ADDRESS) {
             const ethBalance = await batchRegisterContract.signer.getBalance();
             if (ethBalance.lt(paymentMax)) {
-                throw new Error("Insufficient ETH balance");
+                errorList.push("Insufficient ETH balance");
             }
         } else {
             // attach ERC20 token to contract and create an instance of ERC20 contract
             const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
             const erc20Balance = await erc20Contract.balanceOf(signerAddress);
             if (erc20Balance.lt(paymentMax)) {
-                throw new Error("Insufficient ERC20 balance");
+                errorList.push("Insufficient ERC20 balance");
             };
             // check Allowance
             const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);
             if (allowance.lt(paymentMax)) {
-                throw new Error("Insufficient ERC20 allowance");
+                errorList.push("Insufficient ERC20 allowance");
             }
         }
 
@@ -190,7 +145,7 @@ export const batchRegistration: IBatchRegistration = (
         const commitmentStatus = await batchCheckCommitment(domains);
         commitmentStatus.forEach((status, index) => {
             if (status != 2) {
-                throw new Error(`Domain ${domains[index].nameKey} is not committed`);
+                errorList.push(`Domain ${domains[index].nameKey} is not committed`);
             }
         });
 
@@ -198,19 +153,18 @@ export const batchRegistration: IBatchRegistration = (
         const availabilityStatus = await batchCheckAvailability(domains);
         availabilityStatus.forEach((status, index) => {
             if (!status) {
-                throw new Error(`Domain ${domains[index].nameKey} is not available`);
+                errorList.push(`Domain ${domains[index].nameKey} is not available`);
             }
         });
-        return true;
+
+        return {
+            success: errorList.length == 0,
+            errors: errorList,
+            commitmentStatus: commitmentStatus,
+            availabilityStatus: availabilityStatus
+        };
     }
 
-    /**
-     * @dev Approve the ERC20 token for the contract to use, return null if the approval is not needed
-     * 
-     * @param paymentToken The address of the payment token
-     * @param paymentMax The approval needed
-     * @return The transaction object or null if the approval is not needed
-     */
     const approveERC20Tokens = async (
         paymentToken: string,
         paymentMax: string
@@ -226,12 +180,6 @@ export const batchRegistration: IBatchRegistration = (
         return null;
     }
 
-    /**
-     * @dev Batch register the domains. Use the getPriceWithMargin function to get the necessary data before calling this function
-     * 
-     * @param requests The information to register the domains
-     * @returns The transaction object
-     */
     const batchRegister = async (
         requests: RegistrationInfoStruct[],
         paymentToken: string,

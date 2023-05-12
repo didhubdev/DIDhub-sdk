@@ -18,12 +18,12 @@ class DIDhubSDK implements IDIDhubSDK {
     /**
      * @dev instantiate the didhub sdk
      * 
-     * @param chain  the chain name, i.e. BSC, ETHEREUM
+     * @param chain  the chain name, i.e. BNB, ETHEREUM
      * @param secret the secret a 32 bytes hex string
      * @param provider a signer that can sign and send transactions
      */
     public constructor(
-        chain: string = "ETHEREUM",
+        chain: string = "BNB",
         secret: string,
         provider: any
     ) {
