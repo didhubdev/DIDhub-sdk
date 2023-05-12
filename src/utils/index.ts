@@ -1,3 +1,4 @@
+import { ZERO_ADDRESS } from 'config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
 
@@ -15,7 +16,7 @@ export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStr
 
     domains.forEach((domain) => {
         let collectionInfo = domain.collectionInfo;
-        let contractAddress = collectionInfo.split(":").slice(1).join(":");
+        let contractAddress = collectionInfo.split(":").slice(1).join(":").toLowerCase();
         let fullName = domain.nameKey.split(":")[1];
         let nameStr = fullName.split(".");
         let name = nameStr[nameStr.length - 1];
@@ -53,7 +54,7 @@ export const getRegistrationInfo = (
     domains: IDomainInfo[],
     owner: string,
     secret: string,
-    paymentToken: string = "",
+    paymentToken: string = ZERO_ADDRESS,
     paymentMax: string = "0"
 ): RegistrationInfoStruct[] => {
 
