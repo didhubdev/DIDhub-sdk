@@ -1,4 +1,4 @@
-import { IBatchRegister } from '../modules/batchRegister/type';
+import { IBatchRegister } from '../modules/batchRegister';
 
 export { IBatchRegister }
 

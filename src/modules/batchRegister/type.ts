@@ -1,5 +1,7 @@
+import { BatchRegister } from 'contracts/didhub';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
 import { BigNumber, ContractTransaction } from 'ethers';
+import { batchRegistration } from '.';
 
 export interface IDomainInfo {
     collectionInfo: string
@@ -36,3 +38,8 @@ export interface IBatchRegister {
         paymentMax: string
     ) => Promise<ContractTransaction>;
 }
+
+export type batchRegistration = (
+    batchRegisterContract: BatchRegister,
+    secret: string
+) => IBatchRegister;
