@@ -49,7 +49,7 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
         result.forEach(r=>{
             if (project == r.project.toLowerCase()) {
                 unwrappedList.push(r[field][0]);
-                r.field = r[field].length > 0 ? r[field].slice(1) : [];
+                r[field] = r[field].length > 0 ? r[field].slice(1) : [];
             }
         });
     })
