@@ -189,13 +189,13 @@ export const batchRegistration: IBatchRegistration = (
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
-                gasLimit: estimatedGas.mul(110)
+                gasLimit: estimatedGas.mul(120).div(100)
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
-                gasLimit: estimatedGas.mul(110)
+                gasLimit: estimatedGas.mul(120).div(100)
             });
             return tx;
         }
