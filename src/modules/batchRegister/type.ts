@@ -77,7 +77,7 @@ export interface IBatchRegister {
      * 
      * @returns The list of individual price of each domains
      */
-    getIndividualPrice: (domains: IDomainInfo[], paymentToken: string) => Promise<DomainPriceInfoStruct[]>;
+    getIndividualPrice: (domains: IDomainInfo[]) => Promise<DomainPriceInfoStruct[]>;
     
     /**
      * @dev Get the price data necessary for batch register with a specific margin apply

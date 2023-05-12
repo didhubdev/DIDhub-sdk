@@ -70,7 +70,7 @@ if (commitmentInfos.length > 0) {
 
 // get price info for purchase
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
-console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax}`);
+console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
 
 // approval needed if the paymentToken is not native token
 if (paymentToken !== ZERO_ADDRESS) {
