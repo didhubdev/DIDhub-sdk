@@ -30,8 +30,10 @@ export const batchRegistration: IBatchRegistration = (
     const batchCommit = async (
         commitmentInfos: CommitmentInfoStructOutput[]
     ): Promise<ContractTransaction> => {
+        const estimatedGas = await batchRegisterContract.estimateGas.batchCommit(commitmentInfos);
         const tx = await batchRegisterContract.batchCommit(
-            commitmentInfos
+            commitmentInfos,
+            {gasLimit: estimatedGas.mul(120).div(100)}
         );
         return tx;
     }
