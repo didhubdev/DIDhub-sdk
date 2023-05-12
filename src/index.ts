@@ -28,11 +28,11 @@ class DIDhubSDK implements IDIDhubSDK {
         provider: any
     ) {
 
-        this.ethersProvider = new providers.Web3Provider(provider as providers.ExternalProvider);
+        // this.ethersProvider = new providers.Web3Provider(provider as providers.ExternalProvider);
         
         this.batchRegisterContract = getBatchRegisterContract(
             chain,
-            this.ethersProvider
+            provider as providers.ExternalProvider
         );
 
         this.secret = secret;
