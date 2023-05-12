@@ -41,7 +41,7 @@ availabilityStatus.forEach((status, index) => {
 // get price
 const individualPrices = await sdk.register.getIndividualPrice(domainsAvailable, paymentToken);
 individualPrices.forEach((price, index) => {
-    console.log(`Prices: ${price.price} ${price.paymentToken} for ${domainsAvailable[index].nameKey}`);
+    console.log(`Prices: ${price.price} ${paymentToken} for ${domainsAvailable[index].nameKey}`);
 });
 
 // get commitment status
