@@ -47,6 +47,7 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     let unwrappedList: T[] = [];
     domains.forEach(d=>{
         let project = d.collectionInfo.split(":").slice(1).join(":");
+        console.log('shifting: ', tmpResult.filter(c=>c.project.toLowerCase()==project.toLowerCase())[0][field]);
         unwrappedList.push(tmpResult.filter(c=>c.project.toLowerCase()==project.toLowerCase())[0][field].shift());
     })
     return unwrappedList;
