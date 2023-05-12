@@ -139,6 +139,15 @@
     ethers "5.6.1"
     ts-node "^10.4.1"
 
+"@didhubdev/sdk@0.0.50":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.50.tgz#a8d5a6d7da73acf91a81ef88ab5127a805595b49"
+  integrity sha512-e/HnaAYEvve/aJaUmNz1BCKmgMYpbZbpNPFqkqpo2GQmojv6GRsCz8EzulJjnbyL+ILBN+gXyAitty3yLZmOIg==
+  dependencies:
+    "@didhubdev/sdk" "0.0.25"
+    ethers "5.6.1"
+    ts-node "^10.4.1"
+
 "@didhubdev/sdk@0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.0.6.tgz#f4200811bc080b5adc549741349b1b69fe619e0a"

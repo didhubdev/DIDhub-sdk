@@ -5,7 +5,7 @@ import { BigNumber, ContractTransaction, BigNumberish } from 'ethers';
 export interface IDomainInfo {
     collectionInfo: string
     nameKey: string;
-    duration?: string;
+    duration?: BigNumberish;
 }
 
 export interface IRegistrationData {

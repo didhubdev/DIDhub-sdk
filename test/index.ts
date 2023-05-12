@@ -9,6 +9,8 @@ const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL!)
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 // swap the above with metamask provider if used in frontend
 
+const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
+
 // input params =================================================================
 const domains = [
     {
@@ -18,7 +20,6 @@ const domains = [
     }
 ];
 const margin = 3; // 3%
-const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 const paymentToken = ZERO_ADDRESS;
 // const paymentToken = USDC;
 // =============================================================================
@@ -39,7 +40,7 @@ availabilityStatus.forEach((status, index) => {
 
 
 // get price
-const individualPrices = await sdk.register.getIndividualPrice(domainsAvailable, paymentToken);
+const individualPrices = await sdk.register.getIndividualPrice(domainsAvailable);
 individualPrices.forEach((price, index) => {
     console.log(`Prices: ${price.price} ${paymentToken} for ${domainsAvailable[index].nameKey}`);
 });

@@ -3,7 +3,7 @@ import { ERC20__factory } from '../../contracts/tokens';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
 import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult } from '../../utils';
-import { BigNumber, ContractTransaction } from 'ethers';
+import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
 
 export const batchRegistration: IBatchRegistration = (
@@ -169,7 +169,7 @@ export const batchRegistration: IBatchRegistration = (
 
     const approveERC20Tokens = async (
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ): Promise<ContractTransaction | null> => {
         const signerAddress = await batchRegisterContract.signer.getAddress();
         // attach ERC20 token to contract and create an instance of ERC20 contract
@@ -185,7 +185,7 @@ export const batchRegistration: IBatchRegistration = (
     const batchRegister = async (
         requests: RegistrationInfoStruct[],
         paymentToken: string,
-        paymentMax: string
+        paymentMax: BigNumberish
     ): Promise<ContractTransaction> => {
         if (paymentToken == ZERO_ADDRESS) {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
