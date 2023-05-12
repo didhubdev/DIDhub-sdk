@@ -14,7 +14,7 @@ const domains = [
     {
         collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
         nameKey: "SpaceId:bnb.testdidhubdomain",
-        duration: "31536000" // 1 year
+        duration: 31536000 // 1 year
     }
 ];
 const margin = 3; // 3%

@@ -1,3 +1,4 @@
+import { BigNumberish } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
@@ -55,7 +56,7 @@ export const getRegistrationInfo = (
     owner: string,
     secret: string,
     paymentToken: string = ZERO_ADDRESS,
-    paymentMax: string = "0"
+    paymentMax: BigNumberish = 0
 ): RegistrationInfoStruct[] => {
 
     let wrappedDomains = wrapDomain(domains);
@@ -68,7 +69,7 @@ export const getRegistrationInfo = (
             paymentToken: paymentToken,
             owner: owner,
             secret: secret,
-            params: ""
+            params: []
         });
     });
 
