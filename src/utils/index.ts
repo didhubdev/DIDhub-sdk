@@ -42,11 +42,12 @@ export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStr
 }
 
 export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[], field: string ): T[] => {
+    let resultClone = result.map(r=>({...r}));
     // unwrap results to list
     let unwrappedList: T[] = [];
     domains.forEach(d=>{
         let project = d.collectionInfo.split(":").slice(1).join(":").toLowerCase();
-        result.forEach(r=>{
+        resultClone.forEach(r=>{
             if (project == r.project.toLowerCase()) {
                 unwrappedList.push(r[field][0]);
                 r[field] = r[field].length > 0 ? r[field].slice(1) : [];
