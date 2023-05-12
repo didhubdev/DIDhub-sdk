@@ -1,4 +1,4 @@
-import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
+import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
 
 interface SelectField<T> {

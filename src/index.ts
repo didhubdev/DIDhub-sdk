@@ -1,6 +1,6 @@
 import { ethers, providers } from "ethers";
 
-import { getBatchRegisterContract, BatchRegister } from "contracts/didhub";
+import { getBatchRegisterContract, BatchRegister } from "./contracts/didhub";
 
 import { batchRegistration, IBatchRegister } from "./modules";
 import { IDIDhubSDK } from "./type";
