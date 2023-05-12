@@ -1,4 +1,4 @@
-import { DIDhubSDK, IBatchRegister } from "@didhubdev/sdk";
+import { DIDhubSDK } from "@didhubdev/sdk";
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL!);
@@ -23,7 +23,7 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 const sdk = new DIDhubSDK("BSC", secret, signer);
 
 // get commitment status
-// const commitmentStatus = await sdk.register.batchCheckCommitment(domains);
-const br = sdk.register as IBatchRegister;
-const commitmentStatus = await br.batchCheckCommitment(domains);
+const commitmentStatus = await sdk.register.batchCheckCommitment(domains);
+// const br = sdk.register as IBatchRegister;
+// const commitmentStatus = await br.batchCheckCommitment(domains);
 

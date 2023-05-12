@@ -10,15 +10,7 @@ export const batchRegistration: IBatchRegistration = (
     batchRegisterContract: BatchRegister,
     secret: string
 ): IBatchRegister => {
-
-    /**
-     * @dev get the commitment hashes for the domains, grouped by project
-     * 
-     * @param domains The list of domains to check
-     * 
-     * @returns The list of commitment hashes grouped by project
-     * 
-     */
+    
     const batchMakeCommitments = async (
         domains: IDomainInfo[]
     ): Promise<CommitmentInfoStructOutput[]> => {
@@ -35,13 +27,6 @@ export const batchRegistration: IBatchRegistration = (
         return commitments;
     }
 
-    /**
-     * @dev commit the domains
-     * 
-     * @param commitmentInfos The list of commitment infos, it is the output of batchMakeCommitments function
-     * 
-     * @return The transaction object
-     */
     const batchCommit = async (
         commitmentInfos: CommitmentInfoStructOutput[]
     ): Promise<ContractTransaction> => {
