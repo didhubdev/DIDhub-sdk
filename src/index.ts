@@ -7,8 +7,6 @@ import { IDIDhubSDK } from "./type";
 
 class DIDhubSDK implements IDIDhubSDK {
 
-    private ethersProvider: ethers.providers.Web3Provider;
-
     private batchRegisterContract: BatchRegister;
 
     private secret: string;
@@ -32,7 +30,7 @@ class DIDhubSDK implements IDIDhubSDK {
         
         this.batchRegisterContract = getBatchRegisterContract(
             chain,
-            provider as providers.ExternalProvider
+            provider as providers.JsonRpcSigner
         );
 
         this.secret = secret;

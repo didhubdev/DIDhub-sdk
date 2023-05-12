@@ -1,12 +1,13 @@
 import { BatchRegister } from "./BSC/BatchRegister";
 import { BatchRegister__factory } from "./BSC/BatchRegister__factory";
 import { CONTRACTS } from "../../config";
+import { providers } from "ethers";
 
-export const getBatchRegisterContract = (chain: string, provider: any): BatchRegister => {
+export const getBatchRegisterContract = (chain: string, provider: providers.JsonRpcSigner): BatchRegister => {
     // initialise batch register contract of a particular network
     switch (chain) {
         case "BNB":
-            return new BatchRegister__factory(provider.getSigner()).attach(
+            return new BatchRegister__factory(provider).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.BSC
             );
         default:
