@@ -18,12 +18,12 @@ yarn add @didhubdev/sdk
 ```
 const sdk = new DIDhubSDK(chain, secret, signer);
 ```
-chain is the name of the supported blockchain. Supported chains are listed below
+chain is the name of the supported blockchain. Supported chains are listed below \
 | chain name | code |
 | --- | --- |
 | Binance Smart Chain | BNB |
 
-secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user
+secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. \
 signer, e.g. metamask signer
 
 ## Inputs for Domain Name Registration
@@ -38,13 +38,18 @@ const domains = [
 const margin = 3; // 3%
 const paymentToken = ZERO_ADDRESS;
 ```
-domains is a list of domain information that contains the collectionInfo (${chain}:${contractAddress}),  nameKey, and duration.
-margin is the slipage of the swap. Put 0 if you are certain that no token swap will take place
-paymentToken is the token to pay for the domain. Currently only Native Tokens (0x0000000000000000000000000000000000000000), WBNB (0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c) and USDC (0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d) are supported.
+domains is a list of domain information that contains the collectionInfo (${chain}:${contractAddress}),  nameKey, and duration. \
+margin is the slipage of the swap. Put 0 if you are certain that no token swap will take place \
+paymentToken is the token to pay for the domain. Supported tokens are listed below:
+| chain | token symbol | address |
+| --- | --- | --- |
+| BSC | Native | 0x0000000000000000000000000000000000000000 |
+| BSC | WBNB | 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c | 
+| BSC | USDC | 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d | 
 
 ## Functions to interact with the DIDHUB batch registration contract
 
-Please follows the following steps to purchase domains in bulk with the DIDHUB contract. See ./test/index.ts for a comphrensive flow of domain purchase.
+Please follow the following steps to purchase domains in bulk with the DIDHUB contract. See ./test/index.ts for a comphrensive flow of domain purchase.
 
 ### Check Domain Availability
 ```
