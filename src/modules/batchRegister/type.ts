@@ -39,7 +39,7 @@ export interface IBatchRegister {
     ) => Promise<ContractTransaction>;
 }
 
-export type batchRegistration = (
+export type IBatchRegistration = (
     batchRegisterContract: BatchRegister,
     secret: string
 ) => IBatchRegister;
