@@ -86,7 +86,7 @@ const registrationData = await sdk.register.getPriceWithMargin(domains, paymentT
 ```
 
 ### Approve ERC20 tokens if necessary
-If you want to purchase the domains with token that are different from the one specified by the domain name project, you need to approve the DIDhub contract to take custody of your tokens, perform swapping and purchase the domain on your behalf
+If you want to purchase the domains with tokens that are different from the type specified by the domain name project, you need to approve the DIDhub contract to take custody of your tokens, perform swapping and purchase the domain on your behalf
 ```
 const approveTx = await sdk.register.approveERC20Tokens(paymentToken, amount);
 await approveTx.wait()
