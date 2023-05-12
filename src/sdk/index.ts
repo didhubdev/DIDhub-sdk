@@ -14,8 +14,8 @@ class DIDhubSDK implements IDIDhubSDK {
 
     private secret: string;
 
-    public did: IBatchRegister;
-    
+    private did: IBatchRegister;
+
     /**
      * @dev instantiate the didhub sdk
      * 
@@ -43,6 +43,10 @@ class DIDhubSDK implements IDIDhubSDK {
             this.secret
         );
         
+    }
+    
+    get register(): IBatchRegister {
+        return this.did;
     }
 
 }
