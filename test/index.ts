@@ -1,5 +1,4 @@
-import { DIDhubSDK } from "@didhubdev/sdk";
-import { IDomainInfo } from "@didhubdev/sdk/dist/modules/batchRegister/type";
+import { DIDhubSDK, IDomainInfo } from "@didhubdev/sdk";
 import { ethers } from "ethers";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";

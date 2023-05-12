@@ -15,3 +15,4 @@ export const getBatchRegisterContract = (chain: string, provider: any): BatchReg
 }
 
 export { BatchRegister } from "./BSC/BatchRegister";
+export { BatchRegister__factory } from './BSC/BatchRegister__factory';

@@ -1,5 +1,5 @@
-import { BatchRegister } from 'contracts/didhub';
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
+import { BatchRegister } from '../../contracts';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
 import { BigNumber, ContractTransaction } from 'ethers';
 
 export interface IDomainInfo {

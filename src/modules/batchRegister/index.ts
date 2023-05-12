@@ -1,10 +1,10 @@
-import { BatchRegister } from './../../contracts/didhub';
-import { ERC20__factory } from 'contracts/tokens';
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from 'contracts/didhub/BSC/BatchRegister';
+import { BatchRegister } from '../../contracts/didhub';
+import { ERC20__factory } from '../../contracts/tokens';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
 import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck } from './type';
-import { getPriceRequest, getRegistrationInfo, unwrapResult } from 'utils';
+import { getPriceRequest, getRegistrationInfo, unwrapResult } from '../../utils';
 import { BigNumber, ContractTransaction } from 'ethers';
-import { ZERO_ADDRESS } from 'config';
+import { ZERO_ADDRESS } from '../../config';
 
 export const batchRegistration: IBatchRegistration = (
     batchRegisterContract: BatchRegister,
