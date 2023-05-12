@@ -7,8 +7,8 @@ export const getBatchRegisterContract = (chain: string, provider: providers.Json
     // initialise batch register contract of a particular network
     switch (chain) {
         case "BNB":
-            return new BatchRegister__factory(provider).attach(
-                CONTRACTS.DIDHUB.BATCH_REGISTER.BSC
+            return (new BatchRegister__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_REGISTER.BNB
             );
         default:
             throw Error("Chain not supported");
