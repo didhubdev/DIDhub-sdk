@@ -56,12 +56,9 @@ export const batchRegistration: IBatchRegistration = (
             secret
         );
 
-        console.log("RegInfo", registrationInfo);
-        console.log(registrationInfo[0].domains);
         const availabilityStatusResult = await batchRegisterContract.batchCheckAvailability(
             registrationInfo
         );
-        console.log(availabilityStatusResult);
 
         // unwrap results to list
         let availabilityStatus: boolean[] = unwrapResult(domains, availabilityStatusResult, "status");
