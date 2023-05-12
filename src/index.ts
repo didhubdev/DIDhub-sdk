@@ -52,3 +52,6 @@ class DIDhubSDK implements IDIDhubSDK {
 }
 
 export { DIDhubSDK };
+
+// export type
+export * from "./modules/batchRegister/type";
