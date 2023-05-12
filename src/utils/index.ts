@@ -1,4 +1,4 @@
-import { ZERO_ADDRESS } from 'config';
+import { ZERO_ADDRESS } from '../config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
 
