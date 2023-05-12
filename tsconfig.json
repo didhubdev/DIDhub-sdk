@@ -1,17 +1,30 @@
 {
-    "extends": "fastify-tsconfig",
     "compilerOptions": {
-      "outDir": "dist",
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-      "strictPropertyInitialization": false,
-      "noUnusedLocals": false,
-      "resolveJsonModule": true,
-      "moduleResolution": "node",
-      "baseUrl": "./src/",
-      "target": "es2018",
-      "types": [ "node" ],
-      "typeRoots": [ "../node_modules/@types" ]
+        "module": "commonjs",
+        "declaration": true,
+        "pretty": true,
+        "noEmitOnError": true,
+        "strict": true,
+        "removeComments": false,
+        "newLine": "lf",
+        "noFallthroughCasesInSwitch": true,
+        "useDefineForClassFields": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "lib": [
+            "esnext"
+        ],
+        "outDir": "dist",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false,
+        "noUnusedLocals": false,
+        "resolveJsonModule": true,
+        "moduleResolution": "node",
+        "baseUrl": "./src/",
+        "target": "es2018",
+        "types": [ "node" ],
+        "typeRoots": [ "../node_modules/@types" ]
     },
     "include": ["src/**/**/*.ts"]
-  }
+}
