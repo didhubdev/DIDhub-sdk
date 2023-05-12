@@ -186,10 +186,17 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: string
     ): Promise<ContractTransaction> => {
         if (paymentToken == ZERO_ADDRESS) {
-            const tx = await batchRegisterContract.batchRegister(requests, {value: paymentMax});
+            const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
+            const tx = await batchRegisterContract.batchRegister(requests, {
+                value: paymentMax,
+                gasLimit: estimatedGas.mul(110)
+            });
             return tx;
         } else {
-            const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax);
+            const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
+            const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
+                gasLimit: estimatedGas.mul(110)
+            });
             return tx;
         }
     }

@@ -58,13 +58,15 @@ commitmentStatus.forEach((status, index) => {
 // get commitment hashes
 const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
 
-// commit on chain
-const commitTx = await sdk.register.batchCommit(commitmentInfos);
-await commitTx.wait();
+if (commitmentInfos.length > 0) {
+    // commit on chain
+    const commitTx = await sdk.register.batchCommit(commitmentInfos);
+    await commitTx.wait();
 
-// wait some time (20 seconds should be sufficient for bsc)
-console.log("Waiting for 20 seconds for the commitment to be mined...");
-await new Promise(resolve => setTimeout(resolve, 20000));
+    // wait some time (20 seconds should be sufficient for bsc)
+    console.log("Waiting for 20 seconds for the commitment to be mined...");
+    await new Promise(resolve => setTimeout(resolve, 20000));
+}
 
 // get price info for purchase
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
