@@ -50,13 +50,14 @@ export const batchRegistration: IBatchRegistration = (
     const batchCheckAvailability = async (
         domains: IDomainInfo[]
     ): Promise<boolean[]> => {
-        const registrationInfo  = getRegistrationInfo(
+        const registrationInfo = getRegistrationInfo(
             domains,
             await batchRegisterContract.signer.getAddress(),
             secret
         );
 
         console.log("RegInfo", registrationInfo);
+        console.log(registrationInfo[0].domains);
         const availabilityStatusResult = await batchRegisterContract.batchCheckAvailability(
             registrationInfo
         );
