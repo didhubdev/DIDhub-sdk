@@ -92,6 +92,19 @@ const approveTx = await sdk.register.approveERC20Tokens(paymentToken, amount);
 await approveTx.wait()
 ```
 
+### Final Check before Register
+This function does a final check on all conditions, such as availability, commit statuses, token balance, token approval. It is recommended to use the function before Batch Register
+```
+const finalCheck = await sdk.register.checkPurchaseConditions(domains, registrationData.paymentToken, registrationData.paymentMax);
+```
+The return variable contains the followings \
+```
+success #whether the transaction will suceed
+availabilityStatus # A list containing the availability status of the domains to the input domain list
+commitmentStatus # A list containing the commitment status of the domains from the input domain list
+errors #A list of error message if something is not right
+```
+
 ### Batch Register
 Use the registration data as input for the purchase. The SDK will handle cases of both native tokens and ERC20 tokens.
 ```
