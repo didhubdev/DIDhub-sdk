@@ -21,7 +21,7 @@ class DIDhubSDK implements IDIDhubSDK {
      * @param provider a signer that can sign and send transactions
      */
     public constructor(
-        chain: string = "BNB",
+        chain: string,
         secret: string,
         provider: any
     ) {

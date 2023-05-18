@@ -22,6 +22,7 @@ chain is the name of the supported blockchain. Supported chains are listed below
 | chain name | code |
 | --- | --- |
 | Binance Smart Chain | BNB |
+| Arbitrum | ARBITRUM |
 
 secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. \
 signer, e.g. metamask signer

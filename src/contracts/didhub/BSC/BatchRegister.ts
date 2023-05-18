@@ -93,6 +93,45 @@ export type RegistrationStatusResponseStructOutput = [string, boolean[]] & {
   status: boolean[];
 };
 
+export type DurationInfoStruct = { project: string; names: string[] };
+
+export type DurationInfoStructOutput = [string, string[]] & {
+  project: string;
+  names: string[];
+};
+
+export type DurationResponseStruct = {
+  project: string;
+  duration: BigNumberish[];
+};
+
+export type DurationResponseStructOutput = [string, BigNumber[]] & {
+  project: string;
+  duration: BigNumber[];
+};
+
+export type RenewInfoStruct = {
+  project: string;
+  domains: DomainInfoStruct[];
+  paymentToken: string;
+  paymentMax: BigNumberish;
+  params: BytesLike;
+};
+
+export type RenewInfoStructOutput = [
+  string,
+  DomainInfoStructOutput[],
+  string,
+  BigNumber,
+  string
+] & {
+  project: string;
+  domains: DomainInfoStructOutput[];
+  paymentToken: string;
+  paymentMax: BigNumber;
+  params: string;
+};
+
 export type PriceRequestStruct = {
   project: string;
   domains: DomainInfoStruct[];
@@ -125,16 +164,19 @@ export type ProjectPriceResponseStructOutput = [
 
 export interface BatchRegisterInterface extends utils.Interface {
   functions: {
-    "approveToken(address)": FunctionFragment;
+    "approveToken(address,bool)": FunctionFragment;
     "approvedPairs(address,address)": FunctionFragment;
     "approvedTokens(address)": FunctionFragment;
     "batchCheckAvailability((address,(string,uint256)[],address,uint256,address,bytes32,bytes)[])": FunctionFragment;
     "batchCheckCommitments((address,bytes32[])[])": FunctionFragment;
     "batchCheckRegistration((address,(string,uint256)[],address,uint256,address,bytes32,bytes)[])": FunctionFragment;
     "batchCommit((address,bytes32[])[])": FunctionFragment;
+    "batchGetDuration((address,string[])[])": FunctionFragment;
     "batchMakeCommitment((address,(string,uint256)[],address,uint256,address,bytes32,bytes)[])": FunctionFragment;
     "batchRegister((address,(string,uint256)[],address,uint256,address,bytes32,bytes)[])": FunctionFragment;
     "batchRegisterERC20((address,(string,uint256)[],address,uint256,address,bytes32,bytes)[],address,uint256)": FunctionFragment;
+    "batchRenew((address,(string,uint256)[],address,uint256,bytes)[])": FunctionFragment;
+    "batchRenewERC20((address,(string,uint256)[],address,uint256,bytes)[],address,uint256)": FunctionFragment;
     "feeBasisPt()": FunctionFragment;
     "feeContract()": FunctionFragment;
     "feeFixed()": FunctionFragment;
@@ -152,7 +194,7 @@ export interface BatchRegisterInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "approveToken",
-    values: [string]
+    values: [string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "approvedPairs",
@@ -179,6 +221,10 @@ export interface BatchRegisterInterface extends utils.Interface {
     values: [CommitmentInfoStruct[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "batchGetDuration",
+    values: [DurationInfoStruct[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "batchMakeCommitment",
     values: [RegistrationInfoStruct[]]
   ): string;
@@ -189,6 +235,14 @@ export interface BatchRegisterInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "batchRegisterERC20",
     values: [RegistrationInfoStruct[], string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "batchRenew",
+    values: [RenewInfoStruct[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "batchRenewERC20",
+    values: [RenewInfoStruct[], string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "feeBasisPt",
@@ -266,6 +320,10 @@ export interface BatchRegisterInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "batchGetDuration",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "batchMakeCommitment",
     data: BytesLike
   ): Result;
@@ -275,6 +333,11 @@ export interface BatchRegisterInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "batchRegisterERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "batchRenew", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "batchRenewERC20",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "feeBasisPt", data: BytesLike): Result;
@@ -372,6 +435,7 @@ export interface BatchRegister extends BaseContract {
   functions: {
     approveToken(
       token: string,
+      approved: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -403,6 +467,11 @@ export interface BatchRegister extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    batchGetDuration(
+      durationInfo: DurationInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<[DurationResponseStructOutput[]]>;
+
     batchMakeCommitment(
       requests: RegistrationInfoStruct[],
       overrides?: CallOverrides
@@ -415,6 +484,18 @@ export interface BatchRegister extends BaseContract {
 
     batchRegisterERC20(
       requests: RegistrationInfoStruct[],
+      paymentToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    batchRenew(
+      requests: RenewInfoStruct[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    batchRenewERC20(
+      requests: RenewInfoStruct[],
       paymentToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -479,6 +560,7 @@ export interface BatchRegister extends BaseContract {
 
   approveToken(
     token: string,
+    approved: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -510,6 +592,11 @@ export interface BatchRegister extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  batchGetDuration(
+    durationInfo: DurationInfoStruct[],
+    overrides?: CallOverrides
+  ): Promise<DurationResponseStructOutput[]>;
+
   batchMakeCommitment(
     requests: RegistrationInfoStruct[],
     overrides?: CallOverrides
@@ -522,6 +609,18 @@ export interface BatchRegister extends BaseContract {
 
   batchRegisterERC20(
     requests: RegistrationInfoStruct[],
+    paymentToken: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  batchRenew(
+    requests: RenewInfoStruct[],
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  batchRenewERC20(
+    requests: RenewInfoStruct[],
     paymentToken: string,
     amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -581,7 +680,11 @@ export interface BatchRegister extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    approveToken(token: string, overrides?: CallOverrides): Promise<void>;
+    approveToken(
+      token: string,
+      approved: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     approvedPairs(
       arg0: string,
@@ -611,6 +714,11 @@ export interface BatchRegister extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    batchGetDuration(
+      durationInfo: DurationInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<DurationResponseStructOutput[]>;
+
     batchMakeCommitment(
       requests: RegistrationInfoStruct[],
       overrides?: CallOverrides
@@ -623,6 +731,18 @@ export interface BatchRegister extends BaseContract {
 
     batchRegisterERC20(
       requests: RegistrationInfoStruct[],
+      paymentToken: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    batchRenew(
+      requests: RenewInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    batchRenewERC20(
+      requests: RenewInfoStruct[],
       paymentToken: string,
       amount: BigNumberish,
       overrides?: CallOverrides
@@ -705,6 +825,7 @@ export interface BatchRegister extends BaseContract {
   estimateGas: {
     approveToken(
       token: string,
+      approved: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -736,6 +857,11 @@ export interface BatchRegister extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    batchGetDuration(
+      durationInfo: DurationInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     batchMakeCommitment(
       requests: RegistrationInfoStruct[],
       overrides?: CallOverrides
@@ -748,6 +874,18 @@ export interface BatchRegister extends BaseContract {
 
     batchRegisterERC20(
       requests: RegistrationInfoStruct[],
+      paymentToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    batchRenew(
+      requests: RenewInfoStruct[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    batchRenewERC20(
+      requests: RenewInfoStruct[],
       paymentToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -813,6 +951,7 @@ export interface BatchRegister extends BaseContract {
   populateTransaction: {
     approveToken(
       token: string,
+      approved: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -847,6 +986,11 @@ export interface BatchRegister extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    batchGetDuration(
+      durationInfo: DurationInfoStruct[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     batchMakeCommitment(
       requests: RegistrationInfoStruct[],
       overrides?: CallOverrides
@@ -859,6 +1003,18 @@ export interface BatchRegister extends BaseContract {
 
     batchRegisterERC20(
       requests: RegistrationInfoStruct[],
+      paymentToken: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    batchRenew(
+      requests: RenewInfoStruct[],
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    batchRenewERC20(
+      requests: RenewInfoStruct[],
       paymentToken: string,
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
