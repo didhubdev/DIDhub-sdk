@@ -97,7 +97,7 @@ This function does a final check on all conditions, such as availability, commit
 ```
 const finalCheck = await sdk.register.checkPurchaseConditions(domains, registrationData.paymentToken, registrationData.paymentMax);
 ```
-The return variable contains the followings \
+The return variable contains the followings
 ```
 success //whether the transaction will suceed
 availabilityStatus //A list containing the availability status of the domains to the input domain list
