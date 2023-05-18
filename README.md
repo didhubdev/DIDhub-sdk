@@ -99,10 +99,10 @@ const finalCheck = await sdk.register.checkPurchaseConditions(domains, registrat
 ```
 The return variable contains the followings \
 ```
-success #whether the transaction will suceed
-availabilityStatus # A list containing the availability status of the domains to the input domain list
-commitmentStatus # A list containing the commitment status of the domains from the input domain list
-errors #A list of error message if something is not right
+success //whether the transaction will suceed
+availabilityStatus //A list containing the availability status of the domains to the input domain list
+commitmentStatus //A list containing the commitment status of the domains from the input domain list
+errors //A list of error message if something is not right
 ```
 
 ### Batch Register
