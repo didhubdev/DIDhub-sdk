@@ -81,6 +81,14 @@ if (paymentToken !== ZERO_ADDRESS) {
     console.log(`Approved ERC20 Tokens`);
 }
 
+// final check 
+const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
+console.log(`Final check: ${finalCheck.success}`);
+// print error if any
+finalCheck.errors.forEach(error => {
+    console.log(`Error: ${error}`);
+});
+
 // register
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
 await registerTx.wait();
