@@ -12,7 +12,7 @@ export const getBatchRegisterContract = (chain: string, provider: providers.Json
             );
         case "ARBITRUM":
             return (new BatchRegister__factory(provider)).attach(
-                CONTRACTS.DIDHUB.BATCH_REGISTER.ARB
+                CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
         default:
             throw Error("Chain not supported");
