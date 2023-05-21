@@ -33,6 +33,7 @@ class DIDhubSDK implements IDIDhubSDK {
             provider as providers.JsonRpcSigner
         );
         
+        this.checkSecretValidity(secret);
         this.secret = secret;
         
         this.did = batchRegistration(
@@ -42,6 +43,23 @@ class DIDhubSDK implements IDIDhubSDK {
         
     }
 
+    // get secret from current time
+    public getSecretFromCurrentTime = (): string => {
+        const now = Math.floor(Date.now() / 1000);
+        const secret = ethers.utils.solidityKeccak256(
+            ["uint256"],
+            [now]
+        );
+        return secret;
+    }
+
+    // check secret validity to be bytes32
+    public checkSecretValidity(secret: string) {
+        const valid = ethers.utils.isBytesLike(secret) && ethers.utils.hexDataLength(secret) === 32;
+        if (!valid) {
+            throw Error("Secret must be in the form of bytes32 string");
+        }
+    }
 
     get register(): IBatchRegister {
         return this.did as IBatchRegister;
