@@ -1,7 +1,7 @@
 import { BatchRegister } from '../../contracts/didhub';
 import { ERC20__factory } from '../../contracts/tokens';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
-import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck } from './type';
+import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult } from '../../utils';
 import { BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
@@ -167,6 +167,16 @@ export const batchRegistration: IBatchRegistration = (
         };
     }
 
+    const getERC20Balance = async (
+        paymentToken: string
+    ): Promise<BigNumberish> => {
+        const signerAddress = await batchRegisterContract.signer.getAddress();
+        // attach ERC20 token to contract and create an instance of ERC20 contract
+        const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+        const erc20Balance = await erc20Contract.balanceOf(signerAddress);
+        return erc20Balance;
+    }
+
     const approveERC20Tokens = async (
         paymentToken: string,
         paymentMax: BigNumberish
@@ -203,6 +213,51 @@ export const batchRegistration: IBatchRegistration = (
         }
     }
 
+    const getSupportedTokens = async (): Promise<ITokenInfo[]> => {
+        // check current chain
+        const chainId = await batchRegisterContract.signer.getChainId();
+        switch (chainId) {
+            case 56:
+                return [
+                    {
+                        name: "BNB",
+                        address: "0x0000000000000000000000000000000000000000",
+                        decimals: 18
+                    },
+                    {
+                        name: "WBNB",
+                        address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+                        decimals: 18
+                    },
+                    {
+                        name: "USDC",
+                        address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+                        decimals: 18
+                    }
+                ]
+            case 42161:
+                return [
+                    {
+                        name: "ETH",
+                        address: "0x0000000000000000000000000000000000000000",
+                        decimals: 18
+                    },
+                    {
+                        name: "WETH",
+                        address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+                        decimals: 18
+                    },
+                    {
+                        name: "USDC",
+                        address: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+                        decimals: 6
+                    }
+                ]
+            default:
+                throw Error("Chain not supported");
+        }
+    }
+
     return {
         batchCheckCommitment: batchCheckCommitment,
         batchMakeCommitments: batchMakeCommitments,
@@ -212,8 +267,10 @@ export const batchRegistration: IBatchRegistration = (
         getPriceWithMargin: getPriceWithMargin,
         getIndividualPrice: getIndividualPrice,
         checkPurchaseConditions: checkPurchaseConditions,
+        getERC20Balance: getERC20Balance,
         approveERC20Tokens: approveERC20Tokens,
-        batchRegister: batchRegister
+        batchRegister: batchRegister,
+        getSupportedTokens: getSupportedTokens
     }
 
 }

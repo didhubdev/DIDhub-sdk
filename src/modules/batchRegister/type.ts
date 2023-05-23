@@ -21,6 +21,12 @@ export interface IPurchaseCheck {
     availabilityStatus: boolean[];
 }
 
+export interface ITokenInfo {
+    name: string,
+    address: string,
+    decimals: number
+}
+
 export interface IBatchRegister {
     
     /**
@@ -110,6 +116,17 @@ export interface IBatchRegister {
         paymentMax: BigNumberish
     ) => Promise<IPurchaseCheck>;
 
+
+    /**
+     * @dev get token balance of the signer
+     * 
+     * @param paymentToken The address of the payment token
+     * @returns The balance of the signer for the payment token
+     */
+    getERC20Balance: (
+        paymentToken: string
+    ) => Promise<BigNumberish>;
+
     /**
      * @dev Approve the ERC20 token for the contract to use, return null if the approval is not needed
      * 
@@ -135,6 +152,13 @@ export interface IBatchRegister {
         paymentToken: string,
         paymentMax: BigNumberish
     ) => Promise<ContractTransaction>;
+
+    /**
+     * @dev Get the list of supported tokens
+     * 
+     * @return The list of supported tokens
+     */
+    getSupportedTokens: () => Promise<ITokenInfo[]>;
 }
 
 export type IBatchRegistration = (

@@ -86,6 +86,16 @@ Below is the function to obtain the data input for the batchRegister function.
 const registrationData = await sdk.register.getPriceWithMargin(domains, paymentToken, margin)
 ```
 
+### Get Supported token list
+```
+cont tokenList = await sdk.register.getSupportedTokens()
+```
+
+### Check ERC20 token balance
+```
+const balance = await sdk.register.getERC20balance(tokenAddress)
+```
+
 ### Approve ERC20 tokens if necessary
 If you want to purchase the domains with tokens that are different from the type specified by the domain name project, you need to approve the DIDhub contract to take custody of your tokens, perform swapping and purchase the domain on your behalf
 ```
