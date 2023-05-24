@@ -1,4 +1,4 @@
-import { ethers, providers } from "ethers";
+import { ethers, providers, Signer } from "ethers";
 
 import { getBatchRegisterContract, BatchRegister } from "./contracts/didhub";
 import { getSeaportContract, Seaport } from "./contracts/seaport";
@@ -6,10 +6,12 @@ import { getSeaportContract, Seaport } from "./contracts/seaport";
 import { batchRegistration, IBatchRegister, IOpensea, openseaInit } from "./modules";
 import { IDIDhubSDK } from "./type";
 
+import { Seaport as SeaportSDK } from "@opensea/seaport-js";
+
 class DIDhubSDK implements IDIDhubSDK {
 
     public batchRegisterContract: BatchRegister;
-    public seaportContract: Seaport;
+    public seaportSDK: InstanceType<typeof SeaportSDK>;
 
     private secret: string;
 
@@ -36,10 +38,9 @@ class DIDhubSDK implements IDIDhubSDK {
             provider as providers.JsonRpcSigner
         );
 
-        this.seaportContract = getSeaportContract(
-            chain,
+        this.seaportSDK = new SeaportSDK(
             provider as providers.JsonRpcSigner
-        );
+        )
         
         this.checkSecretValidity(secret);
         this.secret = secret;
@@ -50,9 +51,9 @@ class DIDhubSDK implements IDIDhubSDK {
         );
 
         this.seaport = openseaInit(
-            this.seaportContract
+            this.seaportSDK,
+            provider as Signer
         );
-        
     }
 
     // get secret from current time

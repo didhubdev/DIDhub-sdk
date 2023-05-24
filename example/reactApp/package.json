@@ -6,7 +6,7 @@
     "@binance-chain/bsc-connector": "^1.0.0",
     "@binance-chain/bsc-use-wallet": "^0.8.1",
     "@chakra-ui/react": "^1.4.1",
-    "@didhubdev/sdk": "^0.1.7",
+    "@didhubdev/sdk": "^0.1.8",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@metamask/onboarding": "^1.0.0",
