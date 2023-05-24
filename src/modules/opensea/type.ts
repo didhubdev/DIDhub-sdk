@@ -23,4 +23,11 @@ export interface IOpensea {
         paymentAmount: string,
         endInDays: number
     ) => Promise<OrderWithCounter>
+    
+    bidDomain: (
+        domainInfo: string,
+        paymentToken: string,
+        paymentAmount: string,
+        endInDays: number
+    ) => Promise<OrderWithCounter>
 }
