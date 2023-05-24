@@ -16,6 +16,8 @@ import {
   hexlify,
 } from 'ethers/lib/utils';
 
+import { DIDhubSDK } from '@didhubdev/sdk';
+
 import {
   Box,
   Button,
@@ -43,31 +45,14 @@ function VestingInterface() {
 
   const metamask = window.ethereum;
 
-  const getData = async () => {
-    
-    const provider = new ethers.providers.Web3Provider(metamask);
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    setSignerAddress(address);
-
-    const tokenContract = getTokenContract(
-      provider,
-      TOKEN_CONTRACT_ADDRESS
-    );
-
-    const symbol = await tokenContract.symbol();
-    const balance = await tokenContract.balanceOf(address);
-    const nonce = await tokenContract.nonces(address);
-
-    setAccountState({
-      balance,
-      symbol,
-      nonce
-    });
-  };
+  const provider = new ethers.providers.Web3Provider(metamask);
+  const sdk = new DIDhubSDK({
+    provider: provider,
+    chainId: 56,
+  });
 
   useEffect(() => {
-    getData();
+    // getData();
     const interval = setInterval(getData, 5000);
     return () => {
       clearInterval(interval);
@@ -75,71 +60,42 @@ function VestingInterface() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const signData = async (fromAddress, typeData) => {
-    return new Promise(function (resolve, reject) {
+  // const signData = async (fromAddress, typeData) => {
+  //   return new Promise(function (resolve, reject) {
 
-      const provider = new ethers.providers.Web3Provider(metamask);
-      const signer = provider.getSigner();
+  //     const provider = new ethers.providers.Web3Provider(metamask);
+  //     const signer = provider.getSigner();
       
-      metamask.sendAsync(
-        {
-          id: 1,
-          method: "eth_signTypedData_v3",
-          params: [fromAddress, typeData],
-          from: fromAddress,
-        },
-        function (err, result) {
-          if (err) {
-            reject(err); //TODO
-            setIsClaiming(false);
-          } else {
-            const r = result.result.slice(0, 66);
-            const s = "0x" + result.result.slice(66, 130);
-            const v = Number("0x" + result.result.slice(130, 132));
-            resolve({
-              v,
-              r,
-              s,
-            });
-          }
-        }
-      );
-    });
-  };
+  //     metamask.sendAsync(
+  //       {
+  //         id: 1,
+  //         method: "eth_signTypedData_v3",
+  //         params: [fromAddress, typeData],
+  //         from: fromAddress,
+  //       },
+  //       function (err, result) {
+  //         if (err) {
+  //           reject(err); //TODO
+  //           setIsClaiming(false);
+  //         } else {
+  //           const r = result.result.slice(0, 66);
+  //           const s = "0x" + result.result.slice(66, 130);
+  //           const v = Number("0x" + result.result.slice(130, 132));
+  //           resolve({
+  //             v,
+  //             r,
+  //             s,
+  //           });
+  //         }
+  //       }
+  //     );
+  //   });
+  // };
 
   const signTransaction = async () => {
     
-    const deadline = 1833234440741;
-    const spenderAddress = "0x1b40383aFD33CF0ad844B1E900432E3059ba3236";
-    const dataString = "{ Name : Henry , Age : 28 , Gender : Male, Image URL : www.iamhandsome.com/pic/1 }";
 
-    setIsClaiming(true);
-    const messageData = createPermitMessageData(
-      signerAddress,
-      accountState.nonce.toString(),
-      dataString
-    );
     
-    const sig = await signData(signerAddress, messageData.typedData);
-
-    console.log(sig)
-    
-    setSignedTransactionState(Object.assign({}, sig, messageData.message))
-
-    const approve = { owner: signerAddress, spender: spenderAddress, value: "100000" };
-    console.log(approve);
-    const digest = await getApprovalDigest(
-      "RADIAN",
-      TOKEN_CONTRACT_ADDRESS,
-      approve,
-      accountState.nonce.toString(),
-      dataString
-    )
-
-    const { v, r, s } = ecsign(Buffer.from(digest.slice(2), 'hex'), Buffer.from("72dfd56b9a77c370977b08f1af401bb32704759f1ac7229d363fce53dc4a7db1", 'hex'))
-    console.log(v, hexlify(r), hexlify(s));
-
-    setIsClaiming(false);
   };
 
   return (

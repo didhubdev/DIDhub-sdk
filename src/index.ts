@@ -8,8 +8,8 @@ import { getSeaportContract, Seaport } from "contracts/seaport";
 
 class DIDhubSDK implements IDIDhubSDK {
 
-    private batchRegisterContract: BatchRegister;
-    private seaportContract: Seaport;
+    public batchRegisterContract: BatchRegister;
+    public seaportContract: Seaport;
 
     private secret: string;
 
