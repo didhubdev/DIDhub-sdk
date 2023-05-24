@@ -1,4 +1,4 @@
-import { ZERO_ADDRESS } from "config";
+import { ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
     IOpensea,

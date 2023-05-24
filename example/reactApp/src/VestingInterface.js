@@ -36,10 +36,6 @@ function VestingInterface() {
   const [tokenId, setTokenId] = useState();
   const [amount, setAmount] = useState();
 
-  const [signerAddress, setSignerAddress] = useState();
-  const [spenderAddress, setSpenderAddress] = useState();
-  const [accountState, setAccountState] = useState({'balance': 0, 'symbol': 'BTIEPT', 'nonce': 0});
-  const [signedTransactionState, setSignedTransactionState] = useState({});
   const [isClaiming, setIsClaiming] = useState(false);
 
   const metamask = window.ethereum;
@@ -52,8 +48,15 @@ function VestingInterface() {
     signer
   );
 
+  const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+  
   const signTransaction = async () => {
-    
+      await sdk.opensea.listDomain(
+        tokenAddress,
+        tokenId,
+        paymentToken,
+        amount
+      );
   };
 
   return (
