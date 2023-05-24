@@ -3,11 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
-import {
-  getTokenContract,
-} from './contract';
 import { abbreviateAddress, formatTokenNum } from './utils';
-import { TOKEN_CONTRACT_ADDRESS, EXPLORER_URL } from './config';
+import { EXPLORER_URL } from './config';
 import { createPermitMessageData, getApprovalDigest } from './utils';
 import { ethers } from 'ethers';
 import { ecsign } from 'ethereumjs-util'
@@ -120,10 +117,10 @@ function VestingInterface() {
             <Td>
               <Link
                 color="teal.500"
-                href={`${EXPLORER_URL}/address/${TOKEN_CONTRACT_ADDRESS}`}
+                href={`${EXPLORER_URL}/address/${sdk.seaportContract.address}`}
                 isExternal
               >
-                {abbreviateAddress(TOKEN_CONTRACT_ADDRESS)}
+                {abbreviateAddress(sdk.seaportContract.address)}
               </Link>
             </Td>
           </Tr>

@@ -1,10 +1,10 @@
 import { ethers, providers } from "ethers";
 
 import { getBatchRegisterContract, BatchRegister } from "./contracts/didhub";
+import { getSeaportContract, Seaport } from "./contracts/seaport";
 
 import { batchRegistration, IBatchRegister, IOpensea, openseaInit } from "./modules";
 import { IDIDhubSDK } from "./type";
-import { getSeaportContract, Seaport } from "contracts/seaport";
 
 class DIDhubSDK implements IDIDhubSDK {
 
