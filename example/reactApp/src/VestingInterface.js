@@ -63,11 +63,11 @@ function VestingInterface() {
       const order = await sdk.opensea.listDomain(
         domainInfo,
         paymentToken,
-        amount
+        amount,
+        3
       );
       console.log(order);
 
-      order.parameters.conduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000";
       // submit to opensea
       const response = await fetch(
         "https://api.opensea.io/v2/orders/bsc/seaport/listings",

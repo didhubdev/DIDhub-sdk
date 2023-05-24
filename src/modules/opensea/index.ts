@@ -35,9 +35,9 @@ export const openseaInit: IOpenseaInit = (
         const itemType = getItemType(contractAddress);
         const signerAddress = await signer.getAddress();
 
-        const startTime = Math.floor(Date.now() / 1000).toString();
-        const endTime = startTime + endInDays * 24 * 60 * 60;
-
+        const now = Math.floor(Date.now() / 1000);
+        const startTime = now.toString();
+        const endTime = (now + endInDays * 24 * 60 * 60).toString();
 
         const { executeAllActions } = await seaportSDK.createOrder(
             {
