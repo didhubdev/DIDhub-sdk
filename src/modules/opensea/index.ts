@@ -53,7 +53,7 @@ export const openseaInit: IOpenseaInit = (
 
         // split up into fee
         const openseaFee = 250;
-        const openseaRecipient = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
+        const openseaRecipient = "0x0000a26b00c1f0df003000390027140000faa719";
         let fees = [
           {
             basisPoints: openseaFee,
