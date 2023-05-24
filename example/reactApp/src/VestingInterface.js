@@ -51,9 +51,10 @@ function VestingInterface() {
   const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
   
   const signTransaction = async () => {
+      console.log(tokenAddress, tokenId, paymentToken, amount);
+      const domainInfo = `BNB:${tokenAddress}:${tokenId}`;
       await sdk.opensea.listDomain(
-        tokenAddress,
-        tokenId,
+        domainInfo,
         paymentToken,
         amount
       );
@@ -74,20 +75,6 @@ function VestingInterface() {
         style={{ borderCollapse: 'initial', tableLayout: 'fixed' }}
       >
         <Tbody>
-          <Tr>
-            <Td>
-              <strong>Token Contract Address</strong>
-            </Td>
-            <Td>
-              <Link
-                color="teal.500"
-                href={`${EXPLORER_URL}/address/${sdk.seaportContract.address}`}
-                isExternal
-              >
-                {abbreviateAddress(sdk.seaportContract.address)}
-              </Link>
-            </Td>
-          </Tr>
 
           <Tr>
             <Td>
@@ -130,7 +117,8 @@ function VestingInterface() {
             </Td>
             <Td>
               <Center>
-              {`${accountState.balance}`}
+
+
               </Center>
             </Td>
           </Tr>
@@ -140,12 +128,11 @@ function VestingInterface() {
             </Td>
             <Td>
               <Center>
-              <NumberInput
+              <Input
                 value={amount}
-                onChange={(valueString)=>setAmount(valueString)}
-                defaultValue={0}>
-                  <NumberInputField />
-              </NumberInput>
+                onChange={(event)=>setAmount(event.target.value)}
+                defaultValue="">
+              </Input>
               </Center>
             </Td>
           </Tr>
@@ -154,7 +141,7 @@ function VestingInterface() {
               <strong>Grant to Address</strong>
             </Td>
             <Td>
-              <Input value={spenderAddress} onChange={(event)=>setSpenderAddress(event.target.value)}/>
+              <Input value=""/>
             </Td>
           </Tr>
           <Tr>

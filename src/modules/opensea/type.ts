@@ -1,5 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { BigNumber, Signer } from "ethers";
+import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
+import { Signer } from "ethers";
 
 export enum ItemType {
     NATIVE = 0,
@@ -20,5 +21,5 @@ export interface IOpensea {
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
-    ) => Promise<void>
+    ) => Promise<OrderWithCounter>
 }

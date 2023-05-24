@@ -54,7 +54,9 @@ export const openseaInit: IOpenseaInit = (
             signerAddress
           );
         
-        await executeAllActions();
+        const order = await executeAllActions();
+
+        return order;
     }
 
     return {
