@@ -2,16 +2,19 @@ import { ethers, providers } from "ethers";
 
 import { getBatchRegisterContract, BatchRegister } from "./contracts/didhub";
 
-import { batchRegistration, IBatchRegister } from "./modules";
+import { batchRegistration, IBatchRegister, IOpensea, openseaInit } from "./modules";
 import { IDIDhubSDK } from "./type";
+import { getSeaportContract, Seaport } from "contracts/seaport";
 
 class DIDhubSDK implements IDIDhubSDK {
 
     private batchRegisterContract: BatchRegister;
+    private seaportContract: Seaport;
 
     private secret: string;
 
     private did: IBatchRegister;
+    private seaport: IOpensea;
 
     /**
      * @dev instantiate the didhub sdk
@@ -32,6 +35,11 @@ class DIDhubSDK implements IDIDhubSDK {
             chain,
             provider as providers.JsonRpcSigner
         );
+
+        this.seaportContract = getSeaportContract(
+            chain,
+            provider as providers.JsonRpcSigner
+        );
         
         this.checkSecretValidity(secret);
         this.secret = secret;
@@ -39,6 +47,10 @@ class DIDhubSDK implements IDIDhubSDK {
         this.did = batchRegistration(
             this.batchRegisterContract,
             this.secret
+        );
+
+        this.seaport = openseaInit(
+            this.seaportContract
         );
         
     }
@@ -63,6 +75,10 @@ class DIDhubSDK implements IDIDhubSDK {
 
     get register(): IBatchRegister {
         return this.did as IBatchRegister;
+    }
+
+    get opensea(): IOpensea {
+        return this.seaport as IOpensea;
     }
 
 }

@@ -7,5 +7,8 @@ export const CONTRACTS = {
             "BNB": "0xf1e35a7955E88F8D4F091DeC99cD6a2778CEc2Aa",
             "ARBITRUM": "0xE327299dD1af606967E018dDf89baca0e4582c94"
         }
+    },
+    "MARKETPLACE": {
+        "SEAPORT1_5": "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC"
     }
 }
