@@ -4,7 +4,7 @@
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import type { Provider, TransactionRequest } from "@ethersproject/providers";
 import type { PromiseOrValue } from "../../common";
-import type { Seaport, SeaportInterface } from "../../contracts/Seaport";
+import type { Seaport, SeaportInterface } from "./Seaport";
 
 const _abi = [
   {
