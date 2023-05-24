@@ -27,12 +27,17 @@ export const openseaInit: IOpenseaInit = (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
+        endInDays: number
     ) => {
 
         const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
 
         const itemType = getItemType(contractAddress);
         const signerAddress = await signer.getAddress();
+
+        const startTime = Math.floor(Date.now() / 1000).toString();
+        const endTime = startTime + endInDays * 24 * 60 * 60;
+
 
         const { executeAllActions } = await seaportSDK.createOrder(
             {
@@ -50,11 +55,14 @@ export const openseaInit: IOpenseaInit = (
                   recipient: signerAddress,
                 },
               ],
+              startTime: startTime,
+              endTime: endTime
             },
             signerAddress
           );
         
         const order = await executeAllActions();
+        order.parameters.conduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000";
 
         return order;
     }

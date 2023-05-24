@@ -21,5 +21,6 @@ export interface IOpensea {
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
+        endInDays: number
     ) => Promise<OrderWithCounter>
 }

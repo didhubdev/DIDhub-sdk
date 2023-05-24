@@ -13,6 +13,10 @@ import {
 } from 'ethers/lib/utils';
 
 import { DIDhubSDK } from '@didhubdev/sdk';
+import fetch from 'node-fetch';
+
+// import env
+import dotenv from 'dotenv';
 
 import {
   Box,
@@ -29,6 +33,8 @@ import {
   Text,
   Input
 } from '@chakra-ui/react';
+
+dotenv.config();
 
 function VestingInterface() {
 
@@ -52,12 +58,34 @@ function VestingInterface() {
   
   const signTransaction = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
-      const domainInfo = `BNB:${tokenAddress}:${tokenId}`;
-      await sdk.opensea.listDomain(
+      const chain = "BNB";
+      const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
+      const order = await sdk.opensea.listDomain(
         domainInfo,
         paymentToken,
         amount
       );
+      console.log(order);
+
+      order.parameters.conduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000";
+      // submit to opensea
+      const response = await fetch(
+        "https://api.opensea.io/v2/orders/bsc/seaport/listings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-KEY": process.env.REACT_APP_OPENSEA_API
+          },
+          body: JSON.stringify({
+            ...order,
+            protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC"
+          })
+        },
+      )
+
+      console.log("response", response);
+      console.log(await response.json());
   };
 
   return (
