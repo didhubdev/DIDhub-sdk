@@ -1,4 +1,4 @@
-import { Fee } from "@opensea/seaport-js/lib/types";
+import { Fee, OrderComponents, OrderWithCounter } from "@opensea/seaport-js/lib/types";
 import { ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
@@ -93,6 +93,30 @@ export const openseaInit: IOpenseaInit = (
         const order = await executeAllActions();
 
         return order;
+    }
+    
+    const fulfillOrder = async (
+      order: OrderWithCounter
+    ) => {
+      const signerAddress = await signer.getAddress();
+      const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
+        order: order,
+        accountAddress: signerAddress
+      });
+      const tx = await executeAllFulfillActions();
+      await tx.wait();
+    }
+
+    const cancelOrders = async (
+        orders: OrderComponents[]
+    ) => {
+        const signerAddress = await signer.getAddress();
+        const transaction = seaportSDK.cancelOrders(
+            orders,
+            signerAddress
+        );
+        const tx = await transaction.transact();
+        await tx.wait();
     }
 
     const bidDomain = async (

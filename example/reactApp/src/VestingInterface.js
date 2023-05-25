@@ -55,12 +55,13 @@ function VestingInterface() {
   );
 
   const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+  // const paymentToken = "0x0000000000000000000000000000000000000000"
   
   const signTransaction = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
       const chain = "BNB";
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
-      const order = await sdk.opensea.listDomain(
+      const order = await sdk.opensea.bidDomain(
         domainInfo,
         paymentToken,
         amount,
@@ -70,7 +71,7 @@ function VestingInterface() {
 
       // submit to opensea
       const response = await fetch(
-        "https://api.opensea.io/v2/orders/bsc/seaport/listings",
+        "https://api.opensea.io/v2/orders/bsc/seaport/offers",
         {
           method: "POST",
           headers: {
