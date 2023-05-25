@@ -1,6 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
-import { Signer } from "ethers";
+import { ContractTransaction, Signer } from "ethers";
 
 export enum ItemType {
     NATIVE = 0,
@@ -24,10 +24,19 @@ export interface IOpensea {
         endInDays: number
     ) => Promise<OrderWithCounter>
     
-    bidDomain: (
+    offerDomain: (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
         endInDays: number
-    ) => Promise<OrderWithCounter>
+    ) => Promise<OrderWithCounter>,
+
+    fulfillListing: (
+        orderId: string
+    ) => Promise<ContractTransaction>,
+
+    fulfillOffer: (
+        orderId: string
+    ) => Promise<ContractTransaction>,
+
 }

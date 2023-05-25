@@ -7,7 +7,8 @@ import {
 } from "./type"
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { Signer } from "ethers";
+import { ContractTransaction, Signer } from "ethers";
+import { getOpenseaListingData, getOpenseaOfferData } from "../../api";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -97,14 +98,38 @@ export const openseaInit: IOpenseaInit = (
     
     const fulfillOrder = async (
       order: OrderWithCounter
-    ) => {
+    ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order: order,
         accountAddress: signerAddress
       });
       const tx = await executeAllFulfillActions();
-      await tx.wait();
+      return tx;
+    }
+
+    const fulfillListing = async (
+      orderId: string
+    ):Promise<ContractTransaction> => {  
+      // fetch data from opensea
+      const response = await getOpenseaListingData(orderId, await signer.getAddress());
+      if (response.code !== 1) {
+        throw new Error(response.message);
+      }
+      const order = response.data;
+      return await fulfillOrder(order.fulfillment_data.orders[0]);
+    }
+
+    const fulfillOffer = async (
+      orderId: string
+    ):Promise<ContractTransaction> => {  
+      // fetch data from opensea
+      const response = await getOpenseaOfferData(orderId, await signer.getAddress());
+      if (response.code !== 1) {
+        throw new Error(response.message);
+      }
+      const order = response.data;
+      return await fulfillOrder(order.fulfillment_data.orders[0]);
     }
 
     const cancelOrders = async (
@@ -116,10 +141,11 @@ export const openseaInit: IOpenseaInit = (
             signerAddress
         );
         const tx = await transaction.transact();
-        await tx.wait();
+        return tx;
     }
+    
 
-    const bidDomain = async (
+    const offerDomain = async (
       domainInfo: string,
       paymentToken: string,
       paymentAmount: string,
@@ -180,7 +206,9 @@ export const openseaInit: IOpenseaInit = (
 
     return {
         listDomain: listDomain,
-        bidDomain: bidDomain
+        offerDomain: offerDomain,
+        fulfillListing: fulfillListing,
+        fulfillOffer: fulfillOffer
     }
 
 }
