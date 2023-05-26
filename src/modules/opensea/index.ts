@@ -8,7 +8,7 @@ import {
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { ContractTransaction, Signer } from "ethers";
-import { getOpenseaListingData, getOpenseaOfferData } from "../../api";
+import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -42,7 +42,7 @@ export const openseaInit: IOpenseaInit = (
         paymentAmount: string,
         endInDays: number
     ) => {
-
+        
         const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
 
         const itemType = getItemType(contractAddress);
@@ -93,7 +93,9 @@ export const openseaInit: IOpenseaInit = (
         
         const order = await executeAllActions();
 
-        return order;
+        const data = await postOpenseaListingData(order, chain);
+        
+        return data;
     }
     
     const fulfillOrder = async (
@@ -133,17 +135,22 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const cancelOrders = async (
-        orders: OrderComponents[]
+        orderIds: string[]
     ) => {
+        const orderComponents = await getOrders(orderIds);
+        const nonNullOrders = orderComponents.filter((order: any) => order !== null);
+        if (nonNullOrders.length === 0) {
+            throw new Error("No existing orders found");
+        }
         const signerAddress = await signer.getAddress();
         const transaction = seaportSDK.cancelOrders(
-            orders,
+          orderComponents,
             signerAddress
         );
         const tx = await transaction.transact();
         return tx;
     }
-    
+
 
     const offerDomain = async (
       domainInfo: string,
@@ -201,14 +208,17 @@ export const openseaInit: IOpenseaInit = (
       
       const order = await executeAllActions();   
       
-      return order;
+      const data = await postOpenseaOfferData(order, chain);
+
+      return data;
     }
 
     return {
         listDomain: listDomain,
         offerDomain: offerDomain,
         fulfillListing: fulfillListing,
-        fulfillOffer: fulfillOffer
+        fulfillOffer: fulfillOffer,
+        cancelOrders: cancelOrders
     }
 
 }

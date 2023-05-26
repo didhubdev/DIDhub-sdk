@@ -61,32 +61,31 @@ function VestingInterface() {
       console.log(tokenAddress, tokenId, paymentToken, amount);
       const chain = "BNB";
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
-      const order = await sdk.opensea.offerDomain(
+      const data = await sdk.opensea.offerDomain(
         domainInfo,
         paymentToken,
         amount,
         3
       );
-      console.log(order);
+      // console.log(order);
+      
+      // const response = await fetch(
+      //   "https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json"
+      //     },
+      //     body: JSON.stringify({
+      //       parameters: order.parameters,
+      //       signature: order.signature,
+      //       protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+      //       chain: "BNB"
+      //     })
+      //   },
+      // )
 
-      // submit to opensea
-      const response = await fetch(
-        "https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            ...order,
-            protocol_address: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-            chain: "bsc"
-          })
-        },
-      )
-
-      console.log("response", response);
-      console.log(await response.json());
+      console.log(data);
   };
 
   return (

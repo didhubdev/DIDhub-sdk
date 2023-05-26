@@ -1,5 +1,4 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
 import { ContractTransaction, Signer } from "ethers";
 
 export enum ItemType {
@@ -9,6 +8,11 @@ export enum ItemType {
     ERC1155 = 3,
     ERC721_WITH_CRITERIA = 4,
     ERC1155_WITH_CRITERIA = 5,
+}
+
+export interface IDIDhubResponse {
+    code: number,
+    message: string
 }
 
 export type IOpenseaInit = (
@@ -22,14 +26,14 @@ export interface IOpensea {
         paymentToken: string,
         paymentAmount: string,
         endInDays: number
-    ) => Promise<OrderWithCounter>
+    ) => Promise<IDIDhubResponse>
     
     offerDomain: (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
         endInDays: number
-    ) => Promise<OrderWithCounter>,
+    ) => Promise<IDIDhubResponse>,
 
     fulfillListing: (
         orderId: string
@@ -39,4 +43,7 @@ export interface IOpensea {
         orderId: string
     ) => Promise<ContractTransaction>,
 
+    cancelOrders: (
+        orderIds: string[]
+    ) => Promise<ContractTransaction>,
 }
