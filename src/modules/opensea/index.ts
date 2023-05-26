@@ -92,7 +92,8 @@ export const openseaInit: IOpenseaInit = (
           );
         
         const order = await executeAllActions();
-
+          
+        console.log(order);
         const data = await postOpenseaListingData(order, chain);
         
         return data;
@@ -131,6 +132,7 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
+      console.log(order.fulfillment_data.orders[0]);
       return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter);
     }
 
