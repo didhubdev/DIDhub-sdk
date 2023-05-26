@@ -9,13 +9,13 @@ import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 
 class DIDhubSDK implements IDIDhubSDK {
 
-    public batchRegisterContract: BatchRegister;
+    public batchRegisterContract: BatchRegister | null;
     public seaportSDK: InstanceType<typeof SeaportSDK>;
 
     private secret: string;
 
-    private did: IBatchRegister;
-    private seaport: IOpensea;
+    private did: IBatchRegister | null;
+    private seaport: IOpensea | null;
 
     /**
      * @dev instantiate the didhub sdk
@@ -44,10 +44,10 @@ class DIDhubSDK implements IDIDhubSDK {
         this.checkSecretValidity(secret);
         this.secret = secret;
         
-        this.did = batchRegistration(
+        this.did = this.batchRegisterContract ? batchRegistration(
             this.batchRegisterContract,
             this.secret
-        );
+        ) : null;
 
         this.seaport = openseaInit(
             this.seaportSDK,
@@ -74,11 +74,14 @@ class DIDhubSDK implements IDIDhubSDK {
     }
 
     get register(): IBatchRegister {
-        return this.did as IBatchRegister;
+        if (this.did === null) {
+            throw Error("Batch register is only supported in BNB and ARBITRUM");
+        }
+        return this.did! as IBatchRegister;
     }
 
     get opensea(): IOpensea {
-        return this.seaport as IOpensea;
+        return this.seaport! as IOpensea;
     }
 
 }

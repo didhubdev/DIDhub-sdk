@@ -3,7 +3,7 @@ import { BatchRegister__factory } from "./BSC/BatchRegister__factory";
 import { CONTRACTS } from "../../config";
 import { providers } from "ethers";
 
-export const getBatchRegisterContract = (chain: string, provider: providers.JsonRpcSigner): BatchRegister => {
+export const getBatchRegisterContract = (chain: string, provider: providers.JsonRpcSigner): BatchRegister | null => {
     // initialise batch register contract of a particular network
     switch (chain) {
         case "BNB":
@@ -15,7 +15,8 @@ export const getBatchRegisterContract = (chain: string, provider: providers.Json
                 CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
         default:
-            throw Error("Chain not supported");
+            console.log("Chain not supported");
+            return null;
     }
 }
 

@@ -50,8 +50,9 @@ function VestingInterface() {
 
   const provider = new ethers.providers.Web3Provider(metamask);
   const signer = provider.getSigner();
+  const initChain = "POLYGON";
   const sdk = new DIDhubSDK(
-    "BNB",
+    initChain,
     "0x0000000000000000000000000000000000000000000000000000000000000000",
     signer
   );
@@ -77,7 +78,7 @@ function VestingInterface() {
 
   const signOffer = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
-      const chain = "BNB";
+      const chain = initChain;
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
       const data = await sdk.opensea.offerDomain(
         domainInfo,
@@ -90,7 +91,7 @@ function VestingInterface() {
 
   const signListing = async () => {
     console.log(tokenAddress, tokenId, paymentToken, amount);
-    const chain = "BNB";
+    const chain = initChain ;
     const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
     const data = await sdk.opensea.listDomain(
       domainInfo,
