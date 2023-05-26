@@ -38,8 +38,10 @@ dotenv.config();
 
 function VestingInterface() {
 
-  const [tokenAddress, setTokenAddress] = useState();
-  const [tokenId, setTokenId] = useState();
+  const [chain, setChain] = useState("BNB");
+  const [orderId, setOrderId] = useState();
+  const [tokenAddress, setTokenAddress] = useState("0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6");
+  const [tokenId, setTokenId] = useState("62989861101794962219924061081957215181955279530765526469477249127872642808190");
   const [amount, setAmount] = useState();
 
   const [isClaiming, setIsClaiming] = useState(false);
@@ -56,8 +58,24 @@ function VestingInterface() {
 
   const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
   // const paymentToken = "0x0000000000000000000000000000000000000000"
-  
-  const signTransaction = async () => {
+
+  const fulfillOffer = async () => {
+    const tx = await sdk.opensea.fulfillOffer(
+      orderId
+    );
+    const data = await tx.wait();
+    console.log(data);
+  };
+
+  const fulfillListing = async () => {
+    const tx = await sdk.opensea.fulfillListing(
+      orderId
+    );
+    const data = await tx.wait();
+    console.log(data);
+  };
+
+  const signOffer = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
       const chain = "BNB";
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
@@ -67,42 +85,58 @@ function VestingInterface() {
         amount,
         3
       );
-      // console.log(order);
-      
-      // const response = await fetch(
-      //   "https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json"
-      //     },
-      //     body: JSON.stringify({
-      //       parameters: order.parameters,
-      //       signature: order.signature,
-      //       protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-      //       chain: "BNB"
-      //     })
-      //   },
-      // )
-
       console.log(data);
   };
 
+  const signListing = async () => {
+    console.log(tokenAddress, tokenId, paymentToken, amount);
+    const chain = "BNB";
+    const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
+    const data = await sdk.opensea.listDomain(
+      domainInfo,
+      paymentToken,
+      amount,
+      3
+    );
+    console.log(data);
+  };
+
+  const cancelOrder = async () => {
+    const tx = await sdk.opensea.cancelOrders(
+      [orderId]
+    );
+    const data = await tx.wait();
+    console.log(data);
+  }
+  
   return (
      <Box>
 
-      <Heading size="md" mb={5} textAlign="center">
-        Test meta transaction
+      <Heading size="ml" mb={5} textAlign="center">
+        Test Opensea
       </Heading>
       
       <Table
         variant="simple"
-        size="md"
+        size="ml"
         borderRadius="12px"
         borderWidth="1px"
         style={{ borderCollapse: 'initial', tableLayout: 'fixed' }}
       >
         <Tbody>
+
+        <Tr>
+            <Td>
+              <strong>Chain</strong>
+            </Td>
+            <Td>
+              <Input
+                value={chain}
+                onChange={(event)=>setChain(event.target.value)}
+                defaultValue="">
+              </Input>
+            </Td>
+          </Tr>
 
           <Tr>
             <Td>
@@ -132,27 +166,20 @@ function VestingInterface() {
 
           <Tr>
             <Td>
-              <strong>Signature</strong>
+              <strong>OrderId</strong>
             </Td>
             <Td>
-
+              <Input
+                value={orderId}
+                onChange={(event)=>setOrderId(event.target.value)}
+                defaultValue="">
+              </Input>
             </Td>
           </Tr>
 
           <Tr>
             <Td>
-              <strong>Available to Sell</strong>
-            </Td>
-            <Td>
-              <Center>
-
-
-              </Center>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
-              <strong>Amount to List</strong>
+              <strong>Amount</strong>
             </Td>
             <Td>
               <Center>
@@ -164,25 +191,60 @@ function VestingInterface() {
               </Center>
             </Td>
           </Tr>
+
           <Tr>
             <Td>
-              <strong>Grant to Address</strong>
-            </Td>
-            <Td>
-              <Input value=""/>
-            </Td>
-          </Tr>
-          <Tr>
-            <Td>
+              <Button
+                onClick={signOffer}
+                colorScheme="green"
+                ml={6}
+                isDisabled={isClaiming}
+              >
+                Sign Offer
+              </Button>
             </Td>
             <Td>
               <Button
-                onClick={signTransaction}
+                onClick={signListing}
                 colorScheme="green"
                 ml={5}
                 isDisabled={isClaiming}
               >
-                Sign Transaction
+                Sign Listing
+              </Button>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>
+              <Button
+                onClick={fulfillOffer}
+                colorScheme="green"
+                ml={6}
+                isDisabled={isClaiming}
+              >
+                Fulfill Offer
+              </Button>
+            </Td>
+            <Td>
+              <Button
+                onClick={fulfillListing}
+                colorScheme="green"
+                ml={5}
+                isDisabled={isClaiming}
+              >
+                Fulfill Listing
+              </Button>
+            </Td>
+          </Tr>
+          <Tr>
+            <Td>
+              <Button
+                onClick={cancelOrder}
+                colorScheme="green"
+                ml={6}
+                isDisabled={isClaiming}
+              >
+                Cancel Order
               </Button>
             </Td>
           </Tr>
