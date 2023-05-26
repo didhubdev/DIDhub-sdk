@@ -103,7 +103,7 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
-        order: order,
+        order,
         accountAddress: signerAddress
       });
       const tx = await executeAllFulfillActions();
