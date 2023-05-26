@@ -56,8 +56,8 @@ function VestingInterface() {
     signer
   );
 
-  const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-  // const paymentToken = "0x0000000000000000000000000000000000000000"
+  // const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+  const paymentToken = "0x0000000000000000000000000000000000000000"
 
   const fulfillOffer = async () => {
     const tx = await sdk.opensea.fulfillOffer(
