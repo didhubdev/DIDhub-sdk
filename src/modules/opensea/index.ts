@@ -131,6 +131,7 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
+      console.log(order.fulfillment_data.transaction.input_data.order);
       return await fulfillOrder(order.fulfillment_data.transaction.input_data.order as OrderWithCounter);
     }
 
