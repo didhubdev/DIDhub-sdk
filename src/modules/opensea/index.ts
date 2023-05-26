@@ -119,7 +119,7 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
-      return await fulfillOrder(order.fulfillment_data.orders[0].parameters);
+      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter);
     }
 
     const fulfillOffer = async (
@@ -131,8 +131,7 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
-      console.log(order.fulfillment_data.orders[0].parameters);
-      return await fulfillOrder(order.fulfillment_data.orders[0].parameters);
+      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter);
     }
 
     const cancelOrders = async (

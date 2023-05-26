@@ -2084,10 +2084,10 @@
     ethers "5.6.1"
     ts-node "^10.4.1"
 
-"@didhubdev/sdk@^0.1.23":
-  version "0.1.23"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.1.23.tgz#1b520f227f9ab8cd5e8ee9758122c7d6eee5fd4c"
-  integrity sha512-rGk2EZQMiPAoj5yb4N3+IuKyQwnTMef1T68B7QX6hj0kwfLPMRVwTiZGjsKD8R8GLamyCgLOyrs0kIfm7KW4Dg==
+"@didhubdev/sdk@^0.1.24":
+  version "0.1.24"
+  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.1.24.tgz#71ba1745c4618453b56293157eb5d2ada0b65295"
+  integrity sha512-c8QlaauZY1+PfGqurHPT/FVr4m5bjVIsCjCD1XDNVDdMFca53gtJc+SzSlcMSifqRZteSHGjFmtWgU2++8oqYQ==
   dependencies:
     "@didhubdev/sdk" "0.0.53"
     "@opensea/seaport-js" "^1.3.0"
