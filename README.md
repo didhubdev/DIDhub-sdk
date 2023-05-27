@@ -126,12 +126,14 @@ const registerTx = await sdk.register.batchRegister(registrationData.requests, r
 
 
 ### Make Offer
-Note that it is not possible to offer native token.
+Note that it is not possible to offer native token. \
+Approval process is automatically handled.
 ```
 const data = await sdk.opensea.offerDomain(domainInfo, paymentToken, amount, days);
 ```
 
 ### List Domain
+Approval is automatically handled.
 ```
 const data = await sdk.opensea.listDomain(domainInfo, paymentToken, amount, days);
 ```
