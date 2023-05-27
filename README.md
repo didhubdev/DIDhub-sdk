@@ -16,7 +16,7 @@ yarn add @didhubdev/sdk
 
 ## Initalise SDK
 ```
-const sdk = new DIDhubSDK(chain, secret, signer);
+const sdk = new DIDhubSDK(chain, signer, secret);
 ```
 chain is the name of the supported blockchain. Supported chains are listed below \
 | chain name | code |
@@ -24,8 +24,9 @@ chain is the name of the supported blockchain. Supported chains are listed below
 | Binance Smart Chain | BNB |
 | Arbitrum | ARBITRUM |
 
-secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. \
-signer, e.g. metamask signer
+signer, e.g. metamask signer \
+
+secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. This variable is optional
 
 ## Inputs for Domain Name Registration
 ```
@@ -47,6 +48,9 @@ paymentToken is the token to pay for the domain. Supported tokens are listed bel
 | BSC | Native | 0x0000000000000000000000000000000000000000 |
 | BSC | WBNB | 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c | 
 | BSC | USDC | 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d | 
+| ARBITRUM | Native | 0x0000000000000000000000000000000000000000 |
+| ARBITRUM | WBNB | 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 | 
+| ARBITRUM | USDC | 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8 | 
 
 ## Functions to interact with the DIDHUB batch registration contract
 

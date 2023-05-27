@@ -21,13 +21,13 @@ class DIDhubSDK implements IDIDhubSDK {
      * @dev instantiate the didhub sdk
      * 
      * @param chain  the chain name, i.e. BNB, ETHEREUM
-     * @param secret the secret a 32 bytes hex string
      * @param provider a signer that can sign and send transactions
+     * @param {string} [secret] the secret a 32 bytes hex string
      */
     public constructor(
         chain: string,
-        secret: string,
-        provider: any
+        provider: any,
+        secret?: string
     ) {
 
         // this.ethersProvider = new providers.Web3Provider(provider as providers.ExternalProvider);
@@ -41,7 +41,11 @@ class DIDhubSDK implements IDIDhubSDK {
             provider as providers.JsonRpcSigner
         )
         
-        this.checkSecretValidity(secret);
+        if (secret === undefined) {
+            secret = this.getSecretFromCurrentTime();
+        } else {
+            this.checkSecretValidity(secret);
+        }
         this.secret = secret;
         
         this.did = this.batchRegisterContract ? batchRegistration(
