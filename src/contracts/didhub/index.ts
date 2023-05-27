@@ -15,7 +15,6 @@ export const getBatchRegisterContract = (chain: string, provider: providers.Json
                 CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
         default:
-            console.log("Chain not supported");
             return null;
     }
 }
