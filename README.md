@@ -121,3 +121,33 @@ Use the registration data as input for the purchase. The SDK will handle cases o
 ```
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
 ```
+
+## Functions to interact with Opensea
+
+
+### Make Offer
+Note that it is not possible to offer native token.
+```
+const data = await sdk.opensea.offerDomain(domainInfo, paymentToken, amount, days);
+```
+
+### List Domain
+```
+const data = await sdk.opensea.listDomain(domainInfo, paymentToken, amount, days);
+```
+
+### Accept Offer
+```
+const tx = await sdk.opensea.fulfillOffer(orderId);
+```
+
+### Fulfill Listing
+```
+const tx = await sdk.opensea.fulfillListing(orderId);
+```
+
+### Cancel Order
+This can take in an array of both offer or listing orders
+```
+const tx = await sdk.opensea.cancelOrders(orderIds);
+```
