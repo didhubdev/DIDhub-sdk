@@ -25,7 +25,7 @@ const paymentToken = ZERO_ADDRESS;
 // =============================================================================
 
 // instantiate SDK
-const sdk = new DIDhubSDK("BSC", secret, signer);
+const sdk = new DIDhubSDK(signer, secret);
 
 // get availablity status
 let domainsAvailable: IDomainInfo[] = [];

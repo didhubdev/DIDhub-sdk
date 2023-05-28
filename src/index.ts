@@ -1,7 +1,5 @@
 import { ethers, providers, Signer } from "ethers";
 
-import { getBatchRegisterContract, BatchRegister } from "./contracts/didhub";
-
 import { batchRegistration, IBatchRegister, IOpensea, openseaInit } from "./modules";
 import { IDIDhubSDK } from "./type";
 
