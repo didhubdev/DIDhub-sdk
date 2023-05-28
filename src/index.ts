@@ -9,33 +9,23 @@ import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 
 class DIDhubSDK implements IDIDhubSDK {
 
-    public batchRegisterContract: BatchRegister | null;
     public seaportSDK: InstanceType<typeof SeaportSDK>;
 
     private secret: string;
 
-    private did: IBatchRegister | null;
-    private seaport: IOpensea | null;
+    private did: IBatchRegister;
+    private seaport: IOpensea;
 
     /**
      * @dev instantiate the didhub sdk
      * 
-     * @param chain  the chain name, i.e. BNB, ETHEREUM
      * @param provider a signer that can sign and send transactions
      * @param {string} [secret] the secret a 32 bytes hex string
      */
     public constructor(
-        chain: string,
         provider: any,
         secret?: string
     ) {
-
-        // this.ethersProvider = new providers.Web3Provider(provider as providers.ExternalProvider);
-        
-        this.batchRegisterContract = getBatchRegisterContract(
-            chain,
-            provider as providers.JsonRpcSigner
-        );
 
         this.seaportSDK = new SeaportSDK(
             provider as providers.JsonRpcSigner
@@ -48,10 +38,10 @@ class DIDhubSDK implements IDIDhubSDK {
         }
         this.secret = secret;
         
-        this.did = this.batchRegisterContract ? batchRegistration(
-            this.batchRegisterContract,
+        this.did = batchRegistration(
+            provider as providers.JsonRpcSigner,
             this.secret
-        ) : null;
+        );
 
         this.seaport = openseaInit(
             this.seaportSDK,

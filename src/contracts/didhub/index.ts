@@ -3,19 +3,20 @@ import { BatchRegister__factory } from "./BSC/BatchRegister__factory";
 import { CONTRACTS } from "../../config";
 import { providers } from "ethers";
 
-export const getBatchRegisterContract = (chain: string, provider: providers.JsonRpcSigner): BatchRegister | null => {
+export const getBatchRegisterContract = async (provider: providers.JsonRpcSigner): Promise<BatchRegister> => {
     // initialise batch register contract of a particular network
-    switch (chain) {
-        case "BNB":
+    const chainId = await provider.getChainId();
+    switch (chainId) {
+        case 56:
             return (new BatchRegister__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.BNB
             );
-        case "ARBITRUM":
+        case 421611:
             return (new BatchRegister__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
         default:
-            return null;
+            throw Error("Chain is not supported");
     }
 }
 

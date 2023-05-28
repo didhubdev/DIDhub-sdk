@@ -1,6 +1,6 @@
 import { BatchRegister } from '../../contracts';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
-import { BigNumber, ContractTransaction, BigNumberish } from 'ethers';
+import { BigNumber, ContractTransaction, BigNumberish, providers } from 'ethers';
 
 export interface IDomainInfo {
     collectionInfo: string
@@ -162,6 +162,6 @@ export interface IBatchRegister {
 }
 
 export type IBatchRegistration = (
-    batchRegisterContract: BatchRegister,
+    batchRegisterContract: providers.JsonRpcSigner,
     secret: string
 ) => IBatchRegister;
