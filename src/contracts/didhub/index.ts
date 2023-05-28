@@ -16,7 +16,7 @@ export const getBatchRegisterContract = async (provider: providers.JsonRpcSigner
                 CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
         default:
-            throw Error("Chain is not supported");
+            throw Error(`Chain ${chainId} is not supported`);
     }
 }
 
