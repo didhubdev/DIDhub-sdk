@@ -8,11 +8,6 @@ export const getOpenseaListingData = async (
     signer: string,
     useCache: boolean = true
 ) => {
-    // remove OPENSEA: prefix
-    if (orderId.includes("OPENSEA:")) {
-        orderId = orderId.replace("OPENSEA:", "");
-    }
-    console.log("orderId", orderId);
 
     // read from cache
     if (useCache && cache[orderId + signer]) {
@@ -45,11 +40,6 @@ export const getOpenseaOfferData = async (
     signer: string,
     useCache: boolean = true
 ) => {
-
-    // remove OPENSEA: prefix
-    if (orderId.includes("OPENSEA:")) {
-        orderId = orderId.replace("OPENSEA:", "");
-    }
 
     // read from cache
     if (useCache && cache[orderId + signer]) {
@@ -132,13 +122,6 @@ export const getOrders = async (
     orderIds: string[]
 ) => {
 
-    orderIds = orderIds.map((orderId) => {
-      if (orderId.includes("OPENSEA:")) {
-          return orderId.replace("OPENSEA:", "");
-      }
-      return orderId;
-    });
-    
     const response = await fetch(
         "https://stage.api.didhub.com/nftmarketplace/v1/opensea/orders",
         {
