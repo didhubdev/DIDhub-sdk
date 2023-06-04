@@ -1,4 +1,4 @@
-import { ERC20__factory } from "contracts";
+import { ERC20__factory } from "../../contracts";
 import { BigNumberish, ContractTransaction, providers} from "ethers";
 import { IUtils } from "./type";
 
