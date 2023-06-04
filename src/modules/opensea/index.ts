@@ -1,4 +1,4 @@
-import { AdvancedOrder, Fee, OrderComponents, OrderWithCounter } from "@opensea/seaport-js/lib/types";
+import { Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
 import { ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
@@ -9,9 +9,8 @@ import {
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { ContractTransaction, Signer, providers, BigNumber } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
-import { getBatchPurchaseContract } from "contracts";
-import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, SwapPriceStruct } from "contracts/didhub/batchPurchase/BatchPurchase";
-import { DomainPriceInfoStruct } from "contracts/didhub/BSC/BatchRegister";
+import { getBatchPurchaseContract } from "../../contracts";
+import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -126,7 +125,7 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       return order.fulfillment_data.orders[0];
     }
-    
+
     const fulfillListing = async (
       orderId: string
     ):Promise<ContractTransaction> => {  

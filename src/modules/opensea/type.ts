@@ -1,6 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { SwapInfoStruct } from "contracts/didhub/batchPurchase/BatchPurchase";
-import { ContractTransaction, Signer, providers } from "ethers";
+import { SwapInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { ContractTransaction, providers } from "ethers";
 
 export enum ItemType {
     NATIVE = 0,
