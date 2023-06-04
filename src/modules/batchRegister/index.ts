@@ -178,10 +178,9 @@ export const batchRegistration: IBatchRegistration = (
     const getERC20Balance = async (
         paymentToken: string
     ): Promise<BigNumberish> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const signerAddress = await batchRegisterContract.signer.getAddress();
+        const signerAddress = await provider.getAddress();
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+        const erc20Contract = new ERC20__factory(provider).attach(paymentToken);
         const erc20Balance = await erc20Contract.balanceOf(signerAddress);
         return erc20Balance;
     }
@@ -191,7 +190,7 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<ContractTransaction | null> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
-        const signerAddress = await batchRegisterContract.signer.getAddress();
+        const signerAddress = await provider.getAddress();
         // attach ERC20 token to contract and create an instance of ERC20 contract
         const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
         const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);

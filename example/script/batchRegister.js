@@ -1,12 +1,12 @@
-import { DIDhubSDK, IDomainInfo } from "@didhubdev/sdk";
+import { DIDhubSDK } from "@didhubdev/sdk";
 import { ethers } from "ethers";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL!);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
 // init signer from private key
-const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
 
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
@@ -28,7 +28,7 @@ const paymentToken = ZERO_ADDRESS;
 const sdk = new DIDhubSDK(signer, secret);
 
 // get availablity status
-let domainsAvailable: IDomainInfo[] = [];
+let domainsAvailable = [];
 const availabilityStatus = await sdk.register.batchCheckAvailability(domains);
 // remove domain from list if not available
 availabilityStatus.forEach((status, index) => {
@@ -49,7 +49,7 @@ individualPrices.forEach((price, index) => {
 const commitmentStatus = await sdk.register.batchCheckCommitment(domainsAvailable);
 
 // if status is not 2, try to commit
-let domainsToCommit: IDomainInfo[] = [];
+let domainsToCommit = [];
 commitmentStatus.forEach((status, index) => {
     if (status !== 2) {
         domainsToCommit.push(domainsAvailable[index]);

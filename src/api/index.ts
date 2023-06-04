@@ -1,10 +1,22 @@
 import { OrderWithCounter } from '@opensea/seaport-js/lib/types';
 import fetch from 'cross-fetch';
 
+let cache: Record<string, OrderWithCounter> = {};
+
 export const getOpenseaListingData = async (
     orderId: string,
-    signer: string
+    signer: string,
+    useCache: boolean = true
 ) => {
+    // remove OPENSEA: prefix
+    if (orderId.includes("OPENSEA:")) {
+        orderId = orderId.replace("OPENSEA:", "");
+    }
+
+    // read from cache
+    if (useCache && cache[orderId + signer]) {
+      return cache[orderId + signer];
+    }
 
     const response = await fetch(
         `https://stage.api.didhub.com/nftmarketplace/v1/opensea/listing?orderId=${orderId}&signer=${signer}`,
@@ -15,15 +27,33 @@ export const getOpenseaListingData = async (
             }
         }
     )
-
     const data = await response.json();
+
+    // save to cache
+    if (data.code !== 1) {
+      throw new Error(data.message);
+    } else {
+      cache[orderId + signer] = data;
+    }
+
     return data;
-}
+};
 
 export const getOpenseaOfferData = async (
     orderId: string,
-    signer: string
+    signer: string,
+    useCache: boolean = true
 ) => {
+
+    // remove OPENSEA: prefix
+    if (orderId.includes("OPENSEA:")) {
+        orderId = orderId.replace("OPENSEA:", "");
+    }
+
+    // read from cache
+    if (useCache && cache[orderId + signer]) {
+      return cache[orderId + signer];
+    }
 
     const response = await fetch(
         `https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer?orderId=${orderId}&signer=${signer}`,
@@ -36,6 +66,14 @@ export const getOpenseaOfferData = async (
     )
 
     const data = await response.json();
+
+    // save to cache
+    if (data.code !== 1) {
+      throw new Error(data.message);
+    } else {
+      cache[orderId + signer] = data;
+    }
+
     return data;
 }
 
@@ -93,6 +131,13 @@ export const getOrders = async (
     orderIds: string[]
 ) => {
 
+    orderIds = orderIds.map((orderId) => {
+      if (orderId.includes("OPENSEA:")) {
+          return orderId.replace("OPENSEA:", "");
+      }
+      return orderId;
+    });
+    
     const response = await fetch(
         "https://stage.api.didhub.com/nftmarketplace/v1/opensea/orders",
         {

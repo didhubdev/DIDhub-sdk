@@ -6,6 +6,9 @@ export const CONTRACTS = {
         "BATCH_REGISTER": {
             "BNB": "0xf1e35a7955E88F8D4F091DeC99cD6a2778CEc2Aa",
             "ARBITRUM": "0xE327299dD1af606967E018dDf89baca0e4582c94"
+        },
+        "BATCH_PURCHASE": {
+            "POLYGON": "0x2a04833b375Da98971E2EdD1572CfeFB135642d2"
         }
     },
     "MARKETPLACE": {

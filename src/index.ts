@@ -1,6 +1,6 @@
 import { ethers, providers, Signer } from "ethers";
 
-import { batchRegistration, IBatchRegister, IOpensea, openseaInit } from "./modules";
+import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, utils } from "./modules";
 import { IDIDhubSDK } from "./type";
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
@@ -13,6 +13,7 @@ class DIDhubSDK implements IDIDhubSDK {
 
     private did: IBatchRegister;
     private seaport: IOpensea;
+    public utils: IUtils = utils;
 
     /**
      * @dev instantiate the didhub sdk
@@ -43,7 +44,7 @@ class DIDhubSDK implements IDIDhubSDK {
 
         this.seaport = openseaInit(
             this.seaportSDK,
-            provider as Signer
+            provider as providers.JsonRpcSigner
         );
     }
 
