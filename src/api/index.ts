@@ -12,6 +12,7 @@ export const getOpenseaListingData = async (
     if (orderId.includes("OPENSEA:")) {
         orderId = orderId.replace("OPENSEA:", "");
     }
+    console.log("orderId", orderId);
 
     // read from cache
     if (useCache && cache[orderId + signer]) {
