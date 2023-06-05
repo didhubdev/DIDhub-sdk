@@ -23,6 +23,7 @@ const paymentToken = ZERO_ADDRESS;
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, secret);
 
+console.log("Fetching Swap Info...");
 const swapInfo = await sdk.opensea.getSwapInfo(orderIds, paymentToken, margin);
 
 console.log(swapInfo);
