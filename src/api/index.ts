@@ -15,7 +15,7 @@ export const getOpenseaListingData = async (
     }
 
     const response = await fetch(
-        `https://stage.api.didhub.com/nftmarketplace/v1/opensea/listing?orderId=${orderId}&signer=${signer}`,
+        `https://api.didhub.com/nftmarketplace/v1/opensea/listing?orderId=${orderId}&signer=${signer}`,
         {
             method: 'GET',
             headers: {
@@ -47,7 +47,7 @@ export const getOpenseaOfferData = async (
     }
 
     const response = await fetch(
-        `https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer?orderId=${orderId}&signer=${signer}`,
+        `https://api.didhub.com/nftmarketplace/v1/opensea/offer?orderId=${orderId}&signer=${signer}`,
         {
             method: 'GET',
             headers: {
@@ -74,7 +74,7 @@ export const postOpenseaOfferData = async (
 ) => {
 
     const response = await fetch(
-        "https://stage.api.didhub.com/nftmarketplace/v1/opensea/offer",
+        "https://api.didhub.com/nftmarketplace/v1/opensea/offer",
         {
           method: "POST",
           headers: {
@@ -99,7 +99,7 @@ export const postOpenseaListingData = async (
 ) => {
 
     const response = await fetch(
-        "https://stage.api.didhub.com/nftmarketplace/v1/opensea/listing",
+        "https://api.didhub.com/nftmarketplace/v1/opensea/listing",
         {
           method: "POST",
           headers: {
@@ -123,7 +123,7 @@ export const getOrders = async (
 ) => {
 
     const response = await fetch(
-        "https://stage.api.didhub.com/nftmarketplace/v1/opensea/orders",
+        "https://api.didhub.com/nftmarketplace/v1/opensea/orders",
         {
             method: "POST",
             headers: {
