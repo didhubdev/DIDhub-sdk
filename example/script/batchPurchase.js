@@ -33,7 +33,8 @@ console.log(swapInfo);
 // approval needed if the paymentToken is not native token
 if (paymentToken !== ZERO_ADDRESS) {
     // check and approve
-    const approveTx = await sdk.utils.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+    console.log('Checking Approval');
+    const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
     if (approveTx) await approveTx.wait();
     console.log(`Approved ERC20 Tokens`);
 }
