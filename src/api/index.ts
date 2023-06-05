@@ -23,6 +23,11 @@ export const getOpenseaListingData = async (
             }
         }
     )
+
+    if (response.status === 429) {
+      throw new Error('Too Many Requests');
+    }
+
     const data = await response.json();
 
     // save to cache
@@ -56,6 +61,10 @@ export const getOpenseaOfferData = async (
         }
     )
 
+    if (response.status === 429) {
+      throw new Error('Too Many Requests');
+    }
+
     const data = await response.json();
 
     // save to cache
@@ -74,20 +83,24 @@ export const postOpenseaOfferData = async (
 ) => {
 
     const response = await fetch(
-        "https://api.didhub.com/nftmarketplace/v1/opensea/offer",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            parameters: order.parameters,
-            signature: order.signature,
-            protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-            chain: chain
-          })
+      "https://api.didhub.com/nftmarketplace/v1/opensea/offer",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
         },
-      )
+        body: JSON.stringify({
+          parameters: order.parameters,
+          signature: order.signature,
+          protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+          chain: chain
+        })
+      },
+    )
+
+    if (response.status === 429) {
+      throw new Error('Too Many Requests');
+    }
 
     const data = await response.json();
     return data;
@@ -114,6 +127,10 @@ export const postOpenseaListingData = async (
         },
       )
 
+    if (response.status === 429) {
+      throw new Error('Too Many Requests');
+    }
+
     const data = await response.json();
     return data;
 }
@@ -134,6 +151,10 @@ export const getOrders = async (
             })
           },
     );
+    
+    if (response.status === 429) {
+      throw new Error('Too Many Requests');
+    }
     
     const data = await response.json();
     return data.data;
