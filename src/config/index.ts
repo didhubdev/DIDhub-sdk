@@ -8,7 +8,8 @@ export const CONTRACTS = {
             "ARBITRUM": "0xE327299dD1af606967E018dDf89baca0e4582c94"
         },
         "BATCH_PURCHASE": {
-            "POLYGON": "0x2a04833b375Da98971E2EdD1572CfeFB135642d2"
+            "POLYGON": "0x2a04833b375Da98971E2EdD1572CfeFB135642d2",
+            "BNB": "0x1325F67E87Ca85341eA8Cb6115C749c8147E5dea"
         }
     },
     "MARKETPLACE": {

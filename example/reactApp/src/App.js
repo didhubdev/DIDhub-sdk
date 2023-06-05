@@ -2,10 +2,8 @@
 
 import { Button } from '@chakra-ui/button';
 import { Box, Center, Container, Flex } from '@chakra-ui/layout';
-import { Tag } from '@chakra-ui/tag';
 import React, { useState } from 'react';
 
-import { abbreviateAddress } from './utils';
 import VestingInterface from './VestingInterface';
 
 import { REQUIRED_CHAIN_ID } from './config';

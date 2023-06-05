@@ -1,19 +1,9 @@
 // VestingInterface.js
 
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
-
-import { abbreviateAddress } from './utils';
-import { EXPLORER_URL } from './config';
+import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import { ecsign } from 'ethereumjs-util'
-
-import {
-  hexlify,
-} from 'ethers/lib/utils';
 
 import { DIDhubSDK } from '@didhubdev/sdk';
-import fetch from 'node-fetch';
 
 // import env
 import dotenv from 'dotenv';
@@ -26,11 +16,7 @@ import {
   Tbody,
   Td,
   Tr,
-  Link,
   Center,
-  NumberInput,
-  NumberInputField,
-  Text,
   Input
 } from '@chakra-ui/react';
 
@@ -43,22 +29,16 @@ function VestingInterface() {
   const [tokenAddress, setTokenAddress] = useState("0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6");
   const [tokenId, setTokenId] = useState("62989861101794962219924061081957215181955279530765526469477249127872642808190");
   const [amount, setAmount] = useState();
-
-  const [isClaiming, setIsClaiming] = useState(false);
+  const [paymentToken, setPaymentToken] = useState("0x0000000000000000000000000000000000000000");
 
   const metamask = window.ethereum;
 
   const provider = new ethers.providers.Web3Provider(metamask);
   const signer = provider.getSigner();
-  const initChain = "POLYGON";
   const sdk = new DIDhubSDK(
-    initChain,
-    "0x0000000000000000000000000000000000000000000000000000000000000000",
-    signer
+    signer,
+    "0x0000000000000000000000000000000000000000000000000000000000000000"
   );
-
-  // const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-  const paymentToken = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 
   const fulfillOffer = async () => {
     const tx = await sdk.opensea.fulfillOffer(
@@ -78,7 +58,6 @@ function VestingInterface() {
 
   const signOffer = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
-      const chain = initChain;
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
       const data = await sdk.opensea.offerDomain(
         domainInfo,
@@ -91,7 +70,6 @@ function VestingInterface() {
 
   const signListing = async () => {
     console.log(tokenAddress, tokenId, paymentToken, amount);
-    const chain = initChain ;
     const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
     const data = await sdk.opensea.listDomain(
       domainInfo,
@@ -134,6 +112,19 @@ function VestingInterface() {
               <Input
                 value={chain}
                 onChange={(event)=>setChain(event.target.value)}
+                defaultValue="">
+              </Input>
+            </Td>
+          </Tr>
+
+          <Tr>
+            <Td>
+              <strong>Payment Token</strong>
+            </Td>
+            <Td>
+              <Input
+                value={paymentToken}
+                onChange={(event)=>setPaymentToken(event.target.value)}
                 defaultValue="">
               </Input>
             </Td>
@@ -199,7 +190,7 @@ function VestingInterface() {
                 onClick={signOffer}
                 colorScheme="green"
                 ml={6}
-                isDisabled={isClaiming}
+                isDisabled={false}
               >
                 Sign Offer
               </Button>
@@ -209,7 +200,7 @@ function VestingInterface() {
                 onClick={signListing}
                 colorScheme="green"
                 ml={5}
-                isDisabled={isClaiming}
+                isDisabled={false}
               >
                 Sign Listing
               </Button>
@@ -221,7 +212,7 @@ function VestingInterface() {
                 onClick={fulfillOffer}
                 colorScheme="green"
                 ml={6}
-                isDisabled={isClaiming}
+                isDisabled={false}
               >
                 Fulfill Offer
               </Button>
@@ -231,7 +222,7 @@ function VestingInterface() {
                 onClick={fulfillListing}
                 colorScheme="green"
                 ml={5}
-                isDisabled={isClaiming}
+                isDisabled={false}
               >
                 Fulfill Listing
               </Button>
@@ -243,7 +234,7 @@ function VestingInterface() {
                 onClick={cancelOrder}
                 colorScheme="green"
                 ml={6}
-                isDisabled={isClaiming}
+                isDisabled={false}
               >
                 Cancel Order
               </Button>

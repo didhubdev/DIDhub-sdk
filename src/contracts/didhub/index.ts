@@ -30,6 +30,10 @@ export const getBatchPurchaseContract = async (provider: providers.JsonRpcSigner
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.POLYGON
             );
+        case 56: 
+            return (new BatchPurchase__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_PURCHASE.BNB
+            );
         default:
             throw Error(`Chain ${chainId} is not supported`);
     }
