@@ -210,7 +210,6 @@ export const openseaInit: IOpenseaInit = (
       const advancedOrders = await fetchAdvancedOrders(orderIds);
       
       const priceInfo = getPriceInfo(advancedOrders);
-      console.log(priceInfo);
 
       const individualPrices = await batchPurchaseContract.callStatic.getIndividualPrice(priceInfo, paymentToken);
 

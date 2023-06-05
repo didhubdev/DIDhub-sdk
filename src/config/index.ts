@@ -9,7 +9,7 @@ export const CONTRACTS = {
         },
         "BATCH_PURCHASE": {
             "POLYGON": "0x2a04833b375Da98971E2EdD1572CfeFB135642d2",
-            "BNB": "0x1325F67E87Ca85341eA8Cb6115C749c8147E5dea"
+            "BNB": "0xAceeB6F3829FAa3EA4b331D4E29Fa3162321497b"
         }
     },
     "MARKETPLACE": {
