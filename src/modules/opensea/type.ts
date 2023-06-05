@@ -1,6 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { SwapInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { ContractTransaction, providers } from "ethers";
+import { BigNumberish, ContractTransaction, providers } from "ethers";
 import { AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export enum ItemType {
@@ -131,4 +131,17 @@ export interface IOpensea {
     cancelOrders: (
         orderIds: string[]
     ) => Promise<ContractTransaction>,
+
+    /**
+     * @note This function is used to approve a list of ERC20 tokens on Opensea
+     *  
+     * @param paymentToken the address of the payment token
+     * @param paymentMax the maximum amount of payment token to approve
+     * 
+     * @return contract transaction or null if the token is already approved
+     */
+    approveERC20Tokens: (
+        paymentToken: string,
+        paymentMax: BigNumberish
+    ) => Promise<ContractTransaction | null>
 }

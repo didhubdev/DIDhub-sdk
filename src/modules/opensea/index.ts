@@ -7,9 +7,9 @@ import {
 } from "./type"
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { ContractTransaction, Signer, providers, BigNumber } from "ethers";
+import { ContractTransaction, providers, BigNumber, BigNumberish } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
-import { getBatchPurchaseContract } from "../../contracts";
+import { ERC20__factory, getBatchPurchaseContract } from "../../contracts";
 import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export const openseaInit: IOpenseaInit = (
@@ -362,6 +362,22 @@ export const openseaInit: IOpenseaInit = (
       return data;
     }
 
+    const approveERC20Tokens = async (
+      paymentToken: string,
+      paymentMax: BigNumberish
+  ): Promise<ContractTransaction | null> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const signerAddress = await provider.getAddress();
+      // attach ERC20 token to contract and create an instance of ERC20 contract
+      const erc20Contract = new ERC20__factory(batchPurchaseContract.signer).attach(paymentToken);
+      const allowance = await erc20Contract.allowance(signerAddress, batchPurchaseContract.address);
+      if (allowance.lt(paymentMax)) {
+          const tx = await erc20Contract.approve(batchPurchaseContract.address, paymentMax);
+          return tx;
+      }
+      return null;
+  }
+
     return {
         listDomain: listDomain,
         offerDomain: offerDomain,
@@ -370,7 +386,8 @@ export const openseaInit: IOpenseaInit = (
         getAdvancedOrders: getAdvancedOrders,
         getSwapInfo: getSwapInfo,
         fulfillListings: fulfillListings,
-        cancelOrders: cancelOrders
+        cancelOrders: cancelOrders,
+        approveERC20Tokens: approveERC20Tokens
     }
 
 }
