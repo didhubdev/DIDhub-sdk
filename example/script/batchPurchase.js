@@ -26,10 +26,18 @@ const sdk = new DIDhubSDK(signer, secret);
 const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
 
 console.log("Fetching Swap Info...");
-const swapInfo = await sdk.opensea.getSwapInfo(orderIds, paymentToken, margin);
+const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
 
 console.log(swapInfo);
 
-// const tx = await sdk.opensea.fulfillListings(orderIds, swapInfo);
-// const receipt = await tx.wait();
-// console.log("PUrchase Completed");
+// approval needed if the paymentToken is not native token
+if (paymentToken !== ZERO_ADDRESS) {
+    // check and approve
+    const approveTx = await sdk.utils.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+    if (approveTx) await approveTx.wait();
+    console.log(`Approved ERC20 Tokens`);
+}
+
+const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+const receipt = await tx.wait();
+console.log("PUrchase Completed");

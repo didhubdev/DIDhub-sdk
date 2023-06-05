@@ -13,7 +13,7 @@ class DIDhubSDK implements IDIDhubSDK {
 
     private did: IBatchRegister;
     private seaport: IOpensea;
-    public utils: IUtils = utils;
+    public utilsWithProvider: IUtils;
 
     /**
      * @dev instantiate the didhub sdk
@@ -46,6 +46,10 @@ class DIDhubSDK implements IDIDhubSDK {
             this.seaportSDK,
             provider as providers.JsonRpcSigner
         );
+
+        this.utilsWithProvider = utils(
+            provider as providers.JsonRpcSigner
+        );
     }
 
     // get secret from current time
@@ -75,6 +79,10 @@ class DIDhubSDK implements IDIDhubSDK {
 
     get opensea(): IOpensea {
         return this.seaport! as IOpensea;
+    }
+
+    get utils(): IUtils {
+        return this.utilsWithProvider! as IUtils;
     }
 
 }
