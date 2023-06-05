@@ -90,7 +90,7 @@ export interface IOpensea {
      * 
      * @returns advanced orders
      */
-    fetchAdvancedOrders: (
+    getAdvancedOrders: (
         orderIds: string[]
     ) => Promise<AdvancedOrderStruct[]>,
 

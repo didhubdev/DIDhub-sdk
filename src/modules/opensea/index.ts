@@ -226,7 +226,7 @@ export const openseaInit: IOpenseaInit = (
       };
     }
 
-    const fetchAdvancedOrders = async (
+    const getAdvancedOrders = async (
       orderIds: string[]
     ): Promise<AdvancedOrderStruct[]> => {
       let advancedOrders = [];
@@ -367,7 +367,7 @@ export const openseaInit: IOpenseaInit = (
         offerDomain: offerDomain,
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
-        fetchAdvancedOrders: fetchAdvancedOrders,
+        getAdvancedOrders: getAdvancedOrders,
         getSwapInfo: getSwapInfo,
         fulfillListings: fulfillListings,
         cancelOrders: cancelOrders
