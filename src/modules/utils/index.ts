@@ -3,7 +3,7 @@ import { BigNumberish, ContractTransaction, providers} from "ethers";
 import { IUtils } from "./type";
 
 
-const utils = (provider: providers.JsonRpcSigner) => {
+export const utils = (provider: providers.JsonRpcSigner) => {
 
     const getERC20Balance = async (
         paymentToken: string
