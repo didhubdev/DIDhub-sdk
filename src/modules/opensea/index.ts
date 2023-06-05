@@ -198,17 +198,15 @@ export const openseaInit: IOpenseaInit = (
         
       return priceInfo;
     }
-    
+
     const getSwapInfo = async (
-      orderIds: string[],
+      advancedOrders: AdvancedOrderStruct[],
       paymentToken: string,
       margin: number
     ): Promise<SwapInfoStruct> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
 
-      const advancedOrders = await fetchAdvancedOrders(orderIds);
-      
       const priceInfo = getPriceInfo(advancedOrders);
 
       const individualPrices = await batchPurchaseContract.callStatic.getIndividualPrice(priceInfo, paymentToken);
@@ -252,11 +250,10 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const fulfillListings = async (
-      orderIds: string[],
+      advancedOrders: AdvancedOrderStruct[],
       swapInfo: SwapInfoStruct
     ): Promise<ContractTransaction> => {
 
-      const advancedOrders = await fetchAdvancedOrders(orderIds);
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
 
       let tx; 
@@ -370,6 +367,7 @@ export const openseaInit: IOpenseaInit = (
         offerDomain: offerDomain,
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
+        fetchAdvancedOrders: fetchAdvancedOrders,
         getSwapInfo: getSwapInfo,
         fulfillListings: fulfillListings,
         cancelOrders: cancelOrders

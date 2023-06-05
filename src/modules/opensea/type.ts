@@ -1,6 +1,7 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { SwapInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { ContractTransaction, providers } from "ethers";
+import { AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export enum ItemType {
     NATIVE = 0,
@@ -82,11 +83,21 @@ export interface IOpensea {
     fulfillOffer: (
         orderId: string
     ) => Promise<ContractTransaction>,
+    
+    /**
+     * 
+     * @param orderIds the order ids of the listings
+     * 
+     * @returns advanced orders
+     */
+    fetchAdvancedOrders: (
+        orderIds: string[]
+    ) => Promise<AdvancedOrderStruct[]>,
 
     /**
      * @note This function is used to get the information necessary to complete a swap operation before fulfilling order on opensea
      * 
-     * @param orderIds the order ids of the listings
+     * @param advancedOrders the order info fetched from Opensea
      * @param paymentToken the address of the payment token
      * @param margin the margin to add to the payment amount (usually set below 0.3%)
      * 
@@ -94,7 +105,7 @@ export interface IOpensea {
      * 
      */
     getSwapInfo: (
-        orderIds: string[],
+        advancedOrders: AdvancedOrderStruct[],
         paymentToken: string,
         margin: number
     ) => Promise<SwapInfoStruct>,
@@ -102,13 +113,13 @@ export interface IOpensea {
     /**
      * @note This function is used to fulfill a list of listings on Opensea
      * 
-     * @param orderIds the order ids of the listings
+     * @param param advancedOrders the order info fetched from Opensea
      * @param swapInfo the swap info returned from getSwapInfo. This can be obtained by calling getSwapInfo function
      * 
      * @retrybs contract transaction
      */
     fulfillListings: (
-        orderIds: string[],
+        advancedOrders: AdvancedOrderStruct[],
         swapInfo: SwapInfoStruct
     ) => Promise<ContractTransaction>,
 
