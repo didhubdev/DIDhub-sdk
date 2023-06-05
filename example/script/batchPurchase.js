@@ -31,7 +31,7 @@ const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, mar
 console.log(swapInfo);
 
 // approval needed if the paymentToken is not native token
-if (paymentToken !== ZERO_ADDRESS) {
+if (paymentToken !== ZERO_ADDRESS) {    
     // check and approve
     console.log('Checking Approval');
     const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
