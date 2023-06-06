@@ -154,7 +154,7 @@ const tx = await sdk.opensea.cancelOrders(orderIds);
 
 ### Fulfill Listings
 Fulfill multiple listings in one transaction, using a single token type as input. If the orders require payment of different token types, the input tokens will be swapped to the targe token type. There are 3 steps to complete this operation: \
-\
+
 1. Obtain the advanced order information using orderId. It is recommended to do this at the time when users add items to cart, instead of doing it in one go during checkout.
 ```
 const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
