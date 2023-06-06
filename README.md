@@ -151,3 +151,23 @@ This can take in an array of both offer or listing orders
 ```
 const tx = await sdk.opensea.cancelOrders(orderIds);
 ```
+
+### Fulfill Listings
+Fulfill multiple listings in one transaction, using a single token type as input. If the orders require payment of different token types, the input tokens will be swapped to the targe token type. There are 3 steps to complete this operation: \
+\
+1. Obtain the advanced order information using orderId. It is recommended to do this at the time when users add items to cart, instead of doing it in one go during checkout.
+```
+const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
+```
+2. Before transaction, the user will choose a token type to complete the purchase, and select the slippage that he/she will toleration in case the target price cannot be met.
+```
+const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
+```
+3. Approve the DIDHub for the amount of token that will be used in the purchase if needded
+```
+const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+```
+4. Finally, complete the transaction with the obtained in the previous functions
+```
+const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+```
