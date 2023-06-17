@@ -13,7 +13,7 @@ export const getBatchRegisterContract = async (provider: providers.JsonRpcSigner
             return (new BatchRegister__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.BNB
             );
-        case 421611:
+        case 42161:
             return (new BatchRegister__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.ARBITRUM
             );
@@ -30,7 +30,7 @@ export const getBatchPurchaseContract = async (provider: providers.JsonRpcSigner
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.POLYGON
             );
-        case 56: 
+        case 56:
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.BNB
             );

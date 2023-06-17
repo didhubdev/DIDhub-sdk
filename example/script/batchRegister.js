@@ -6,7 +6,7 @@ dotenv.config();
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.ARB_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
@@ -16,12 +16,12 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
-        nameKey: "SpaceId:bnb.mimuma",
+        collectionInfo: "ARBITRUM:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
+        nameKey: "SpaceId:arb.mimuma",
         duration: 31536000 // 1 year
     }
 ];
-const margin = 3; // 3%
+const margin = 1; // 1%
 const paymentToken = ZERO_ADDRESS;
 // const paymentToken = USDC;
 // =============================================================================
