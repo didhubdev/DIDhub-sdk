@@ -5,7 +5,7 @@ export const CONTRACTS = {
     "DIDHUB": {
         "BATCH_REGISTER": {
             "BNB": "0x35580f058022d7BA612D1ba31CedFaCC019091a9",
-            "ARBITRUM": "0xE327299dD1af606967E018dDf89baca0e4582c94"
+            "ARBITRUM": "0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1"
         },
         "BATCH_PURCHASE": {
             "POLYGON": "0xa941D5f70FBb25772ECF28Ef6c46c2c1a609E919",
