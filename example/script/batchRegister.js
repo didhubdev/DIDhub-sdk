@@ -17,11 +17,11 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 const domains = [
     {
         collectionInfo: "ARBITRUM:0x5d482D501b369F5bA034DEC5c5fb7A50d2D6Ca20",
-        nameKey: "SpaceId:arb.mimuma",
+        nameKey: "SpaceId-arb:arb.mimuma",
         duration: 31536000 // 1 year
     }
 ];
-const margin = 1; // 1%
+const margin = 3; // 1%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = USDC;
 // =============================================================================
@@ -60,15 +60,15 @@ commitmentStatus.forEach((status, index) => {
 // get commitment hashes
 const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
 
-if (commitmentInfos.length > 0) {
-    // commit on chain
-    const commitTx = await sdk.register.batchCommit(commitmentInfos);
-    await commitTx.wait();
+// if (commitmentInfos.length > 0) {
+//     // commit on chain
+//     const commitTx = await sdk.register.batchCommit(commitmentInfos);
+//     await commitTx.wait();
 
-    // wait some time (20 seconds should be sufficient for bsc)
-    console.log("Waiting for 20 seconds for the commitment to be mined...");
-    await new Promise(resolve => setTimeout(resolve, 20000));
-}
+//     // wait some time (20 seconds should be sufficient for bsc)
+//     console.log("Waiting for 20 seconds for the commitment to be mined...");
+//     await new Promise(resolve => setTimeout(resolve, 20000));
+// }
 
 // get price info for purchase
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
@@ -91,6 +91,6 @@ finalCheck.errors.forEach(error => {
 });
 
 // register
-// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-// await registerTx.wait();
-// console.log(`Register transaction hash: ${registerTx.hash}`);
+const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+await registerTx.wait();
+console.log(`Register transaction hash: ${registerTx.hash}`);
