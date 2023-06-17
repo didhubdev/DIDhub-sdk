@@ -45,7 +45,7 @@ export const batchRegistration: IBatchRegistration = (
         domains: IDomainInfo[]
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
-        const commitmentInfos = await batchMakeCommitments(domains);
+        let commitmentInfos = await batchMakeCommitments(domains);       
         let commitmentStatusResult = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
         // unwrap results to list

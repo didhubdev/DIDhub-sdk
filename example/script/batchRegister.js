@@ -47,9 +47,9 @@ individualPrices.forEach((price, index) => {
     console.log(`Prices: ${price.price} ${paymentToken} for ${domainsAvailable[index].nameKey}`);
 });
 
-// get commitment status
+// // get commitment status
 const commitmentStatus = await sdk.register.batchCheckCommitment(domainsAvailable);
-
+console.log(commitmentStatus);
 // if status is not 2, try to commit
 let domainsToCommit = [];
 commitmentStatus.forEach((status, index) => {
@@ -57,9 +57,8 @@ commitmentStatus.forEach((status, index) => {
         domainsToCommit.push(domainsAvailable[index]);
     }
 });
-
 // get commitment hashes
-const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
+// const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
 
 // if (commitmentInfos.length > 0) {
 //     // commit on chain
