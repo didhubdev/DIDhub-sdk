@@ -16,14 +16,9 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "BNB:0x2723522702093601e6360CAe665518C4f63e9dA6",
-        nameKey: "CCProfile:henrywfyeung",
+        collectionInfo: "FTM:0x14Ffd1Fa75491595c6FD22De8218738525892101",
+        nameKey: "Rave Names:henrywfyeung",
         duration: 0
-    },
-    {
-        collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
-        nameKey: "SpaceId:bnb.100100100100100",
-        duration: 31536000
     }
 ];
 const margin = 1; // 3%
@@ -96,6 +91,6 @@ finalCheck.errors.forEach(error => {
 });
 
 // // register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+// await registerTx.wait();
+// console.log(`Register transaction hash: ${registerTx.hash}`);
