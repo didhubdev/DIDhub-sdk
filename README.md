@@ -56,6 +56,12 @@ const availabilityStatus = await sdk.register.batchCheckAvailability(domains);
 ```
 
 ### Check Commit Status
+There are 5 different commit status types:
+-  0: not exist, requires commit
+-  1: available but before minCommitmentAge
+-  2: available and after minCommitmentAge and before maxCommitmentAge, or does not require commitment
+-  3: available and after maxCommitmentAge, requires commit
+-  4: commit not required
 ```
 const commitmentStatus = await sdk.register.batchCheckCommitment(domains);
 ```

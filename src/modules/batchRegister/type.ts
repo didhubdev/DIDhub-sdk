@@ -35,6 +35,7 @@ export interface IBatchRegister {
      *  1: available but before minCommitmentAge
      *  2: available and after minCommitmentAge and before maxCommitmentAge, or does not require commitment
      *  3: available and after maxCommitmentAge, requires commit
+     *  4: commit not required
      * 
      * @param domains The list of domains to check
      * @returns The list of status of the domains

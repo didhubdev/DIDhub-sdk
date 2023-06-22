@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
+const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.ARB_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
@@ -75,12 +75,12 @@ const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable,
 console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
 
 // // approval needed if the paymentToken is not native token
-if (paymentToken !== ZERO_ADDRESS) {
-    // check and approve
-    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
-    if (approveTx) await approveTx.wait();
-    console.log(`Approved ERC20 Tokens`);
-}
+// if (paymentToken !== ZERO_ADDRESS) {
+//     // check and approve
+//     const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
+//     if (approveTx) await approveTx.wait();
+//     console.log(`Approved ERC20 Tokens`);
+// }
 
 // final check 
 const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
