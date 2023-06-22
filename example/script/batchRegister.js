@@ -16,12 +16,12 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
-        nameKey: "SpaceId:bnb.mimuma",
-        duration: 31536000 // 1 year
+        collectionInfo: "BNB:0x2723522702093601e6360CAe665518C4f63e9dA6",
+        nameKey: "CCProfile:henrywfyeung",
+        duration: 0
     }
 ];
-const margin = 3; // 3%
+const margin = 1; // 3%
 const paymentToken = ZERO_ADDRESS;
 // const paymentToken = USDC;
 // =============================================================================
@@ -47,7 +47,7 @@ individualPrices.forEach((price, index) => {
     console.log(`Prices: ${price.price} ${paymentToken} for ${domainsAvailable[index].nameKey}`);
 });
 
-// // get commitment status
+// get commitment status
 const commitmentStatus = await sdk.register.batchCheckCommitment(domainsAvailable);
 console.log(commitmentStatus);
 // if status is not 2, try to commit
@@ -58,29 +58,29 @@ commitmentStatus.forEach((status, index) => {
     }
 });
 // get commitment hashes
-// const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
+const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
 
-// if (commitmentInfos.length > 0) {
-//     // commit on chain
-//     const commitTx = await sdk.register.batchCommit(commitmentInfos);
-//     await commitTx.wait();
+if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
+    // commit on chain
+    const commitTx = await sdk.register.batchCommit(commitmentInfos);
+    await commitTx.wait();
 
-//     // wait some time (20 seconds should be sufficient for bsc)
-//     console.log("Waiting for 20 seconds for the commitment to be mined...");
-//     await new Promise(resolve => setTimeout(resolve, 20000));
-// }
+    // wait some time (20 seconds should be sufficient for bsc)
+    console.log("Waiting for 20 seconds for the commitment to be mined...");
+    await new Promise(resolve => setTimeout(resolve, 20000));
+}
 
 // get price info for purchase
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
 console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
 
 // // approval needed if the paymentToken is not native token
-// if (paymentToken !== ZERO_ADDRESS) {
-//     // check and approve
-//     const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
-//     if (approveTx) await approveTx.wait();
-//     console.log(`Approved ERC20 Tokens`);
-// }
+if (paymentToken !== ZERO_ADDRESS) {
+    // check and approve
+    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
+    if (approveTx) await approveTx.wait();
+    console.log(`Approved ERC20 Tokens`);
+}
 
 // final check 
 const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
@@ -90,7 +90,7 @@ finalCheck.errors.forEach(error => {
     console.log(`Error: ${error}`);
 });
 
-// register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// // register
+// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+// await registerTx.wait();
+// console.log(`Register transaction hash: ${registerTx.hash}`);
