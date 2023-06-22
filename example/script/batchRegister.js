@@ -6,7 +6,7 @@ dotenv.config();
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.FTM_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
