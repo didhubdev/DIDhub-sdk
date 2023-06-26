@@ -154,8 +154,12 @@ export const batchRegistration: IBatchRegistration = (
         // check is commited
         const commitmentStatus = await batchCheckCommitment(domains);
         commitmentStatus.forEach((status, index) => {
-            if (status != 2 && status != 4) {
+            if (status == 0) {
                 errorList.push(`Domain ${domains[index].nameKey} is not committed`);
+            } else if (status == 1) {
+                errorList.push(`Domain ${domains[index].nameKey} is commited, but not yet effective`);
+            } else if (status == 3) {
+                errorList.push(`Domain ${domains[index].nameKey} is expired. Please commit again`);
             }
         });
 

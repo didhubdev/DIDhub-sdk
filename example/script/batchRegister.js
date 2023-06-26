@@ -6,7 +6,7 @@ dotenv.config();
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.FTM_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.GOERLI_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
@@ -16,9 +16,14 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "FTM:0x14Ffd1Fa75491595c6FD22De8218738525892101",
-        nameKey: "Rave Names:henrywfyeung",
-        duration: 0
+        collectionInfo: "GOERLI:0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+        nameKey: "ENS:eth.henry123123",
+        duration: 60*60*24*30
+    },
+    {
+        collectionInfo: "GOERLI:0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
+        nameKey: "ENS:eth.henry456456",
+        duration: 60*60*24*30
     }
 ];
 const margin = 1; // 3%
@@ -66,8 +71,8 @@ if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
     await commitTx.wait();
 
     // wait some time (20 seconds should be sufficient for bsc)
-    console.log("Waiting for 20 seconds for the commitment to be mined...");
-    await new Promise(resolve => setTimeout(resolve, 20000));
+    console.log("Waiting for 60 seconds for the commitment to be mined...");
+    await new Promise(resolve => setTimeout(resolve, 60000));
 }
 
 // get price info for purchase
@@ -87,7 +92,7 @@ const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, 
 console.log(`Final check: ${finalCheck.success}`);
 // print error if any
 finalCheck.errors.forEach(error => {
-    console.log(`Error: ${error}`);
+    throw Error(`Error: ${error}`);
 });
 
 // // register
