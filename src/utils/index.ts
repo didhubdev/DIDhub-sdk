@@ -1,4 +1,4 @@
-import { BigNumberish } from 'ethers';
+import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
 import { IDomainInfo } from './type';
@@ -57,6 +57,24 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     return unwrappedList;
 }
 
+export const getENSNameResolutionParams = (
+    domains: DomainInfoStruct[],
+    owner: string
+): BytesLike => {
+    // create nodes for the domain
+    const nodes = domains.map((d) => {
+        return ethers.utils.namehash(d.name + ".eth");
+    });
+
+    // create param data from nodes and owner
+    const paramData = nodes.map((n) => {
+        const byteString = `0x8b95dd71${n.slice(2)}000000000000000000000000000000000000000000000000000000000000003c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000014${owner.slice(2).toLowerCase()}000000000000000000000000`;
+        return [byteString];
+    });
+
+    return ethers.utils.defaultAbiCoder.encode(['bytes[][]'], [paramData]);
+}
+
 export const getRegistrationInfo = (
     domains: IDomainInfo[],
     owner: string,
@@ -68,6 +86,19 @@ export const getRegistrationInfo = (
     let wrappedDomains = wrapDomain(domains);
     let registrationInfoStructs: RegistrationInfoStruct[] = [];
     Object.keys(wrappedDomains).forEach((contractAddress) => {
+        let params: BytesLike = [];
+        
+        // compute params if it is ENS project
+        if (
+            [
+                "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85".toLowerCase(),
+                "0x114D4603199df73e7D157787f8778E21fCd13066".toLowerCase(), // name wrapper goerli
+                "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401".toLowerCase() // name wrapper mainnet
+            ].includes(contractAddress.toLowerCase())
+        ) {
+            params = getENSNameResolutionParams(wrappedDomains[contractAddress], owner);
+        }
+
         registrationInfoStructs.push({
             project: contractAddress,
             domains: wrappedDomains[contractAddress],
@@ -75,7 +106,7 @@ export const getRegistrationInfo = (
             paymentToken: paymentToken,
             owner: owner,
             secret: secret,
-            params: []
+            params: params
         });
     });
 

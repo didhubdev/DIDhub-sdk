@@ -91,6 +91,6 @@ finalCheck.errors.forEach(error => {
 });
 
 // // register
-// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-// await registerTx.wait();
-// console.log(`Register transaction hash: ${registerTx.hash}`);
+const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+await registerTx.wait();
+console.log(`Register transaction hash: ${registerTx.hash}`);
