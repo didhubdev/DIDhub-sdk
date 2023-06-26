@@ -5,6 +5,7 @@ dotenv.config();
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
+const WETH = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
 
 const provider = new ethers.providers.JsonRpcBatchProvider(process.env.GOERLI_URL);
 // init signer from private key
@@ -17,17 +18,12 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 const domains = [
     {
         collectionInfo: "GOERLI:0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
-        nameKey: "ENS:eth.henry123123",
-        duration: 60*60*24*30
-    },
-    {
-        collectionInfo: "GOERLI:0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
-        nameKey: "ENS:eth.henry456456",
+        nameKey: "ENS:eth.henrywf111",
         duration: 60*60*24*30
     }
 ];
 const margin = 1; // 3%
-const paymentToken = ZERO_ADDRESS;
+const paymentToken = WETH;
 // const paymentToken = USDC;
 // =============================================================================
 
