@@ -107,6 +107,9 @@ export const batchRegistration: IBatchRegistration = (
         let requests = getRegistrationInfo(domains, owner, secret);
         const totalPrices = await getTotalPrice(domains, paymentToken);
 
+        // get didhub fee
+        const didhubFee = await batchRegisterContract.feeBasisPt();
+
         // enrich request
         requests = requests.map((r, i) => {
             r.paymentToken = paymentToken;
@@ -114,10 +117,11 @@ export const batchRegistration: IBatchRegistration = (
             return r;
         });
         const totalPrice = totalPrices.map(p=>p.mul(100 + margin).div(100)).reduce((a,b)=>a.add(b));
+        const totalPriceWithFee = totalPrice.mul(didhubFee.toNumber()+10000).div(10000);
         return {
             requests: requests,
             paymentToken: paymentToken,
-            paymentMax: totalPrice
+            paymentMax: totalPriceWithFee
         }
     }
 
@@ -149,7 +153,7 @@ export const batchRegistration: IBatchRegistration = (
             if (allowance.lt(paymentMax)) {
                 errorList.push("Insufficient ERC20 allowance");
             }
-        }
+        }   
 
         // check is commited
         const commitmentStatus = await batchCheckCommitment(domains);

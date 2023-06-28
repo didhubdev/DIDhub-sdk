@@ -17,14 +17,19 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "ETHEREUM:0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85",
-        nameKey: "ENS:eth.didhubdeveloper",
+        collectionInfo: "ETHEREUM:0x65483c6b707f51ae3bD8Ed6319B6f3643828e38d",
+        nameKey: "Metalk Name Service:didhub",
+        duration: 60*60*24*28
+    },
+    {
+        collectionInfo: "ETHEREUM:0x2A187453064356c898cAe034EAed119E1663ACb8",
+        nameKey: "Decentraland Names:eth.dcl.didhub",
         duration: 60*60*24*28
     }
 ];
 const margin = 1; // 3%
 // const paymentToken = ZERO_ADDRESS;
-const paymentToken = USDC;
+const paymentToken = ZERO_ADDRESS;
 // =============================================================================
 
 // instantiate SDK
@@ -51,15 +56,17 @@ individualPrices.forEach((price, index) => {
 // get commitment status
 const commitmentStatus = await sdk.register.batchCheckCommitment(domainsAvailable);
 console.log(commitmentStatus);
-// if status is not 2, try to commit
+// if status is not 2 nor 4, try to commit
 let domainsToCommit = [];
 commitmentStatus.forEach((status, index) => {
-    if (status !== 2) {
+    if (status !== 2 && status !== 4) {
         domainsToCommit.push(domainsAvailable[index]);
     }
 });
+console.log("Domains to Commit", domainsToCommit);
 // get commitment hashes
 const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
+console.log("Got Commitment Info");
 
 if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
     // commit on chain
@@ -72,6 +79,7 @@ if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
 }
 
 // get price info for purchase
+console.log("Getting price info for purchase...");
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
 console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
 
@@ -90,6 +98,9 @@ console.log(`Final check: ${finalCheck.success}`);
 finalCheck.errors.forEach(error => {
     throw Error(`Error: ${error}`);
 });
+
+console.log(registrationData.paymentMax);
+process.exit(0);
 
 // // register
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
