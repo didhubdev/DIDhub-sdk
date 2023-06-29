@@ -100,7 +100,6 @@ finalCheck.errors.forEach(error => {
 });
 
 console.log(registrationData.paymentMax);
-process.exit(0);
 
 // // register
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
