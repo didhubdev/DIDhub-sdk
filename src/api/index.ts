@@ -127,7 +127,7 @@ export const postOpenseaListingData = async (
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(orderData)
+          body: JSON.stringify({orders: orderData})
         },
       )
 

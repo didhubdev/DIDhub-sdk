@@ -31,6 +31,11 @@ function VestingInterface() {
   const [amount, setAmount] = useState();
   const [paymentToken, setPaymentToken] = useState("0x0000000000000000000000000000000000000000");
 
+  const [orderId2, setOrderId2] = useState();
+  const [tokenAddress2, setTokenAddress2] = useState("0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6");
+  const [tokenId2, setTokenId2] = useState("62989861101794962219924061081957215181955279530765526469477249127872642808190");
+  const [amount2, setAmount2] = useState();
+
   const metamask = window.ethereum;
 
   const provider = new ethers.providers.Web3Provider(metamask);
@@ -71,13 +76,34 @@ function VestingInterface() {
   const signListing = async () => {
     console.log(tokenAddress, tokenId, paymentToken, amount);
     const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
-    const data = await sdk.opensea.listDomain(
-      domainInfo,
-      paymentToken,
-      amount,
-      3
-    );
-    console.log(data);
+    const firstListingData = {
+      domainInfo: domainInfo,
+      paymentToken: paymentToken,
+      paymentAmount: amount,
+      endInDays: 3
+    };
+    const secondListingData = tokenAddress2 && tokenId2 && amount2 ? {
+      domainInfo: `${chain}:${tokenAddress2}:${tokenId2}`,
+      paymentToken: paymentToken,
+      paymentAmount: amount2,
+      endInDays: 3
+    } : null;
+
+    if (secondListingData != null) {
+      const data = await sdk.opensea.bulkListDomain(
+        [firstListingData, secondListingData]
+      );
+      console.log(data);
+    } else {
+      const data = await sdk.opensea.listDomain(
+        domainInfo,
+        paymentToken,
+        amount,
+        3
+      );
+      console.log(data);  
+    }
+
   };
 
   const cancelOrder = async () => {
@@ -129,6 +155,8 @@ function VestingInterface() {
               </Input>
             </Td>
           </Tr>
+
+          <Tr> FIRST ITEM </Tr>
 
           <Tr>
             <Td>
@@ -183,6 +211,63 @@ function VestingInterface() {
               </Center>
             </Td>
           </Tr>
+
+          <Tr> SECOND ITEM </Tr>
+
+          <Tr>
+            <Td>
+              <strong>Token Address 2</strong>
+            </Td>
+            <Td>
+              <Input
+                value={tokenAddress2}
+                onChange={(event)=>setTokenAddress2(event.target.value)}
+                defaultValue="">
+              </Input>
+            </Td>
+          </Tr>
+
+          <Tr>
+            <Td>
+              <strong>Token Id 2</strong>
+            </Td>
+            <Td>
+              <Input
+                value={tokenId2}
+                onChange={(event)=>setTokenId2(event.target.value)}
+                defaultValue="">
+              </Input>
+            </Td>
+          </Tr>
+
+          <Tr>
+            <Td>
+              <strong>OrderId 2</strong>
+            </Td>
+            <Td>
+              <Input
+                value={orderId2}
+                onChange={(event)=>setOrderId2(event.target.value)}
+                defaultValue="">
+              </Input>
+            </Td>
+          </Tr>
+
+          <Tr>
+            <Td>
+              <strong>Amount 2</strong>
+            </Td>
+            <Td>
+              <Center>
+              <Input
+                value={amount2}
+                onChange={(event)=>setAmount2(event.target.value)}
+                defaultValue="">
+              </Input>
+              </Center>
+            </Td>
+          </Tr>
+          
 
           <Tr>
             <Td>
