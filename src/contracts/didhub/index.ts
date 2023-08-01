@@ -9,9 +9,21 @@ export const getBatchRegisterContract = async (provider: providers.JsonRpcSigner
     // initialise batch register contract of a particular network
     const chainId = await provider.getChainId();
     switch (chainId) {
+        case 1: 
+            return (new BatchRegister__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_REGISTER.ETHEREUM
+            );
+        case 5:
+            return (new BatchRegister__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_REGISTER.GOERLI
+            );
         case 56:
             return (new BatchRegister__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_REGISTER.BNB
+            );
+        case 250:
+            return (new BatchRegister__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_REGISTER.FANTOM
             );
         case 42161:
             return (new BatchRegister__factory(provider)).attach(

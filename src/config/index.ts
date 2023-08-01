@@ -5,12 +5,20 @@ export const CONTRACTS = {
     "DIDHUB": {
         "BATCH_REGISTER": {
             "BNB": "0x35580f058022d7BA612D1ba31CedFaCC019091a9",
-            "ARBITRUM": "0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1"
+            "ARBITRUM": "0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1",
+            "FANTOM": "0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1",
+            "GOERLI": "0x1937Ee61fB553e3168740e714aB79b4D755F7071",
+            "ETHEREUM": "0xD7356f1FC4acc3557cA5E213D3f467FdAeC0140f"
         },
         "BATCH_PURCHASE": {
             "POLYGON": "0xa941D5f70FBb25772ECF28Ef6c46c2c1a609E919",
             "BNB": "0xa307781E7De8A8543f198B446d1253D7C6004029",
             "ARBITRUM": "0x9C70D9eafD623C5Be32F83F1aE50f79AA1448fce"
+            // "ETHEREUM": "",
+            // "FANTOM":  "",
+            // "KLAYTN": "",
+            // "AVALANCHE": ""
+
         }
     },
     "MARKETPLACE": {

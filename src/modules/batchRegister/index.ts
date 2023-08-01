@@ -107,6 +107,9 @@ export const batchRegistration: IBatchRegistration = (
         let requests = getRegistrationInfo(domains, owner, secret);
         const totalPrices = await getTotalPrice(domains, paymentToken);
 
+        // get didhub fee
+        const didhubFee = await batchRegisterContract.feeBasisPt();
+
         // enrich request
         requests = requests.map((r, i) => {
             r.paymentToken = paymentToken;
@@ -114,10 +117,11 @@ export const batchRegistration: IBatchRegistration = (
             return r;
         });
         const totalPrice = totalPrices.map(p=>p.mul(100 + margin).div(100)).reduce((a,b)=>a.add(b));
+        const totalPriceWithFee = totalPrice.mul(didhubFee.toNumber()+10000).div(10000);
         return {
             requests: requests,
             paymentToken: paymentToken,
-            paymentMax: totalPrice
+            paymentMax: totalPriceWithFee
         }
     }
 
@@ -149,13 +153,17 @@ export const batchRegistration: IBatchRegistration = (
             if (allowance.lt(paymentMax)) {
                 errorList.push("Insufficient ERC20 allowance");
             }
-        }
+        }   
 
         // check is commited
         const commitmentStatus = await batchCheckCommitment(domains);
         commitmentStatus.forEach((status, index) => {
-            if (status != 2 && status != 4) {
+            if (status == 0) {
                 errorList.push(`Domain ${domains[index].nameKey} is not committed`);
+            } else if (status == 1) {
+                errorList.push(`Domain ${domains[index].nameKey} is commited, but not yet effective`);
+            } else if (status == 3) {
+                errorList.push(`Domain ${domains[index].nameKey} is expired. Please commit again`);
             }
         });
 
@@ -244,6 +252,19 @@ export const batchRegistration: IBatchRegistration = (
                     {
                         name: "USDC",
                         address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+                        decimals: 18
+                    }
+                ]
+            case 250:
+                return [
+                    {
+                        name: "FTM",
+                        address: "0x0000000000000000000000000000000000000000",
+                        decimals: 18
+                    },
+                    {
+                        name: "WFTM",
+                        address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
                         decimals: 18
                     }
                 ]
