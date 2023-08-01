@@ -64,13 +64,35 @@ function VestingInterface() {
   const signOffer = async () => {
       console.log(tokenAddress, tokenId, paymentToken, amount);
       const domainInfo = `${chain}:${tokenAddress}:${tokenId}`;
+
+      const firstOfferData = {
+        domainInfo: domainInfo,
+        paymentToken: paymentToken,
+        paymentAmount: amount,
+        endInDays: 3
+      };
+
+      const secondOfferData = tokenAddress2 && tokenId2 && amount2 ? {
+        domainInfo: `${chain}:${tokenAddress2}:${tokenId2}`,
+        paymentToken: paymentToken,
+        paymentAmount: amount2,
+        endInDays: 3
+      } : null;
+
+    if (secondOfferData != null) {
+      const data = await sdk.opensea.bulkOfferDomain(
+        [firstOfferData, secondOfferData]
+      );
+      console.log(data);
+    } else {
       const data = await sdk.opensea.offerDomain(
         domainInfo,
         paymentToken,
         amount,
         3
       );
-      console.log(data);
+      console.log(data);  
+    };
   };
 
   const signListing = async () => {

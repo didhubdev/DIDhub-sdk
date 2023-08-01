@@ -62,7 +62,7 @@ export interface IOpensea {
     bulkListDomain: (
         orderRequestData: IOrderRequestData[]  
     ) => Promise<IDIDhubResponse>
-        
+
     /**
      * @note This function is used to make an offer on a domain on Opensea
      *  
@@ -79,6 +79,16 @@ export interface IOpensea {
         paymentAmount: string,
         endInDays: number
     ) => Promise<IDIDhubResponse>,
+
+        /**
+     * @note This function is used to offer a list of domains on Opensea 
+     * 
+     * @param orderRequestData a list of order request data
+     * @returns response object with code and message
+     */
+    bulkOfferDomain: (
+        orderRequestData: IOrderRequestData[]  
+    ) => Promise<IDIDhubResponse>
 
     /**
      * @note This function is used to fulfill a listing on Opensea

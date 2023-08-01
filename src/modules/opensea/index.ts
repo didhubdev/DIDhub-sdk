@@ -455,6 +455,7 @@ export const openseaInit: IOpenseaInit = (
         listDomain: listDomain,
         bulkListDomain: bulkListDomain,
         offerDomain: offerDomain,
+        bulkOfferDomain: bulkOfferDomain,
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
         getAdvancedOrders: getAdvancedOrders,
