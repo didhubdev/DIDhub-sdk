@@ -1,9 +1,10 @@
-import { Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
+import { CreateOrderInput, Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
 import { ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
     IOpensea,
-    ItemType
+    ItemType,
+    IOrderRequestData
 } from "./type"
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
@@ -40,64 +41,72 @@ export const openseaInit: IOpenseaInit = (
       }
     }
 
+    const _getListingData = (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: string,
+      endInDays: number,
+      signerAddress: string
+    ) => {
+      const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
+
+      const itemType = getItemType(contractAddress);
+
+      const now = Math.floor(Date.now() / 1000);
+      const startTime = now.toString();
+      const endTime = (now + endInDays * 24 * 60 * 60).toString();
+
+      // split up into fee
+      const openseaFee = 250;
+      const openseaRecipient = "0x0000a26b00c1f0df003000390027140000faa719";
+      let fees = [
+        {
+          basisPoints: openseaFee,
+          recipient: openseaRecipient,
+        }
+      ]
+
+      const itemRoyalty = getRoyalty(chain, contractAddress);
+      if (itemRoyalty) {
+        fees.push(itemRoyalty);
+      }
+
+      return {
+        offer: [
+          {
+            itemType: itemType,
+            token: contractAddress,
+            identifier: tokenIdDec,
+          },
+        ],
+        consideration: [
+          {
+            amount: paymentAmount,
+            token: paymentToken,
+            recipient: signerAddress,
+          },
+        ],
+        fees: fees,
+        startTime: startTime,
+        endTime: endTime,
+        conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
+      }
+    }
+
     const listDomain = async (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
         endInDays: number
     ) => {
-        
-        const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
-
-        const itemType = getItemType(contractAddress);
         const signerAddress = await provider.getAddress();
+        const chain = domainInfo.split(":")[0];
+        const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
 
-        const now = Math.floor(Date.now() / 1000);
-        const startTime = now.toString();
-        const endTime = (now + endInDays * 24 * 60 * 60).toString();
-
-        // split up into fee
-        const openseaFee = 250;
-        const openseaRecipient = "0x0000a26b00c1f0df003000390027140000faa719";
-        let fees = [
-          {
-            basisPoints: openseaFee,
-            recipient: openseaRecipient,
-          }
-        ]
-
-        const itemRoyalty = getRoyalty(chain, contractAddress);
-        if (itemRoyalty) {
-          fees.push(itemRoyalty);
-        }
-
-        const { executeAllActions } = await seaportSDK.createOrder(
-            {
-              offer: [
-                {
-                  itemType: itemType,
-                  token: contractAddress,
-                  identifier: tokenIdDec,
-                },
-              ],
-              consideration: [
-                {
-                  amount: paymentAmount,
-                  token: paymentToken,
-                  recipient: signerAddress,
-                },
-              ],
-              fees: fees,
-              startTime: startTime,
-              endTime: endTime,
-              conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
-            },
-            signerAddress
-          );
+        const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
         
         const order = await executeAllActions();
-
-        const data = await postOpenseaListingData(order, chain);
+        const data = await postOpenseaListingData([order], chain);
         
         return data;
     }
@@ -301,16 +310,43 @@ export const openseaInit: IOpenseaInit = (
         return tx;
     }
 
-    const offerDomain = async (
+    const bulkListDomain = async (
+      orderRequestData: IOrderRequestData[],
+    ) => {
+      const signerAddress = await provider.getAddress();
+      // ensure that all domains are from the same chain
+      const chain = orderRequestData[0].domainInfo.split(":")[0];
+      orderRequestData.forEach((order) => {
+        if (chain != order.domainInfo.split(":")[0]) {
+          throw new Error("All domains must be from the same chain");
+        }
+      });
+
+      const listingData = orderRequestData.map((order) => {
+        return _getListingData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInDays, signerAddress);
+      });
+      
+      const { executeAllActions }  = await seaportSDK.createBulkOrders(
+        listingData,
+        signerAddress
+      );
+      
+      const orders = await executeAllActions();
+      const data = await postOpenseaListingData(orders, chain);
+
+      return data;
+    }
+
+    const _getOfferData = (
       domainInfo: string,
       paymentToken: string,
       paymentAmount: string,
-      endInDays: number
-    ) => {
+      endInDays: number,
+      signerAddress: string
+    ): CreateOrderInput => {
       const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
 
       const itemType = getItemType(contractAddress);
-      const signerAddress = await provider.getAddress();
 
       const now = Math.floor(Date.now() / 1000);
       const startTime = now.toString();
@@ -330,33 +366,43 @@ export const openseaInit: IOpenseaInit = (
       if (itemRoyalty) {
         fees.push(itemRoyalty);
       }
+
+      return {
+        offer: [
+          {
+            amount: paymentAmount,
+            token: paymentToken,
+          },
+        ],
+        consideration: [
+          {
+            itemType: itemType,
+            token: contractAddress,
+            identifier: tokenIdDec,
+            recipient: signerAddress,
+          }
+        ],
+        fees: fees,
+        startTime: startTime,
+        endTime: endTime,
+        conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
+      }
+    }
+
+    const offerDomain = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: string,
+      endInDays: number
+    ) => {
+
+      const signerAddress = await provider.getAddress();
+      const chain = domainInfo.split(":")[0];
+      const orderInput = _getOfferData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
       
-      const { executeAllActions } = await seaportSDK.createOrder(
-        {
-          offer: [
-            {
-              amount: paymentAmount,
-              token: paymentToken,
-            },
-          ],
-          consideration: [
-            {
-              itemType: itemType,
-              token: contractAddress,
-              identifier: tokenIdDec,
-              recipient: signerAddress,
-            }
-          ],
-          fees: fees,
-          startTime: startTime,
-          endTime: endTime,
-          conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
-        },
-        signerAddress
-      );
+      const { executeAllActions } = await seaportSDK.createOrder(orderInput,signerAddress);
       
-      const order = await executeAllActions();   
-      
+      const order = await executeAllActions();
       const data = await postOpenseaOfferData(order, chain);
       
       return data;
@@ -380,6 +426,7 @@ export const openseaInit: IOpenseaInit = (
 
     return {
         listDomain: listDomain,
+        bulkListDomain: bulkListDomain,
         offerDomain: offerDomain,
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,

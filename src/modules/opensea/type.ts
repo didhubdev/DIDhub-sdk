@@ -28,6 +28,13 @@ export type IOpenseaInit = (
     provider: providers.JsonRpcSigner
 ) => IOpensea;
 
+export interface IOrderRequestData {
+    domainInfo: string,
+    paymentToken: string,
+    paymentAmount: string,
+    endInDays: number
+}
+
 export interface IOpensea {
     
     /**
@@ -37,7 +44,7 @@ export interface IOpensea {
      * @param paymentToken the address of the payment token
      * @param paymentAmount the amount of payment token to list
      * @param endInDays the number of days that this listing will remain valid
-     * @returns 
+     * @returns response object with code and message
      */
     listDomain: (
         domainInfo: string,
@@ -47,6 +54,16 @@ export interface IOpensea {
     ) => Promise<IDIDhubResponse>
     
     /**
+     * @note This function is used to list a list of domains on Opensea 
+     * 
+     * @param orderRequestData a list of order request data
+     * @returns response object with code and message
+     */
+    bulkListDomain: (
+        orderRequestData: IOrderRequestData[]  
+    ) => Promise<IDIDhubResponse>
+        
+    /**
      * @note This function is used to make an offer on a domain on Opensea
      *  
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}
@@ -54,6 +71,7 @@ export interface IOpensea {
      * @param paymentAmount the amount of payment token to list
      * @param endInDays the number of days that this offer will remain valid
      * 
+     * @returns response object with code and message
      */
     offerDomain: (
         domainInfo: string,
