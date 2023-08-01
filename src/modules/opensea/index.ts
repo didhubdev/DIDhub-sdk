@@ -389,6 +389,33 @@ export const openseaInit: IOpenseaInit = (
       }
     }
 
+    const bulkOfferDomain = async (
+      orderRequestData: IOrderRequestData[],
+    ) => {
+      const signerAddress = await provider.getAddress();
+      // ensure that all domains are from the same chain
+      const chain = orderRequestData[0].domainInfo.split(":")[0];
+      orderRequestData.forEach((order) => {
+        if (chain != order.domainInfo.split(":")[0]) {
+          throw new Error("All domains must be from the same chain");
+        }
+      });
+
+      const offerData = orderRequestData.map((order) => {
+        return _getOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInDays, signerAddress);
+      });
+      
+      const { executeAllActions }  = await seaportSDK.createBulkOrders(
+        offerData,
+        signerAddress
+      );
+      
+      const orders = await executeAllActions();
+      const data = await postOpenseaOfferData(orders, chain);
+
+      return data;
+    }
+
     const offerDomain = async (
       domainInfo: string,
       paymentToken: string,
@@ -403,7 +430,7 @@ export const openseaInit: IOpenseaInit = (
       const { executeAllActions } = await seaportSDK.createOrder(orderInput,signerAddress);
       
       const order = await executeAllActions();
-      const data = await postOpenseaOfferData(order, chain);
+      const data = await postOpenseaOfferData([order], chain);
       
       return data;
     }

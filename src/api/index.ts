@@ -78,9 +78,18 @@ export const getOpenseaOfferData = async (
 }
 
 export const postOpenseaOfferData = async (
-    order: OrderWithCounter,
+    orders: OrderWithCounter[],
     chain: string
 ) => {
+
+    let orderData = orders.map((o) => {
+      return {
+        parameters: o.parameters,
+        signature: o.signature,
+        protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+        chain: chain
+      }
+    });
 
     const response = await fetch(
       "https://api.didhub.com/nftmarketplace/v1/opensea/offer",
@@ -89,12 +98,7 @@ export const postOpenseaOfferData = async (
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          parameters: order.parameters,
-          signature: order.signature,
-          protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
-          chain: chain
-        })
+        body: JSON.stringify({prders: orderData})
       },
     )
 
