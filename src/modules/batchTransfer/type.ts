@@ -25,6 +25,31 @@ export interface IBatchTransfer {
     batchCheckApproval: (domainInfos: string[]) => Promise<boolean[]>,
 
     /**
+     * @dev Get the set of contract addresses to approve
+     * 
+     * @param domainInfos An array of domains to be transferred
+     * 
+     * @returns string[] contract addresses
+     */ 
+    getContractAddressesToApprove: (domainInfos: string[]) => string[],
+
+    /**
+     * @dev Approve a type of domain to be transferred 
+     * 
+     * @param domainInfo A domain to be transferred
+     * 
+     * @returns ContractTransaction | null if the user has already approved the contract
+     */
+    approveDomain: (domainInfo: string) => Promise<ContractTransaction | null>,
+
+    /**
+     * @dev Approve all domains to be transferred
+     * 
+     * @param domainInfos An array of domains to be transferred
+     */
+    approveAllDomains: (domainInfos: string[]) => Promise<void>,
+
+    /**
      * @dev Transfer tokens to a particular address
      * 
      * @param domainInfos An array of domains to be transferred

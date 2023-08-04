@@ -2,6 +2,7 @@ import { getBatchTransferContract } from '../../contracts/didhub';
 import { providers } from 'ethers'
 import { IBatchTransfer, IBatchTransferInit } from './type';
 import { ITokenStruct } from '../../contracts/didhub/batchTransfer/BatchTransfer';
+import { utils } from 'modules/utils';
 
 export const batchTransferInit: IBatchTransferInit = (
     provider: providers.JsonRpcSigner
@@ -37,6 +38,38 @@ export const batchTransferInit: IBatchTransferInit = (
         return balance.gt(fixedFee);
     }
 
+    const getContractAddressesToApprove = (
+        domainInfos: string[]
+    ) => {
+        const tokens = domainInfo2Token(domainInfos);
+        const contractAddresses = [...new Set(tokens.map((token) => token.tokenAddress.toLowerCase()))];
+        return contractAddresses;
+    }
+
+    const approveDomain = async (
+        domainInfo: string
+    ) => {
+        const batchTransferContract = await getBatchTransferContract(provider);
+        // select the contract address for approval
+        const contractAddresses = getContractAddressesToApprove([domainInfo])[0];
+        const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchTransferContract.address);
+        return approvalTx;
+    }
+
+    const approveAllDomains = async (
+        domainInfos: string[]
+    ) => {
+        const batchTransferContract = await getBatchTransferContract(provider);
+        // select the contract address for approval
+        const contractAddresses = getContractAddressesToApprove(domainInfos);
+        for (let i = 0 ; i < contractAddresses.length; i++) {
+            const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses[i], batchTransferContract.address);
+            if (approvalTx != null) {
+                await approvalTx.wait();
+            }
+        }
+    }
+
     const batchCheckApproval = async (
         domainInfos: string[]
     ) => {
@@ -68,6 +101,8 @@ export const batchTransferInit: IBatchTransferInit = (
         getFixedFee: getFixedFee,
         checkFee: checkFee,
         batchCheckApproval: batchCheckApproval,
+        getContractAddressesToApprove: getContractAddressesToApprove, 
+        approveAllDomains: approveAllDomains,
         batchTransfer: batchTransfer
     }
 }

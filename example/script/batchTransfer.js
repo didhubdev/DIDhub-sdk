@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.MAINNET_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
 
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -18,19 +18,29 @@ const domainInfos = [
 // =============================================================================
 
 // instantiate SDK
-const sdk = new DIDhubSDK(signer, secret);
+const sdk = new DIDhubSDK(signer);
 
+const fixedFee = await sdk.transfer.getFixedFee();
+console.log(fixedFee.toString());
 
+const isApprovedForTransfer = await sdk.transfer.batchCheckApproval(domainInfos);
+console.log(isApprovedForTransfer);
 
-// // approval needed if the paymentToken is not native token
-if (paymentToken !== ZERO_ADDRESS) {
-    // check and approve
-    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
-    if (approveTx) await approveTx.wait();
-    console.log(`Approved ERC20 Tokens`);
+let domainInfosToApprove = [];
+for (let i = 0; i < isApprovedForTransfer.length ; i++ ) {
+    if (isApprovedForTransfer[i] === false) {
+        domainInfosToApprove.push(domainInfos[i]);
+    }
 }
 
-// // register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// approve if needed
+if (domainInfosToApprove.length > 0) {
+    const approveTx = await sdk.transfer.batchApprove(domainInfosToApprove);
+    await approveTx.wait();
+    console.log(`Approved domain infos`);
+}
+
+// transfer
+const transferTx = await sdk.transfer.batchTransfer(domainInfos, "0x9a10b04E87767457bD353cF97F0b3997B9feeF3A");
+await transferTx.wait();
+console.log(`Transfer transaction hash: ${transferTx.hash}`);

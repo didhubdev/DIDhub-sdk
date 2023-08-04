@@ -1,4 +1,4 @@
-import { ERC20__factory } from "../../contracts";
+import { ERC20__factory, ERC721__factory } from "../../contracts";
 import { BigNumberish, ContractTransaction, providers} from "ethers";
 import { IUtils } from "./type";
 
@@ -30,10 +30,25 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         }
         return null;
     }
+
+    const approveAllERC721or1155Tokens = async (
+        tokenContract: string,
+        operator: string
+    ): Promise<ContractTransaction | null> => {
+        const signerAddress = await provider.getAddress();
+        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
+        const isApprovedForAll = await erc721Contract.isApprovedForAll(signerAddress, operator);
+        if (!isApprovedForAll) {
+            const tx = await erc721Contract.setApprovalForAll(operator, true);
+            return tx;
+        }
+        return null;
+    }
     
     const utils: IUtils = {
         getERC20Balance: getERC20Balance,
-        approveERC20Tokens: approveERC20Tokens
+        approveERC20Tokens: approveERC20Tokens,
+        approveAllERC721or1155Tokens: approveAllERC721or1155Tokens
     }
 
     return utils;
