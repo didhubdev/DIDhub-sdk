@@ -20,12 +20,12 @@ export const CONTRACTS = {
             // "AVALANCHE": ""
         },
         "BATCH_TRANSFER": {
-            "POLYGON": "",
+            "POLYGON": "0x9610fDdF5721e9d727d82bE318b864eC7d4967c7",
             "BNB": "0x62D09c810F0AD579E4fbcD8f60d6cD6a487e5646",
-            "ARBITRUM": ""
+            "ARBITRUM": "0x5950286105FEe78216EB51eBEFb8c188A42A5B1b"
         }, 
         "BATCH_ENS_MANAGER": {
-            "ETHEREUM": ""
+            "ETHEREUM": "0x373e91FbF9Ac403BcBAb680A1349e767FB87E57B"
         }
     },
     "MARKETPLACE": {

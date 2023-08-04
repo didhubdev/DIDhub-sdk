@@ -84,7 +84,7 @@ export const getBatchENSManagerContract = async (provider: providers.JsonRpcSign
     // initialise batch register contract of a particular network
     const chainId = await provider.getChainId();
     switch (chainId) {
-        case 137:
+        case 1:
             return (new BatchENSManager__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_ENS_MANAGER.ETHEREUM
             );

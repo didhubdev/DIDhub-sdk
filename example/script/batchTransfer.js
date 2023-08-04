@@ -35,9 +35,11 @@ for (let i = 0; i < isApprovedForTransfer.length ; i++ ) {
 
 // approve if needed
 if (domainInfosToApprove.length > 0) {
-    const approveTx = await sdk.transfer.approveAllDomains(domainInfosToApprove);
-    await approveTx.wait();
+    await sdk.transfer.approveAllDomains(domainInfosToApprove);
 }
+
+const isApprovedForTransfer2 = await sdk.transfer.batchCheckApproval(domainInfos);
+console.log(isApprovedForTransfer2);
 
 // transfer
 const transferTx = await sdk.transfer.batchTransfer(domainInfos, "0x9a10b04E87767457bD353cF97F0b3997B9feeF3A");
