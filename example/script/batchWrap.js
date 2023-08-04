@@ -11,8 +11,8 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
 
 // input params =================================================================
-const names = [
-    "didhubdeveloper"
+const nameKeys = [
+    "ENS:eth.didhubdeveloper"
 ];
 // =============================================================================
 
@@ -23,21 +23,27 @@ const fixedFee = await sdk.ens.getFixedFee();
 console.log(fixedFee.toString());
 
 // wrapping of domain requires wrapStatus = false, ownerStatus = true, and approval to didhub contract = true
-const wrapStatus = await sdk.ens.batchCheckWrapStatus(names);
+const wrapStatus = await sdk.ens.batchCheckWrapStatus(nameKeys);
 console.log(wrapStatus);
 
-const ownerStatus = await sdk.ens.batchCheckOwnerStatus(names);
+const ownerStatus = await sdk.ens.batchCheckOwnerStatus(nameKeys);
 console.log(ownerStatus);
 
-const isApprovedForWrap = await sdk.ens.batchCheckUnwrappedETH2LDApproval(names);
+let isApprovedForWrap = await sdk.ens.batchCheckUnwrappedETH2LDApproval(nameKeys);
 console.log(isApprovedForWrap);
 
-// if (isApprovedForWrap.includes(false)) {
-//     await sdk.ens.approveAllDomains(names);
-// }
+if (isApprovedForWrap.includes(false)) {
+    const approvalTx = await sdk.ens.approveBaseImplementationDomains(nameKeys);
+    await approvalTx.wait();
+    isApprovedForWrap = await sdk.ens.batchCheckUnwrappedETH2LDApproval(nameKeys);
+}
 
-// if (!wrapStatus.includes(true) && !ownerStatus.includes(true) && !isApprovedForWrap.includes(false)) {
-//     const wrapTx = await sdk.ens.batchWrap(names);
-//     await wrapTx.wait();
-//     console.log(`Wrap transaction hash: ${wrapTx.hash}`);
-// }
+if (!wrapStatus.includes(true) && !ownerStatus.includes(false) && !isApprovedForWrap.includes(false)) {
+    const wrapTx = await sdk.ens.batchWrap(nameKeys);
+    await wrapTx.wait();
+    console.log(`Wrap transaction hash: ${wrapTx.hash}`);
+}
+
+// check 
+const wrapStatusFinal = await sdk.ens.batchCheckWrapStatus(nameKeys);
+console.log(wrapStatusFinal);

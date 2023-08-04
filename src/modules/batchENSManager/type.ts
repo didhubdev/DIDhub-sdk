@@ -35,6 +35,15 @@ export interface IBatchENSManager {
     batchCheckOwnerStatus : (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
+     * @dev batch check the owner status if the domain is shown as wrapped
+     * 
+     * @param nameKeys
+     * 
+     * @returns boolean[]
+     */
+    batchCheckNameWrapperOwnerStatus: (nameKeys: string[]) => Promise<boolean[]>,
+
+    /**
      * @dev Check if the user has approved the contract to spend the unwrapped tokens
      * 
      * @param names An array of domain names

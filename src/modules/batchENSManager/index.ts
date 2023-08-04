@@ -66,6 +66,24 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return ownerStatus;
     }
 
+    const batchCheckNameWrapperOwnerStatus = async (
+        nameKeys: string[]
+    ) => {
+        const names = nameKey2Names(nameKeys);
+        // convert 2LD name into name wrapper node
+        const nodes = names.map(name => {
+            return ethers.utils.namehash(name + ".eth");
+        });
+
+        const ownerStatus = await Promise.all(nodes.map(async (node) => {
+            return await utils(provider).isERC721Owner(
+                "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401", // ENS Name Wrapper
+                node
+            );
+        }));
+        return ownerStatus;
+    }
+
     const batchCheckUnwrappedETH2LDApproval = async (
         nameKeys: string[]
     ) => {
@@ -142,7 +160,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
         return approvalTx;
     }
-    
+
     const approveNameWrapperDomains = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         // select the contract address for approval
@@ -154,11 +172,12 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     return {
         getFixedFee: getFixedFee,
         checkFee: checkFee,
-        batchCheckWrapStatus: batchCheckWrapStatus,
         batchCheckOwnerStatus: batchCheckOwnerStatus,
+        batchCheckNameWrapperOwnerStatus: batchCheckNameWrapperOwnerStatus,
+        batchCheckWrapStatus: batchCheckWrapStatus,
         batchCheckUnwrappedETH2LDApproval: batchCheckUnwrappedETH2LDApproval,
-        batchUnwrap: batchUnwrap,
         batchCheckWrappedETH2LDApproval: batchCheckWrappedETH2LDApproval,
+        batchUnwrap: batchUnwrap,
         batchWrap: batchWrap,
         approveBaseImplementationDomains: approveBaseImplementationDomains,
         approveNameWrapperDomains: approveNameWrapperDomains
