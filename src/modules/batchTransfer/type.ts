@@ -1,5 +1,4 @@
 import { BigNumberish, providers, ContractTransaction } from 'ethers';
-import { ITokenStruct } from 'contracts/didhub/batchTransfer/BatchTransfer';
 
 export interface IBatchTransfer {
     /**

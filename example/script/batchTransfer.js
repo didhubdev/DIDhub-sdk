@@ -20,7 +20,7 @@ const domainInfos = [
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, secret);
 
-const fixedFee = sdk.transfer.getFixedFee();
+const fixedFee = sdk;
 
 // // approval needed if the paymentToken is not native token
 if (paymentToken !== ZERO_ADDRESS) {
