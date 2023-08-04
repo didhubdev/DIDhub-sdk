@@ -12,7 +12,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // input params =================================================================
 const names = [
-    "didhubdev"
+    "didhub"
 ];
 // =============================================================================
 
@@ -25,4 +25,6 @@ console.log(fixedFee.toString());
 const wrapStatus = await sdk.ens.batchCheckWrapStatus(names);
 console.log(wrapStatus);
 
+const ownerStatus = await sdk.ens.batchCheckOwnerStatus(names);
+console.log(ownerStatus);
 
