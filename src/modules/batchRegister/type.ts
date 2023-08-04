@@ -1,4 +1,3 @@
-import { BatchRegister } from '../../contracts';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
 import { BigNumber, ContractTransaction, BigNumberish, providers } from 'ethers';
 

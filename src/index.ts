@@ -1,13 +1,11 @@
 import { ethers, providers } from "ethers";
 
-import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, utils } from "./modules";
+import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, batchTransferInit, batchENSManagerInit, utils } from "./modules";
 import { IDIDhubSDK } from "./type";
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { IBatchTransfer } from "modules/batchTransfer/type";
-import { IBatchENSManager } from "modules/batchENSManager/type";
-import { batchTransferInit } from "modules/batchTransfer";
-import { batchENSManagerInit } from "modules/batchENSManager";
+import { IBatchTransfer } from "./modules/batchTransfer/type";
+import { IBatchENSManager } from "./modules/batchENSManager/type";
 
 class DIDhubSDK implements IDIDhubSDK {
 

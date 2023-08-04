@@ -37,4 +37,4 @@ export interface IBatchTransfer {
 
 export type IBatchTransferInit = (
     provider: providers.JsonRpcSigner
-) => IBatchTransfer
+) => IBatchTransfer;
