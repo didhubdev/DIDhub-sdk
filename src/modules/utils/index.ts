@@ -2,7 +2,6 @@ import { ERC20__factory, ERC721__factory } from "../../contracts";
 import { BigNumberish, ContractTransaction, providers} from "ethers";
 import { IUtils } from "./type";
 
-
 export const utils = (provider: providers.JsonRpcSigner) => {
 
     const getERC20Balance = async (
@@ -45,10 +44,25 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         return null;
     }
     
+    const isERC721Owner = async (
+        tokenContract: string,
+        tokenId: BigNumberish
+    ): Promise<boolean> => {
+        const signerAddress = await provider.getAddress();
+        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
+        try {
+            const owner = await erc721Contract.ownerOf(tokenId);
+            return owner === signerAddress;
+        } catch (e) {
+            return false;
+        }
+    }
+    
     const utils: IUtils = {
         getERC20Balance: getERC20Balance,
         approveERC20Tokens: approveERC20Tokens,
-        approveAllERC721or1155Tokens: approveAllERC721or1155Tokens
+        approveAllERC721or1155Tokens: approveAllERC721or1155Tokens,
+        isERC721Owner: isERC721Owner
     }
 
     return utils;

@@ -1,4 +1,4 @@
-import { BigNumberish, ContractTransaction, providers } from "ethers";
+import { BigNumberish, ContractTransaction } from "ethers";
 
 export interface IUtils {
 
@@ -24,4 +24,17 @@ export interface IUtils {
         tokenContract: string,
         operator: string
     ) => Promise<ContractTransaction | null>
+
+    /**
+     * @dev Check if the signer is the owner of the token
+     * 
+     * @param tokenContract token contract address
+     * @param tokenId token id
+     * 
+     * @returns boolean true if the signer is the owner of the token, false if not or if token has expired
+     */
+    isERC721Owner: (
+        tokenContract: string,
+        tokenId: BigNumberish
+    ) => Promise<boolean>;
 }

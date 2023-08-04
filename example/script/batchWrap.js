@@ -22,5 +22,5 @@ const sdk = new DIDhubSDK(signer);
 const fixedFee = await sdk.ens.getFixedFee();
 console.log(fixedFee.toString());
 
-const wrapStatus = await sdk.ens.batchCheckWrapStatus(domainInfos);
+const wrapStatus = await sdk.ens.batchCheckWrapStatus(names);
 console.log(wrapStatus);

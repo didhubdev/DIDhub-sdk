@@ -1,7 +1,8 @@
 import { getBatchENSManagerContract } from '../../contracts/didhub';
-import { providers, utils } from 'ethers'
+import { providers, ethers } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
+import { utils } from '../../modules/utils';
 
 export const batchENSManagerInit: IBatchENSManagerInit = (
     provider: providers.JsonRpcSigner
@@ -10,8 +11,8 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     const name2TokenId = (names: string[]) => {
         // convert name into tokenIds
         const tokenIds = names.map(name => {
-            return utils.keccak256(
-                utils.toUtf8Bytes(name)
+            return ethers.utils.keccak256(
+                ethers.utils.toUtf8Bytes(name)
             );
         });
         return tokenIds;
@@ -39,6 +40,19 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
             tokenIds
         );
         return wrapStatus;
+    }
+
+    const batchCheckOwnerStatus = async (
+        names: string[]
+    ) => {
+        const tokenIds = name2TokenId(names);
+        const ownerStatus = await Promise.all(tokenIds.map(async (tokenId) => {
+            return await utils(provider).isERC721Owner(
+                "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85", // ENS Base Implementation
+                tokenId
+            );
+        }));
+        return ownerStatus;
     }
 
     const batchCheckUnwrappedETH2LDApproval = async (
@@ -104,6 +118,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         getFixedFee: getFixedFee,
         checkFee: checkFee,
         batchCheckWrapStatus: batchCheckWrapStatus,
+        batchCheckOwnerStatus: batchCheckOwnerStatus,
         batchCheckUnwrappedETH2LDApproval: batchCheckUnwrappedETH2LDApproval,
         batchUnwrap: batchUnwrap,
         batchCheckWrappedETH2LDApproval: batchCheckWrappedETH2LDApproval,
