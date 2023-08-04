@@ -2,7 +2,7 @@ import { getBatchTransferContract } from '../../contracts/didhub';
 import { providers } from 'ethers'
 import { IBatchTransfer, IBatchTransferInit } from './type';
 import { ITokenStruct } from '../../contracts/didhub/batchTransfer/BatchTransfer';
-import { utils } from 'modules/utils';
+import { utils } from '../../modules/utils';
 
 export const batchTransferInit: IBatchTransferInit = (
     provider: providers.JsonRpcSigner
