@@ -1,29 +1,12 @@
 import { getBatchTransferContract } from '../../contracts/didhub';
 import { providers } from 'ethers'
 import { IBatchTransfer, IBatchTransferInit } from './type';
-import { ITokenStruct } from '../../contracts/didhub/batchTransfer/BatchTransfer';
 import { utils } from '../../modules/utils';
+import { getContractAddressSet, domainInfo2Token } from '../../utils';
 
 export const batchTransferInit: IBatchTransferInit = (
     provider: providers.JsonRpcSigner
 ): IBatchTransfer => {
-
-    const domainInfo2Token = (
-        domainInfos: string[]
-    ): ITokenStruct[] => {
-        const tokens: ITokenStruct[] = [];
-        for (let i = 0; i < domainInfos.length; i++) {
-            // splot the domainInfo by :, note: contractAddress may contains :
-            let items = domainInfos[i].split(":");
-            let contractAddress = items.slice(1, items.length - 1).join(":");
-            let tokenId = items[items.length - 1];
-            tokens.push({
-                tokenAddress: contractAddress,
-                tokenId: tokenId
-            });
-        }
-        return tokens;
-    }
 
     const getFixedFee = async () => {
         const batchTransferContract = await getBatchTransferContract(provider);
@@ -38,20 +21,12 @@ export const batchTransferInit: IBatchTransferInit = (
         return balance.gt(fixedFee);
     }
 
-    const getContractAddressesToApprove = (
-        domainInfos: string[]
-    ) => {
-        const tokens = domainInfo2Token(domainInfos);
-        const contractAddresses = [...new Set(tokens.map((token) => token.tokenAddress.toLowerCase()))];
-        return contractAddresses;
-    }
-
     const approveDomain = async (
         domainInfo: string
     ) => {
         const batchTransferContract = await getBatchTransferContract(provider);
         // select the contract address for approval
-        const contractAddresses = getContractAddressesToApprove([domainInfo])[0];
+        const contractAddresses = getContractAddressSet([domainInfo])[0];
         const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchTransferContract.address);
         return approvalTx;
     }
@@ -61,7 +36,7 @@ export const batchTransferInit: IBatchTransferInit = (
     ) => {
         const batchTransferContract = await getBatchTransferContract(provider);
         // select the contract address for approval
-        const contractAddresses = getContractAddressesToApprove(domainInfos);
+        const contractAddresses = getContractAddressSet(domainInfos);
         for (let i = 0 ; i < contractAddresses.length; i++) {
             const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses[i], batchTransferContract.address);
             if (approvalTx != null) {
@@ -100,8 +75,7 @@ export const batchTransferInit: IBatchTransferInit = (
     return {
         getFixedFee: getFixedFee,
         checkFee: checkFee,
-        batchCheckApproval: batchCheckApproval,
-        getContractAddressesToApprove: getContractAddressesToApprove, 
+        batchCheckApproval: batchCheckApproval, 
         approveDomain: approveDomain,
         approveAllDomains: approveAllDomains,
         batchTransfer: batchTransfer

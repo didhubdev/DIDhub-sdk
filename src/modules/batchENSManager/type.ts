@@ -19,20 +19,20 @@ export interface IBatchENSManager {
     /**
      * @dev Check if the domain name is wrapped
      * 
-     * @param names An array of domain names
+     * @param nameKeys An array of domain nameKeys
      * 
      * @return boolean[]
      */
-    batchCheckWrapStatus: (names: string[]) => Promise<boolean[]>,
+    batchCheckWrapStatus: (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
      * @dev batch check the owner status if the domain is shown as unwrapped
      * 
-     * @param names 
+     * @param nameKeys 
      * 
      * @returns boolean[]
      */
-    batchCheckOwnerStatus : (names: string[]) => Promise<boolean[]>,
+    batchCheckOwnerStatus : (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
      * @dev Check if the user has approved the contract to spend the unwrapped tokens
@@ -41,36 +41,50 @@ export interface IBatchENSManager {
      * 
      * @return boolean[]
      */
-    batchCheckUnwrappedETH2LDApproval: (names: string[]) => Promise<boolean[]>,
+    batchCheckUnwrappedETH2LDApproval: (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
      * @dev Check if the user has approved the contract to spend the wrapped tokens
      * 
-     * @param names An array of domain names
+     * @param nameKeys An array of domain nameKeys
      * 
      * @return boolean[]
      */
-    batchCheckWrappedETH2LDApproval: (names: string[]) => Promise<boolean[]>,
-    
+    batchCheckWrappedETH2LDApproval: (nameKeys: string[]) => Promise<boolean[]>,
+
     /**
      * @dev Unwrap the 2LD domain name
      * 
-     * @param names An array of domain names
+     * @param nameKeys An array of domain nameKeys
      * @param to The address to receive the unwrapped tokens
      * 
      * @return ContractTransaction
      */
-    batchUnwrap: (names: string[], to?: string) => Promise<ContractTransaction>,
+    batchUnwrap: (nameKeys: string[], to?: string) => Promise<ContractTransaction>,
 
     /**
      * @dev Wrap the 2LD domain name
      * 
-     * @param names An array of domain names
+     * @param nameKeys An array of domain nameKeys
      * @param to The address to receive the wrapped tokens
      * 
      * @return ContractTransaction
      */
-    batchWrap: (names: string[], to?: string) => Promise<ContractTransaction>
+    batchWrap: (nameKeys: string[], to?: string) => Promise<ContractTransaction>
+
+    /**
+     * @dev Approve the base implementation contract (Old ENS contract) to spend the token
+     * 
+     * @return ContractTransaction | null if already approved
+     */
+    approveBaseImplementationDomains: () => Promise<ContractTransaction | null>,
+
+    /**
+     * @dev Approve the name wrapper contract to spend the token
+     * 
+     * @return ContractTransaction | null if already approved
+     */
+    approveNameWrapperDomains: () => Promise<ContractTransaction | null>
 
 }
 

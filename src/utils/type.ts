@@ -5,3 +5,8 @@ export interface IDomainInfo {
     nameKey: string;
     duration?: BigNumberish;
 }
+
+export interface INFTToken {
+    tokenAddress: string
+    tokenId: string
+}

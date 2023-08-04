@@ -3,10 +3,19 @@ import { providers, ethers } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
 import { utils } from '../../modules/utils';
+import { getContractAddressSet } from '../../utils';
 
 export const batchENSManagerInit: IBatchENSManagerInit = (
     provider: providers.JsonRpcSigner
 ): IBatchENSManager => {
+
+    const nameKey2Names = (nameKeys: string[]) => {
+        const names = nameKeys.map(nameKey => {
+            let nameSlices =  nameKey.split(":")[1].split(".");
+            return nameSlices[nameSlices.length - 1];
+        });
+        return names;
+    }
 
     const name2TokenId = (names: string[]) => {
         // convert name into tokenIds
@@ -32,8 +41,9 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchCheckWrapStatus = async (
-        names: string[]
+        nameKeys: string[]
     ) => {
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const wrapStatus = await batchENSManagerContract.isWrapped(
@@ -43,8 +53,9 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchCheckOwnerStatus = async (
-        names: string[]
+        nameKeys: string[]
     ) => {
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const ownerStatus = await Promise.all(tokenIds.map(async (tokenId) => {
             return await utils(provider).isERC721Owner(
@@ -56,8 +67,9 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchCheckUnwrappedETH2LDApproval = async (
-        names: string[]
+        nameKeys: string[]
     ) => {
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const checkApproval = await batchENSManagerContract.hasApproval(
@@ -67,12 +79,13 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchUnwrap = async (
-        names: string[],
+        nameKeys: string[],
         to?: string
     ) => {
         if (!to) {
             to = await provider.getAddress();
         }
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
@@ -86,8 +99,9 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchCheckWrappedETH2LDApproval = async (
-        names: string[]
+        nameKeys: string[]
     ) => {
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const checkApproval = await batchENSManagerContract.hasApprovalNameWrapper(
@@ -97,12 +111,13 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const batchWrap = async (
-        names: string[],
+        nameKeys: string[],
         to?: string
     ) => {
         if (!to) {
             to = await provider.getAddress();
         }
+        const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const owner = await provider.getAddress();
         // get data
@@ -120,6 +135,22 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return batchWrapTx;
     }
 
+    const approveBaseImplementationDomains = async () => {
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        // select the contract address for approval
+        const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
+        const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        return approvalTx;
+    }
+    
+    const approveNameWrapperDomains = async () => {
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        // select the contract address for approval
+        const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
+        const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        return approvalTx;
+    }
+        
     return {
         getFixedFee: getFixedFee,
         checkFee: checkFee,
@@ -128,7 +159,9 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         batchCheckUnwrappedETH2LDApproval: batchCheckUnwrappedETH2LDApproval,
         batchUnwrap: batchUnwrap,
         batchCheckWrappedETH2LDApproval: batchCheckWrappedETH2LDApproval,
-        batchWrap: batchWrap
+        batchWrap: batchWrap,
+        approveBaseImplementationDomains: approveBaseImplementationDomains,
+        approveNameWrapperDomains: approveNameWrapperDomains
     }
 
 }

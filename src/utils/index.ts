@@ -1,7 +1,7 @@
 import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
-import { IDomainInfo } from './type';
+import { IDomainInfo, INFTToken } from './type';
 
 interface SelectField<T> {
     [key: string]: T;
@@ -149,3 +149,27 @@ export const getPriceRequest = (
 }
 
 
+export const getContractAddressSet = (
+    domainInfos: string[]
+) => {
+    const tokens = domainInfo2Token(domainInfos);
+    const contractAddresses = [...new Set(tokens.map((token) => token.tokenAddress.toLowerCase()))];
+    return contractAddresses;
+}
+
+export const domainInfo2Token = (
+    domainInfos: string[]
+): INFTToken[] => {
+    const tokens: INFTToken[] = [];
+    for (let i = 0; i < domainInfos.length; i++) {
+        // splot the domainInfo by :, note: contractAddress may contains :
+        let items = domainInfos[i].split(":");
+        let contractAddress = items.slice(1, items.length - 1).join(":");
+        let tokenId = items[items.length - 1];
+        tokens.push({
+            tokenAddress: contractAddress,
+            tokenId: tokenId
+        });
+    }
+    return tokens;
+}
