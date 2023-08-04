@@ -1,6 +1,6 @@
-import { BatchRegister, getBatchRegisterContract } from '../../contracts/didhub';
+import { getBatchRegisterContract } from '../../contracts/didhub';
 import { ERC20__factory } from '../../contracts/tokens';
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/BSC/BatchRegister';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
 import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult } from '../../utils';
 import { BigNumber, BigNumberish, ContractTransaction, providers } from 'ethers';

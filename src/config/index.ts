@@ -18,7 +18,14 @@ export const CONTRACTS = {
             // "FANTOM":  "",
             // "KLAYTN": "",
             // "AVALANCHE": ""
-
+        },
+        "BATCH_TRANSFER": {
+            "POLYGON": "",
+            "BNB": "0x62D09c810F0AD579E4fbcD8f60d6cD6a487e5646",
+            "ARBITRUM": ""
+        }, 
+        "BATCH_ENS_MANAGER": {
+            "ETHEREUM": ""
         }
     },
     "MARKETPLACE": {

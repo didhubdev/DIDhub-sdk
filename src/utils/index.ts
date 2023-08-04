@@ -1,6 +1,6 @@
 import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
-import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/BSC/BatchRegister';
+import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
 import { IDomainInfo } from './type';
 
 interface SelectField<T> {
@@ -73,6 +73,26 @@ export const getENSNameResolutionParams = (
     });
 
     return ethers.utils.defaultAbiCoder.encode(['bytes[][]'], [paramData]);
+}
+
+export const getENSTokenWrapParams = (
+    names: string[], // domain names
+    owner: string    // address
+): BytesLike[] => {
+
+    // create param data from nodes and owner
+    let resolver = "0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63";
+    let fuse = 0;
+    const dataArray = names.map((n) => {
+        console.log(n);
+        const result = ethers.utils.defaultAbiCoder.encode(
+            ["string", "address", "uint16", "address"],
+            [n, owner.toLowerCase(), fuse, resolver.toLowerCase()]
+        );
+        return result;
+    });
+
+    return dataArray;
 }
 
 export const getRegistrationInfo = (

@@ -4,6 +4,10 @@ import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, utils
 import { IDIDhubSDK } from "./type";
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
+import { IBatchTransfer } from "modules/batchTransfer/type";
+import { IBatchENSManager } from "modules/batchENSManager/type";
+import { batchTransferInit } from "modules/batchTransfer";
+import { batchENSManagerInit } from "modules/batchENSManager";
 
 class DIDhubSDK implements IDIDhubSDK {
 
@@ -13,6 +17,9 @@ class DIDhubSDK implements IDIDhubSDK {
 
     private did: IBatchRegister;
     private seaport: IOpensea;
+    private batchTransfer: IBatchTransfer;
+    private ensManager: IBatchENSManager;
+
     public utilsWithProvider: IUtils;
 
     /**
@@ -40,6 +47,14 @@ class DIDhubSDK implements IDIDhubSDK {
         this.did = batchRegistration(
             provider as providers.JsonRpcSigner,
             this.secret
+        );
+
+        this.batchTransfer = batchTransferInit(
+            provider as providers.JsonRpcSigner
+        );
+
+        this.ensManager = batchENSManagerInit(
+            provider as providers.JsonRpcSigner
         );
 
         this.seaport = openseaInit(
@@ -72,13 +87,30 @@ class DIDhubSDK implements IDIDhubSDK {
 
     get register(): IBatchRegister {
         if (this.did === null) {
-            throw Error("Batch register is only supported in BNB and ARBITRUM");
+            throw Error("Batch register is not yet supported in this network");
         }
         return this.did! as IBatchRegister;
     }
 
     get opensea(): IOpensea {
+        if (this.opensea === null) {
+            throw Error("Seaport operations is not yet supported in this network");
+        }
         return this.seaport! as IOpensea;
+    }
+
+    get transfer(): IBatchTransfer {
+        if (this.batchTransfer === null) {
+            throw Error("Batch transfer operations is not yet supported in this network");
+        }
+        return this.batchTransfer! as IBatchTransfer;
+    }
+
+    get ens(): IBatchENSManager {
+        if (this.ensManager === null) {
+            throw Error("Batch ENS operations is not yet supported in this network");
+        }
+        return this.ensManager! as IBatchENSManager;
     }
 
     get utils(): IUtils {
