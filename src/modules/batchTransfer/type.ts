@@ -19,21 +19,21 @@ export interface IBatchTransfer {
     /**
      * @dev Check if the user has approved the contract to spend the tokens
      * 
-     * @param tokens An array of tokens to be transferred
+     * @param domainInfos An array of domains to be transferred
      * 
      * @returns boolean[]
      */
-    batchCheckApproval: (tokens: ITokenStruct[]) => Promise<boolean[]>,
+    batchCheckApproval: (domainInfos: string[]) => Promise<boolean[]>,
 
     /**
      * @dev Transfer tokens to a particular address
      * 
-     * @param tokens An array of tokens to be transferred
+     * @param domainInfos An array of domains to be transferred
      * @param to The address to receive the tokens
      * 
      * @returns ContractTransaction
      */
-    batchTransfer: (tokens: ITokenStruct[], to: string) => Promise<ContractTransaction>
+    batchTransfer: (domainInfos: string[], to: string) => Promise<ContractTransaction>
 }
 
 export type IBatchTransferInit = (
