@@ -24,3 +24,5 @@ console.log(fixedFee.toString());
 
 const wrapStatus = await sdk.ens.batchCheckWrapStatus(names);
 console.log(wrapStatus);
+
+
