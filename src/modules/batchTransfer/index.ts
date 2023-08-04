@@ -102,6 +102,7 @@ export const batchTransferInit: IBatchTransferInit = (
         checkFee: checkFee,
         batchCheckApproval: batchCheckApproval,
         getContractAddressesToApprove: getContractAddressesToApprove, 
+        approveDomain: approveDomain,
         approveAllDomains: approveAllDomains,
         batchTransfer: batchTransfer
     }
