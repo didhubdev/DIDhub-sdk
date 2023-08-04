@@ -1,4 +1,4 @@
-import { ethers, providers, Signer } from "ethers";
+import { ethers, providers } from "ethers";
 
 import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, utils } from "./modules";
 import { IDIDhubSDK } from "./type";
