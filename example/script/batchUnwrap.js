@@ -26,8 +26,8 @@ console.log(fixedFee.toString());
 const wrapStatus = await sdk.ens.batchCheckWrapStatus(nameKeys);
 console.log(wrapStatus);
 
-// const ownerStatus = await sdk.ens.batchCheckOwnerStatus(nameKeys);
-// console.log(ownerStatus);
+const ownerStatus = await sdk.ens.batchCheckNameWrapperOwnerStatus(nameKeys);
+console.log(ownerStatus);
 
 let isApprovedForWrap = await sdk.ens.batchCheckWrappedETH2LDApproval(nameKeys);
 console.log(isApprovedForWrap);
