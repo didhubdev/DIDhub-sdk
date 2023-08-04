@@ -68,8 +68,11 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
 
     const batchUnwrap = async (
         names: string[],
-        to: string
+        to?: string
     ) => {
+        if (!to) {
+            to = await provider.getAddress();
+        }
         const tokenIds = name2TokenId(names);
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
@@ -95,8 +98,11 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
 
     const batchWrap = async (
         names: string[],
-        to: string
+        to?: string
     ) => {
+        if (!to) {
+            to = await provider.getAddress();
+        }
         const tokenIds = name2TokenId(names);
         const owner = await provider.getAddress();
         // get data

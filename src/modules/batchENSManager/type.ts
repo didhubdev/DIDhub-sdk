@@ -51,7 +51,7 @@ export interface IBatchENSManager {
      * @return boolean[]
      */
     batchCheckWrappedETH2LDApproval: (names: string[]) => Promise<boolean[]>,
-
+    
     /**
      * @dev Unwrap the 2LD domain name
      * 
@@ -60,7 +60,7 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction
      */
-    batchUnwrap: (names: string[], to: string) => Promise<ContractTransaction>,
+    batchUnwrap: (names: string[], to?: string) => Promise<ContractTransaction>,
 
     /**
      * @dev Wrap the 2LD domain name
@@ -70,7 +70,7 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction
      */
-    batchWrap: (names: string[], to: string) => Promise<ContractTransaction>
+    batchWrap: (names: string[], to?: string) => Promise<ContractTransaction>
 
 }
 

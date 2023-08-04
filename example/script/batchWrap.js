@@ -22,9 +22,24 @@ const sdk = new DIDhubSDK(signer);
 const fixedFee = await sdk.ens.getFixedFee();
 console.log(fixedFee.toString());
 
+// wrapping of domain requires wrapStatus = false, ownerStatus = true, and approval to didhub contract = true
 const wrapStatus = await sdk.ens.batchCheckWrapStatus(names);
 console.log(wrapStatus);
 
 const ownerStatus = await sdk.ens.batchCheckOwnerStatus(names);
 console.log(ownerStatus);
+
+const isApprovedForWrap = await sdk.ens.batchCheckUnwrappedETH2LDApproval(names);
+console.log(isApprovedForWrap);
+
+if (isApprovedForWrap.includes(false)) {
+    await sdk.ens.approveAllDomains(names);
+}
+
+if (!wrapStatus.includes(true) && !ownerStatus.includes(true) && !isApprovedForWrap.includes(false)) {
+    const wrapTx = await sdk.ens.batchWrap(names);
+    await wrapTx.wait();
+    console.log(`Wrap transaction hash: ${wrapTx.hash}`);
+}
+
 
