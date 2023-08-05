@@ -138,10 +138,40 @@ Approval process is automatically handled.
 const data = await sdk.opensea.offerDomain(domainInfo, paymentToken, amount, days);
 ```
 
+### Batch Make Offers
+Batch offer an array of domains
+```
+const data = await sdk.opensea.bulkOfferDomain(offerDataArray);
+```
+where offerDataArray is given as follows
+```
+const offerDataArray = {
+    domainInfo: domainInfo,
+    paymentToken: paymentToken,
+    amount: amount, 
+    days: days
+}
+```
+
 ### List Domain
 Approval is automatically handled.
 ```
 const data = await sdk.opensea.listDomain(domainInfo, paymentToken, amount, days);
+```
+
+### Batch List Domain
+Batch list an array of domains
+```
+const data = await sdk.opensea.bulkListDomain(listingDataArray);
+```
+where listingDataArray is given as follows
+```
+const listingDataArray = {
+    domainInfo: domainInfo,
+    paymentToken: paymentToken,
+    amount: amount, 
+    days: days
+}
 ```
 
 ### Accept Offer
@@ -160,7 +190,7 @@ This can take in an array of both offer or listing orders
 const tx = await sdk.opensea.cancelOrders(orderIds);
 ```
 
-### Fulfill Listings
+### Fulfill Multiple Listings
 Fulfill multiple listings in one transaction, using a single token type as input. If the orders require payment of different token types, the input tokens will be swapped to the targe token type. There are 3 steps to complete this operation:
 
 1. Obtain the advanced order information using orderId. It is recommended to do this at the time when users add items to cart, instead of doing it in one go during checkout.
