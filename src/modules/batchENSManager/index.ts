@@ -52,7 +52,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return wrapStatus;
     }
 
-    const batchCheckOwnerStatus = async (
+    const batchCheckUnwrappedETH2LDOwnerStatus = async (
         nameKeys: string[]
     ) => {
         const names = nameKey2Names(nameKeys);
@@ -66,7 +66,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return ownerStatus;
     }
 
-    const batchCheckNameWrapperOwnerStatus = async (
+    const batchCheckWrappedETH2LDOwnerStatus = async (
         nameKeys: string[]
     ) => {
         const names = nameKey2Names(nameKeys);
@@ -153,7 +153,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return batchWrapTx;
     }
 
-    const approveBaseImplementationDomains = async () => {
+    const approveUnwrappedETH2LDDomains = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         // select the contract address for approval
         const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
@@ -161,7 +161,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return approvalTx;
     }
 
-    const approveNameWrapperDomains = async () => {
+    const approveWrappedETH2LDDomains = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         // select the contract address for approval
         const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
@@ -172,15 +172,15 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     return {
         getFixedFee: getFixedFee,
         checkFee: checkFee,
-        batchCheckOwnerStatus: batchCheckOwnerStatus,
-        batchCheckNameWrapperOwnerStatus: batchCheckNameWrapperOwnerStatus,
+        batchCheckUnwrappedETH2LDOwnerStatus: batchCheckUnwrappedETH2LDOwnerStatus,
+        batchCheckWrappedETH2LDOwnerStatus: batchCheckWrappedETH2LDOwnerStatus,
         batchCheckWrapStatus: batchCheckWrapStatus,
         batchCheckUnwrappedETH2LDApproval: batchCheckUnwrappedETH2LDApproval,
         batchCheckWrappedETH2LDApproval: batchCheckWrappedETH2LDApproval,
         batchUnwrap: batchUnwrap,
         batchWrap: batchWrap,
-        approveBaseImplementationDomains: approveBaseImplementationDomains,
-        approveNameWrapperDomains: approveNameWrapperDomains
+        approveUnwrappedETH2LDDomains: approveUnwrappedETH2LDDomains,
+        approveWrappedETH2LDDomains: approveWrappedETH2LDDomains
     }
 
 }

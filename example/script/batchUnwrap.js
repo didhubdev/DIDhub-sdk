@@ -26,14 +26,14 @@ console.log(fixedFee.toString());
 const wrapStatus = await sdk.ens.batchCheckWrapStatus(nameKeys);
 console.log(wrapStatus);
 
-const ownerStatus = await sdk.ens.batchCheckNameWrapperOwnerStatus(nameKeys);
+const ownerStatus = await sdk.ens.batchCheckWrappedETH2LDOwnerStatus(nameKeys);
 console.log(ownerStatus);
 
 let isApprovedForWrap = await sdk.ens.batchCheckWrappedETH2LDApproval(nameKeys);
 console.log(isApprovedForWrap);
 
 if (isApprovedForWrap.includes(false)) {
-    const approvalTx = await sdk.ens.approveNameWrapperDomains();
+    const approvalTx = await sdk.ens.approveWrappedETH2LDDomains();
     await approvalTx.wait();
     isApprovedForWrap = await sdk.ens.batchCheckWrappedETH2LDApproval(nameKeys);
 }

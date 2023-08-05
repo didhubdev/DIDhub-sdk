@@ -32,7 +32,7 @@ export interface IBatchENSManager {
      * 
      * @returns boolean[]
      */
-    batchCheckOwnerStatus : (nameKeys: string[]) => Promise<boolean[]>,
+    batchCheckUnwrappedETH2LDOwnerStatus : (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
      * @dev batch check the owner status if the domain is shown as wrapped
@@ -41,7 +41,7 @@ export interface IBatchENSManager {
      * 
      * @returns boolean[]
      */
-    batchCheckNameWrapperOwnerStatus: (nameKeys: string[]) => Promise<boolean[]>,
+    batchCheckWrappedETH2LDOwnerStatus: (nameKeys: string[]) => Promise<boolean[]>,
 
     /**
      * @dev Check if the user has approved the contract to spend the unwrapped tokens
@@ -86,14 +86,14 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction | null if already approved
      */
-    approveBaseImplementationDomains: () => Promise<ContractTransaction | null>,
+    approveUnwrappedETH2LDDomains: () => Promise<ContractTransaction | null>,
 
     /**
      * @dev Approve the name wrapper contract to spend the token
      * 
      * @return ContractTransaction | null if already approved
      */
-    approveNameWrapperDomains: () => Promise<ContractTransaction | null>
+    approveWrappedETH2LDDomains: () => Promise<ContractTransaction | null>
 
 }
 

@@ -179,3 +179,92 @@ const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.pa
 ```
 const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
 ```
+
+## Batch Transfer NFT Functions
+
+### Check Fixed Fees
+Check the amount of fixed fees charged by DIDHUB to use the smart contracts (zero at the moment)
+```
+const fixedFee = await sdk.transfer.getFixedFee();
+```
+
+### Check Approval
+Batch Check whether the didhub contract is given the approval
+```
+const isApprovedForTransfer: boolean[] = await sdk.transfer.batchCheckApproval(domainInfos);
+```
+
+### Batch Make Approval
+Batch make approval
+```
+await sdk.transfer.approveAllDomains(domainInfos);
+```
+
+### Batch Transfer
+Batch transfer the domains to a newOwner
+```
+const transferTx = await sdk.transfer.batchTransfer(domainInfos, newOwner);
+```
+
+## Batch ENS Domain Management
+Batch Manage the ENS Domain name
+
+### Check Fixed Fees
+Check the amount of fixed fees charged by DIDHUB to use the smart contracts (zero at the moment)
+```
+const fixedFee = await sdk.ens.getFixedFee();
+```
+
+### Batch Check Wraped Status
+Check the wrap status: true is wrapped, and false is unwrapped
+```
+const wrapStatus = await sdk.ens.batchCheckWrapStatus(nameKeys);
+```
+
+### Batch Check Owner Status
+Check the owner status of the unwrapped domain by calling ownerOf functions of the Base Imeplementation contract
+```
+const ownerStatus = await sdk.ens.batchCheckUnwrappedETH2LDOwnerStatus(nameKeys);
+```
+
+### Batch Check Name Wrapper Owner Status
+Check the owner status of the wrapped domain by calling ownerOf functions of the Name Wrapper contract
+```
+const ownerStatus = await sdk.ens.batchCheckWrappedETH2LDOwnerStatus(nameKeys);
+```
+
+### Batch Check Approval 
+Check whether the user has given approve to the DIDHUB contract for unwrapped domains
+```
+const isApprovedForWrap = await sdk.ens.batchCheckUnwrappedETH2LDApproval(nameKeys);
+```
+
+### Batch Check Name Wrapper Approval
+Check whether the user has given approve to the DIDHUB contract for wrapped domains
+```
+const isApprovedForWrap = await sdk.ens.batchCheckWrappedETH2LDApproval(nameKeys);
+```
+
+### Batch Approve unwrapped domain
+Approve the DIDHUB contract to operate on the unwrapped domains
+```
+const approvalTx = await sdk.ens.approveUnwrappedETH2LDDomains(nameKeys);
+```
+
+### Batch Approve wrapped domain
+Approve the DIDHUB contract to operate on the wrapped domains
+```
+const approvalTx = await sdk.ens.approveWrappedETH2LDDomains();
+```
+
+### Batch Wrap 
+Batch wrap the domain. Fee is paid internally
+```
+const wrapTx = await sdk.ens.batchWrap(nameKeys);
+```
+
+### Batch Unwrap 
+Batch unwrap the domain. Fee is paid internally
+```
+const wrapTx = await sdk.ens.batchUnwrap(nameKeys);
+```
