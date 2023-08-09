@@ -91,7 +91,7 @@ class DIDhubSDK implements IDIDhubSDK {
     }
 
     get opensea(): IOpensea {
-        if (this.opensea === null) {
+        if (this.seaport === null) {
             throw Error("Seaport operations is not yet supported in this network");
         }
         return this.seaport! as IOpensea;
