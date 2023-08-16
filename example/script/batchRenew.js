@@ -19,7 +19,7 @@ const domains = [
     {
         collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
         nameKey: "SpaceId:bnb.100100100100100",
-        duration: 60*60*24*28
+        duration: 60*60*24*28 // renew duration
     },
     {
         collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
@@ -37,37 +37,36 @@ const sdk = new DIDhubSDK(signer, secret);
 
 // check if the signer is also the owner of the two tokens
 
-
 // get price
-const individualPrices = await sdk.register.getIndividualPrice(domainsAvailable);
+const individualPrices = await sdk.register.getIndividualPrice(domains);
 individualPrices.forEach((price, index) => {
-    console.log(`Prices: ${price.price} ${paymentToken} for ${domainsAvailable[index].nameKey}`);
+    console.log(`Prices: ${price.price} ${paymentToken} for ${domains[index].nameKey}`);
 });
 
 // get price info for purchase
 console.log("Getting price info for purchase...");
-const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
-console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
+const renewData = await sdk.register.getPriceWithMargin(domains, paymentToken, margin);
+console.log(`Total required tokens for ${paymentToken} is ${renewData.paymentMax.toString()}`);
 
 // // approval needed if the paymentToken is not native token
 if (paymentToken !== ZERO_ADDRESS) {
     // check and approve
-    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
+    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, renewData.paymentMax);
     if (approveTx) await approveTx.wait();
     console.log(`Approved ERC20 Tokens`);
 }
 
 // final check 
-const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
+const finalCheck = await sdk.register.checkRenewConditions(renewData.paymentToken, renewData.paymentMax);
 console.log(`Final check: ${finalCheck.success}`);
 // print error if any
 finalCheck.errors.forEach(error => {
     throw Error(`Error: ${error}`);
 });
 
-console.log(registrationData.paymentMax);
+console.log(renewData.paymentMax);
 
 // // register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+const registerTx = await sdk.register.batchRenew(renewData.requests, renewData.paymentToken, renewData.paymentMax);
 await registerTx.wait();
 console.log(`Register transaction hash: ${registerTx.hash}`);
