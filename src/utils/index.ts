@@ -1,6 +1,6 @@
 import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
-import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
+import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct, RenewInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
 import { IDomainInfo, INFTToken } from './type';
 
 interface SelectField<T> {
@@ -131,6 +131,28 @@ export const getRegistrationInfo = (
     });
 
     return registrationInfoStructs;
+}
+
+export const getRenewInfo = (
+    domains: IDomainInfo[],
+    paymentToken: string = ZERO_ADDRESS,
+    paymentMax: BigNumberish = 0
+): RenewInfoStruct[] => {
+
+    let wrappedDomains = wrapDomain(domains);
+    let renewInfoStructs: RenewInfoStruct[] = [];
+    Object.keys(wrappedDomains).forEach((contractAddress) => {
+        let params: BytesLike = [];
+        renewInfoStructs.push({
+            project: contractAddress,
+            domains: wrappedDomains[contractAddress],
+            paymentMax: paymentMax,
+            paymentToken: paymentToken,
+            params: params
+        });
+    });
+
+    return renewInfoStructs;
 }
 
 export const getPriceRequest = (

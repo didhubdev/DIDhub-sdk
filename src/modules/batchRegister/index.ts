@@ -1,8 +1,8 @@
 import { getBatchRegisterContract } from '../../contracts/didhub';
 import { ERC20__factory } from '../../contracts/tokens';
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
-import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo } from './type';
-import { getPriceRequest, getRegistrationInfo, unwrapResult } from '../../utils';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct, RenewInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
+import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo, IRenewData, IRegistrationData, IRenewCheck } from './type';
+import { getPriceRequest, getRegistrationInfo, unwrapResult, getRenewInfo } from '../../utils';
 import { BigNumber, BigNumberish, ContractTransaction, providers } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
 
@@ -101,10 +101,38 @@ export const batchRegistration: IBatchRegistration = (
         domains: IDomainInfo[],
         paymentToken: string,
         margin: number
-    ): Promise<any> => {
+    ): Promise<IRegistrationData> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
         const owner = await batchRegisterContract.signer.getAddress();
         let requests = getRegistrationInfo(domains, owner, secret);
+        const totalPrices = await getTotalPrice(domains, paymentToken);
+
+        // get didhub fee
+        const didhubFee = await batchRegisterContract.feeBasisPt();
+
+        // enrich request
+        requests = requests.map((r, i) => {
+            r.paymentToken = paymentToken;
+            r.paymentMax = totalPrices[i].mul(100 + margin).div(100);
+            return r;
+        });
+        const totalPrice = totalPrices.map(p=>p.mul(100 + margin).div(100)).reduce((a,b)=>a.add(b));
+        const totalPriceWithFee = totalPrice.mul(didhubFee.toNumber()+10000).div(10000);
+        return {
+            requests: requests,
+            paymentToken: paymentToken,
+            paymentMax: totalPriceWithFee
+        }
+    }
+
+    const getRenewPriceWithMargin = async (
+        domains: IDomainInfo[],
+        paymentToken: string,
+        margin: number
+    ): Promise<IRenewData> => {
+        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const owner = await batchRegisterContract.signer.getAddress();
+        let requests = getRenewInfo(domains, owner, secret);
         const totalPrices = await getTotalPrice(domains, paymentToken);
 
         // get didhub fee
@@ -183,6 +211,41 @@ export const batchRegistration: IBatchRegistration = (
         };
     }
 
+    const checkRenewConditions = async (
+        paymentToken: string,
+        paymentMax: BigNumberish
+    ): Promise<IRenewCheck> => {
+        
+        let errorList: string[] = [];
+        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const signerAddress = await batchRegisterContract.signer.getAddress();
+
+        // check total price and balance is sufficient
+        if (paymentToken == ZERO_ADDRESS) {
+            const ethBalance = await batchRegisterContract.signer.getBalance();
+            if (ethBalance.lt(paymentMax)) {
+                errorList.push("Insufficient ETH balance");
+            }
+        } else {
+            // attach ERC20 token to contract and create an instance of ERC20 contract
+            const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+            const erc20Balance = await erc20Contract.balanceOf(signerAddress);
+            if (erc20Balance.lt(paymentMax)) {
+                errorList.push("Insufficient ERC20 balance");
+            };
+            // check Allowance
+            const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);
+            if (allowance.lt(paymentMax)) {
+                errorList.push("Insufficient ERC20 allowance");
+            }
+        }
+
+        return {
+            success: errorList.length == 0,
+            errors: errorList
+        };
+    }
+
     const getERC20Balance = async (
         paymentToken: string
     ): Promise<BigNumberish> => {
@@ -226,6 +289,29 @@ export const batchRegistration: IBatchRegistration = (
             const batchRegisterContract = await getBatchRegisterContract(provider);
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
+                gasLimit: estimatedGas.mul(120).div(100)
+            });
+            return tx;
+        }
+    }
+
+    const batchRenew = async (
+        requests: RenewInfoStruct[],
+        paymentToken: string,
+        paymentMax: BigNumberish
+    ): Promise<ContractTransaction> => {
+        if (paymentToken == ZERO_ADDRESS) {
+            const batchRegisterContract = await getBatchRegisterContract(provider);
+            const estimatedGas = await batchRegisterContract.estimateGas.batchRenew(requests, {value: paymentMax});
+            const tx = await batchRegisterContract.batchRenew(requests, {
+                value: paymentMax,
+                gasLimit: estimatedGas.mul(120).div(100)
+            });
+            return tx;
+        } else {
+            const batchRegisterContract = await getBatchRegisterContract(provider);
+            const estimatedGas = await batchRegisterContract.estimateGas.batchRenewERC20(requests, paymentToken, paymentMax);
+            const tx = await batchRegisterContract.batchRenewERC20(requests, paymentToken, paymentMax, {
                 gasLimit: estimatedGas.mul(120).div(100)
             });
             return tx;
@@ -298,11 +384,14 @@ export const batchRegistration: IBatchRegistration = (
         batchCheckAvailability: batchCheckAvailability,
         getTotalPrice: getTotalPrice,
         getPriceWithMargin: getPriceWithMargin,
+        getRenewPriceWithMargin: getRenewPriceWithMargin,
         getIndividualPrice: getIndividualPrice,
         checkPurchaseConditions: checkPurchaseConditions,
+        checkRenewConditions: checkRenewConditions,
         getERC20Balance: getERC20Balance,
         approveERC20Tokens: approveERC20Tokens,
         batchRegister: batchRegister,
+        batchRenew: batchRenew,
         getSupportedTokens: getSupportedTokens
     }
 

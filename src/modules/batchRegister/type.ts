@@ -1,4 +1,4 @@
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
+import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct, RenewInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
 import { BigNumber, ContractTransaction, BigNumberish, providers } from 'ethers';
 
 export interface IDomainInfo {
@@ -13,11 +13,22 @@ export interface IRegistrationData {
     paymentMax: BigNumberish;
 }
 
+export interface IRenewData {
+    requests: RenewInfoStruct[];
+    paymentToken: string;
+    paymentMax: BigNumberish;
+}
+
 export interface IPurchaseCheck {
     success: boolean;
     errors: string[];
     commitmentStatus: number[];
     availabilityStatus: boolean[];
+}
+
+export interface IRenewCheck {
+    success: boolean;
+    errors: string[];
 }
 
 export interface ITokenInfo {
@@ -153,6 +164,47 @@ export interface IBatchRegister {
         paymentMax: BigNumberish
     ) => Promise<ContractTransaction>;
 
+    /**
+     * @dev Check whether the domain is ready for renew. Examine based on the token balance of the signer, 
+     * whether the token approval is sufficient, and the ownership status
+     * 
+     * @param paymentToken The address of the payment token
+     * @param paymentMax The maximum amount of payment token to be used, for registering all domains
+     * 
+     * @return {success, errors, commitmentStatus, availabilityStatus}
+     * success: boolean, whether the domain is ready for registration
+     * errors: string[], the list of errors
+     */ 
+    checkRenewConditions: (
+        paymentToken: string,
+        paymentMax: BigNumberish
+    ) => Promise<IRenewCheck>;
+    
+    /**
+     * @dev Get the price data necessary for batch renew with a specific margin apply
+     * 
+     * @param domains The list of domains to check 
+     * @params paymentToken The address of the payment token
+     * @params margin The margin to apply in percentage, i.e. 3 for 3%
+     * 
+     * @returns The price data necessary for batch renew
+     */    
+    getRenewPriceWithMargin: (domains: IDomainInfo[], paymentToken: string, margin: number) => Promise<IRenewData>;
+
+    /**
+     * @dev Batch renew the domains. Use the getPriceWithMargin function to get the necessary data before calling this function.
+     * Please ensure everything is ready before calling this function. Check any potential error by calling checkRenewConditions function.
+     * Use zero address for paymentToken for native token
+     * 
+     * @param requests The information to register the domains
+     * @returns The transaction object
+     */
+    batchRenew: (
+        requests: RenewInfoStruct[],
+        paymentToken: string,
+        paymentMax: BigNumberish
+    ) => Promise<ContractTransaction>;
+        
     /**
      * @dev Get the list of supported tokens
      * 
