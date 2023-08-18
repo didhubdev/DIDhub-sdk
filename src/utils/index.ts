@@ -2,6 +2,7 @@ import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
 import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct, RenewInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
 import { IDomainInfo, INFTToken } from './type';
+import { namehash, keccak256, toUtf8Bytes, defaultAbiCoder } from 'ethers/lib/utils';
 
 interface SelectField<T> {
     [key: string]: T;
@@ -57,13 +58,17 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     return unwrappedList;
 }
 
+const k256 = (label: string) => keccak256(toUtf8Bytes(label));
+const namehash2LD = (label: string) => keccak256(defaultAbiCoder.encode(["bytes32", "bytes32"], [namehash("eth"), k256(label)]));
+
 export const getENSNameResolutionParams = (
     domains: DomainInfoStruct[],
     owner: string
 ): BytesLike => {
     // create nodes for the domain
     const nodes = domains.map((d) => {
-        return ethers.utils.namehash(d.name + ".eth");
+        // updated namehash function , prevent errors from hashing emojis
+        return namehash2LD(d.name);
     });
 
     // create param data from nodes and owner
