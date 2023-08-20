@@ -46,45 +46,45 @@ function VestingInterface() {
   );
 
   const fulfillOffer = async () => {
-    const tx = await sdk.opensea.fulfillOffer(
-      orderId
-    );
-    const data = await tx.wait();
-    console.log(data);
-
-    // const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(
-    //   [orderId]
+    // const tx = await sdk.opensea.fulfillOffer(
+    //   orderId
     // );
-
-    // let tokensToTransfer = advancedOrders.map((order) => {
-    //     const token = order.parameters.consideration.filter(c=>c.itemType == 2)[0];
-    //     return {
-    //       tokenContract: token.token,
-    //       tokenId: token.identifierOrCriteria,
-    //     };
-    // });
-    // console.log(tokensToTransfer);
-
-    // // make approvals
-    // const approvals = await sdk.opensea.batchCheckConduitApprovalERC721orERC1155(tokensToTransfer);
-    // console.log("Approvals", approvals);
-
-    // // get tokens that are not approved
-    // const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
-
-    // // approve tokens
-    // for (const token of tokensToApprove) {
-    //   const approveTx = await sdk.opensea.approveConduitERC721orERC1155Tokens(token.tokenContract);
-    //   if (approveTx) await approveTx.wait();
-    //   console.log(`Approved ERC721/1155 Tokens`);
-    // }
-
-    // const tx = await sdk.opensea.fulfillOffers(
-    //   advancedOrders
-    // );
-
     // const data = await tx.wait();
     // console.log(data);
+
+    const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(
+      [orderId]
+    );
+
+    let tokensToTransfer = advancedOrders.map((order) => {
+        const token = order.parameters.consideration.filter(c=>c.itemType == 2)[0];
+        return {
+          tokenContract: token.token,
+          tokenId: token.identifierOrCriteria,
+        };
+    });
+    console.log(tokensToTransfer);
+
+    // make approvals
+    const approvals = await sdk.opensea.batchCheckSeaportApprovalERC721orERC1155(tokensToTransfer);
+    console.log("Approvals", approvals);
+
+    // get tokens that are not approved
+    const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
+
+    // approve tokens
+    for (const token of tokensToApprove) {
+      const approveTx = await sdk.opensea.approveSeaportERC721orERC1155Tokens(token.tokenContract);
+      if (approveTx) await approveTx.wait();
+      console.log(`Approved ERC721/1155 Tokens`);
+    }
+
+    const tx = await sdk.opensea.fulfillOffers(
+      advancedOrders
+    );
+
+    const data = await tx.wait();
+    console.log(data);
   };
 
 

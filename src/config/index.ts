@@ -11,9 +11,9 @@ export const CONTRACTS = {
             "ETHEREUM": "0xD7356f1FC4acc3557cA5E213D3f467FdAeC0140f"
         },
         "BATCH_PURCHASE": {
-            "POLYGON": "0x54EFA06c3F5f542712E29c2Da50a91ae55D08eE7",
+            "POLYGON": "0xb2107398C22c28d153977ae85D2ED119b814Ea3B",
             // "BNB": "0xa307781E7De8A8543f198B446d1253D7C6004029", not supported anymore
-            "ARBITRUM": "0xEBFEd04E0fA01507aAb2f39AF6fDd8e382421741"
+            "ARBITRUM": "0x35580f058022d7BA612D1ba31CedFaCC019091a9"
             // "ETHEREUM": "",
             // "FANTOM":  "",
             // "KLAYTN": "",
