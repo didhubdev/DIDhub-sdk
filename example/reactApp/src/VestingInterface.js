@@ -24,10 +24,10 @@ dotenv.config();
 
 function VestingInterface() {
 
-  const [chain, setChain] = useState("BNB");
+  const [chain, setChain] = useState("ARBITRUM");
   const [orderId, setOrderId] = useState();
-  const [tokenAddress, setTokenAddress] = useState("0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6");
-  const [tokenId, setTokenId] = useState("62989861101794962219924061081957215181955279530765526469477249127872642808190");
+  const [tokenAddress, setTokenAddress] = useState("0x5d482d501b369f5ba034dec5c5fb7a50d2d6ca20");
+  const [tokenId, setTokenId] = useState("52492076887691664011327311101779585587025155497779924969137510609172948393659");
   const [amount, setAmount] = useState();
   const [paymentToken, setPaymentToken] = useState("0x0000000000000000000000000000000000000000");
 

@@ -293,6 +293,25 @@ export const openseaInit: IOpenseaInit = (
       return tx;
     }
 
+    const fulfillOffers = async (
+      advancedOrders: AdvancedOrderStruct[]
+    ): Promise<ContractTransaction> => {
+
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+
+      let tx = await batchPurchaseContract.fulfillAvailableAdvancedOrders(
+          advancedOrders,
+          [],
+          getOfferFulfillmentData(advancedOrders),
+          getConsiderationFulfillmentData(advancedOrders),
+          {prices: [], paymentToken: ZERO_ADDRESS, paymentMax: "0"}, // a dummy swap value
+          fulfillerConduitKey,
+          await provider.getAddress(),
+          advancedOrders.length
+        );
+      return tx;
+    }
+
     const cancelOrders = async (
         orderIds: string[]
     ) => {
@@ -458,6 +477,7 @@ export const openseaInit: IOpenseaInit = (
         bulkOfferDomain: bulkOfferDomain,
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
+        fulfillOffers: fulfillOffers,
         getAdvancedOrders: getAdvancedOrders,
         getSwapInfo: getSwapInfo,
         fulfillListings: fulfillListings,

@@ -151,6 +151,17 @@ export interface IOpensea {
         swapInfo: SwapInfoStruct
     ) => Promise<ContractTransaction>,
 
+        /**
+     * @note This function is used to fulfill a list of offers on Opensea
+     * 
+     * @param param advancedOrders the order info fetched from Opensea
+     * 
+     * @retrybs contract transaction
+     */
+    fulfillOffers: (
+        advancedOrders: AdvancedOrderStruct[]
+    ) => Promise<ContractTransaction>,
+    
     /**
      * @note This function is used to cancel a list of listings on Opensea
      * 
