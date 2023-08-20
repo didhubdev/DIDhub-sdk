@@ -164,13 +164,11 @@ export interface IOpensea {
      * @note This function is used to fulfill a list of offers on Opensea
      * 
      * @param advancedOrders the order info fetched from Opensea
-     * @param fulfillmentItems the list of items required to fulfill the order 
      * 
      * @retrybs contract transaction
      */
     fulfillOffers: (
-        advancedOrders: AdvancedOrderStruct[],
-        fulfillmentItems: INFTStruct[]
+        advancedOrders: AdvancedOrderStruct[]
     ) => Promise<ContractTransaction>,
     
     /**
