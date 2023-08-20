@@ -303,7 +303,7 @@ export const openseaInit: IOpenseaInit = (
 
       let tx; 
       if (swapInfo.paymentToken === ZERO_ADDRESS) {
-        tx = await batchPurchaseContract.fulfillAvailableAdvancedOrders(
+        tx = await batchPurchaseContract.fulfillAvailableAdvancedListingOrders(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
@@ -315,7 +315,7 @@ export const openseaInit: IOpenseaInit = (
           {value: swapInfo.paymentMax}
         );
       } else {
-        tx = await batchPurchaseContract.fulfillAvailableAdvancedOrdersERC20(
+        tx = await batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
@@ -330,17 +330,18 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const fulfillOffers = async (
-      advancedOrders: AdvancedOrderStruct[]
+      advancedOrders: AdvancedOrderStruct[],
+      fulfillmentItems: INFTStruct[]
     ): Promise<ContractTransaction> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-
-      let tx = await batchPurchaseContract.fulfillAvailableAdvancedOrders(
+      
+      let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
           getConsiderationFulfillmentData(advancedOrders),
-          {prices: [], paymentToken: ZERO_ADDRESS, paymentMax: "0"}, // a dummy swap value
+          fulfillmentItems,
           fulfillerConduitKey,
           await provider.getAddress(),
           advancedOrders.length
@@ -490,51 +491,36 @@ export const openseaInit: IOpenseaInit = (
       return data;
     }
 
-    const batchCheckSeaportApprovalERC721orERC1155 = async (
+    const batchCheckApprovalERC721orERC1155 = async (
       tokens: INFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const approvals = await batchPurchaseContract.batchCheckSeaportApprovalERC721orERC1155(tokens);
+      const approvals = await batchPurchaseContract.batchCheckApprovalERC721orERC1155(tokens);
       return approvals;
     }
 
-    const batchCheckSeaportApprovalERC20 = async (
+    const batchCheckApprovalERC20 = async (
       tokens: IFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const approvals = await batchPurchaseContract.batchCheckSeaportApprovalERC20(tokens);
+      const approvals = await batchPurchaseContract.batchCheckApprovalERC20(tokens);
       return approvals;
     }
 
-
-    const approveERC20Tokens = async (
-      paymentToken: string,
-      paymentMax: BigNumberish
-    ): Promise<ContractTransaction | null> => {
-        const batchPurchaseContract = await getBatchPurchaseContract(provider);
-        const signerAddress = await provider.getAddress();
-        // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(batchPurchaseContract.signer).attach(paymentToken);
-        const allowance = await erc20Contract.allowance(signerAddress, batchPurchaseContract.address);
-        if (allowance.lt(paymentMax)) {
-            const tx = await erc20Contract.approve(batchPurchaseContract.address, paymentMax);
-            return tx;
-        }
-        return null;
-    }
-
-    const approveSeaportERC721orERC1155Tokens = async (
+    const approveERC721orERC1155Tokens = async (
       tokenAddress: string
     ): Promise<ContractTransaction | null> => { 
-      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, CONTRACTS.MARKETPLACE.SEAPORT1_5);
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
       return tx;
     }
 
-    const approveSeaportERC20Tokens = async (
+    const approveERC20Tokens = async (
       tokenAddress: string,
       tokenAmount: BigNumberish
     ): Promise<ContractTransaction | null> => {
-      const tx = await projectUtils(provider).approveERC20Tokens(tokenAddress, CONTRACTS.MARKETPLACE.SEAPORT1_5, tokenAmount);
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const tx = await projectUtils(provider).approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
       return tx;
     }
 
@@ -552,10 +538,9 @@ export const openseaInit: IOpenseaInit = (
         getSwapInfo: getSwapInfo,
         cancelOrders: cancelOrders,
         approveERC20Tokens: approveERC20Tokens,
-        batchCheckSeaportApprovalERC721orERC1155: batchCheckSeaportApprovalERC721orERC1155,
-        batchCheckSeaportApprovalERC20: batchCheckSeaportApprovalERC20,
-        approveSeaportERC721orERC1155Tokens: approveSeaportERC721orERC1155Tokens,
-        approveSeaportERC20Tokens: approveSeaportERC20Tokens
+        batchCheckApprovalERC721orERC1155: batchCheckApprovalERC721orERC1155,
+        batchCheckApprovalERC20: batchCheckApprovalERC20,
+        approveERC721orERC1155Tokens: approveERC721orERC1155Tokens
     }
 
 }

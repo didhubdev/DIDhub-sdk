@@ -163,12 +163,14 @@ export interface IOpensea {
         /**
      * @note This function is used to fulfill a list of offers on Opensea
      * 
-     * @param param advancedOrders the order info fetched from Opensea
+     * @param advancedOrders the order info fetched from Opensea
+     * @param fulfillmentItems the list of items required to fulfill the order 
      * 
      * @retrybs contract transaction
      */
     fulfillOffers: (
-        advancedOrders: AdvancedOrderStruct[]
+        advancedOrders: AdvancedOrderStruct[],
+        fulfillmentItems: INFTStruct[]
     ) => Promise<ContractTransaction>,
     
     /**
@@ -181,26 +183,13 @@ export interface IOpensea {
     ) => Promise<ContractTransaction>,
 
     /**
-     * @note This function is used to approve a list of ERC20 tokens on Opensea
-     *  
-     * @param paymentToken the address of the payment token
-     * @param paymentMax the maximum amount of payment token to approve
-     * 
-     * @return contract transaction or null if the token is already approved
-     */
-    approveERC20Tokens: (
-        paymentToken: string,
-        paymentMax: BigNumberish
-    ) => Promise<ContractTransaction | null>
-
-    /**
      * @note This function checks whether the opensea conduit have been given approvel to use the given tokens
      * 
      * @param tokens a list of Non-fungible tokens to check. Each token denoted as a tokenContract and tokenId
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
-    batchCheckSeaportApprovalERC721orERC1155: (
+    batchCheckApprovalERC721orERC1155: (
         tokens: INFTStruct[]
     ) => Promise<boolean[]>
     
@@ -211,7 +200,7 @@ export interface IOpensea {
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
-    batchCheckSeaportApprovalERC20: (
+    batchCheckApprovalERC20: (
         tokens: IFTStruct[]
     ) => Promise<boolean[]>
 
@@ -222,7 +211,7 @@ export interface IOpensea {
      * 
      * @returns contract transaction or null if the token is already approved
      */
-    approveSeaportERC721orERC1155Tokens: (
+    approveERC721orERC1155Tokens: (
         tokenAddress: string
     ) => Promise<ContractTransaction | null>,
 
@@ -234,7 +223,7 @@ export interface IOpensea {
      * 
      * @returns contract transaction or null if the token is already approved
      */
-    approveSeaportERC20Tokens: (
+    approveERC20Tokens: (
         tokenAddress: string,
         amount: BigNumberish
     ) => Promise<ContractTransaction | null>

@@ -214,11 +214,12 @@ export type DomainPriceInfoStructOutput = [BigNumber, string] & {
 export interface BatchPurchaseInterface extends utils.Interface {
   functions: {
     "approvedPairs(address,address)": FunctionFragment;
-    "batchCheckSeaportApprovalERC20((address,uint256)[])": FunctionFragment;
-    "batchCheckSeaportApprovalERC721orERC1155((address,uint256)[])": FunctionFragment;
+    "batchCheckApprovalERC20((address,uint256)[])": FunctionFragment;
+    "batchCheckApprovalERC721orERC1155((address,uint256)[])": FunctionFragment;
     "defaultSwapFee()": FunctionFragment;
-    "fulfillAvailableAdvancedOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
-    "fulfillAvailableAdvancedOrdersERC20(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
+    "fulfillAvailableAdvancedListingOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
+    "fulfillAvailableAdvancedListingOrdersERC20(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
+    "fulfillAvailableAdvancedOfferOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],(address,uint256)[],bytes32,address,uint256)": FunctionFragment;
     "getIndividualPrice((uint256,address)[],address)": FunctionFragment;
     "getTotalPrice((uint256,address)[],address)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -234,11 +235,11 @@ export interface BatchPurchaseInterface extends utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "batchCheckSeaportApprovalERC20",
+    functionFragment: "batchCheckApprovalERC20",
     values: [IFTStruct[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "batchCheckSeaportApprovalERC721orERC1155",
+    functionFragment: "batchCheckApprovalERC721orERC1155",
     values: [INFTStruct[]]
   ): string;
   encodeFunctionData(
@@ -246,7 +247,7 @@ export interface BatchPurchaseInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "fulfillAvailableAdvancedOrders",
+    functionFragment: "fulfillAvailableAdvancedListingOrders",
     values: [
       AdvancedOrderStruct[],
       CriteriaResolverStruct[],
@@ -259,13 +260,26 @@ export interface BatchPurchaseInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "fulfillAvailableAdvancedOrdersERC20",
+    functionFragment: "fulfillAvailableAdvancedListingOrdersERC20",
     values: [
       AdvancedOrderStruct[],
       CriteriaResolverStruct[],
       FulfillmentComponentStruct[],
       FulfillmentComponentStruct[],
       SwapInfoStruct,
+      BytesLike,
+      string,
+      BigNumberish
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fulfillAvailableAdvancedOfferOrders",
+    values: [
+      AdvancedOrderStruct[],
+      CriteriaResolverStruct[],
+      FulfillmentComponentStruct[],
+      FulfillmentComponentStruct[],
+      INFTStruct[],
       BytesLike,
       string,
       BigNumberish
@@ -306,11 +320,11 @@ export interface BatchPurchaseInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "batchCheckSeaportApprovalERC20",
+    functionFragment: "batchCheckApprovalERC20",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "batchCheckSeaportApprovalERC721orERC1155",
+    functionFragment: "batchCheckApprovalERC721orERC1155",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -318,11 +332,15 @@ export interface BatchPurchaseInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "fulfillAvailableAdvancedOrders",
+    functionFragment: "fulfillAvailableAdvancedListingOrders",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "fulfillAvailableAdvancedOrdersERC20",
+    functionFragment: "fulfillAvailableAdvancedListingOrdersERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "fulfillAvailableAdvancedOfferOrders",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -400,19 +418,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    batchCheckSeaportApprovalERC20(
+    batchCheckApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<[boolean[]]>;
 
-    batchCheckSeaportApprovalERC721orERC1155(
+    batchCheckApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<[boolean[]]>;
 
     defaultSwapFee(overrides?: CallOverrides): Promise<[number]>;
 
-    fulfillAvailableAdvancedOrders(
+    fulfillAvailableAdvancedListingOrders(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
@@ -424,12 +442,24 @@ export interface BatchPurchase extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    fulfillAvailableAdvancedOrdersERC20(
+    fulfillAvailableAdvancedListingOrdersERC20(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
       swapInfo: SwapInfoStruct,
+      fulfillerConduitKey: BytesLike,
+      recipient: string,
+      maximumFulfilled: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    fulfillAvailableAdvancedOfferOrders(
+      advancedOrders: AdvancedOrderStruct[],
+      criteriaResolvers: CriteriaResolverStruct[],
+      offerFulfillments: FulfillmentComponentStruct[],
+      considerationFulfillments: FulfillmentComponentStruct[],
+      nftFullfillments: INFTStruct[],
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -485,19 +515,19 @@ export interface BatchPurchase extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  batchCheckSeaportApprovalERC20(
+  batchCheckApprovalERC20(
     tokens: IFTStruct[],
     overrides?: CallOverrides
   ): Promise<boolean[]>;
 
-  batchCheckSeaportApprovalERC721orERC1155(
+  batchCheckApprovalERC721orERC1155(
     tokens: INFTStruct[],
     overrides?: CallOverrides
   ): Promise<boolean[]>;
 
   defaultSwapFee(overrides?: CallOverrides): Promise<number>;
 
-  fulfillAvailableAdvancedOrders(
+  fulfillAvailableAdvancedListingOrders(
     advancedOrders: AdvancedOrderStruct[],
     criteriaResolvers: CriteriaResolverStruct[],
     offerFulfillments: FulfillmentComponentStruct[],
@@ -509,12 +539,24 @@ export interface BatchPurchase extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  fulfillAvailableAdvancedOrdersERC20(
+  fulfillAvailableAdvancedListingOrdersERC20(
     advancedOrders: AdvancedOrderStruct[],
     criteriaResolvers: CriteriaResolverStruct[],
     offerFulfillments: FulfillmentComponentStruct[],
     considerationFulfillments: FulfillmentComponentStruct[],
     swapInfo: SwapInfoStruct,
+    fulfillerConduitKey: BytesLike,
+    recipient: string,
+    maximumFulfilled: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  fulfillAvailableAdvancedOfferOrders(
+    advancedOrders: AdvancedOrderStruct[],
+    criteriaResolvers: CriteriaResolverStruct[],
+    offerFulfillments: FulfillmentComponentStruct[],
+    considerationFulfillments: FulfillmentComponentStruct[],
+    nftFullfillments: INFTStruct[],
     fulfillerConduitKey: BytesLike,
     recipient: string,
     maximumFulfilled: BigNumberish,
@@ -570,19 +612,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    batchCheckSeaportApprovalERC20(
+    batchCheckApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<boolean[]>;
 
-    batchCheckSeaportApprovalERC721orERC1155(
+    batchCheckApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<boolean[]>;
 
     defaultSwapFee(overrides?: CallOverrides): Promise<number>;
 
-    fulfillAvailableAdvancedOrders(
+    fulfillAvailableAdvancedListingOrders(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
@@ -594,12 +636,24 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    fulfillAvailableAdvancedOrdersERC20(
+    fulfillAvailableAdvancedListingOrdersERC20(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
       swapInfo: SwapInfoStruct,
+      fulfillerConduitKey: BytesLike,
+      recipient: string,
+      maximumFulfilled: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    fulfillAvailableAdvancedOfferOrders(
+      advancedOrders: AdvancedOrderStruct[],
+      criteriaResolvers: CriteriaResolverStruct[],
+      offerFulfillments: FulfillmentComponentStruct[],
+      considerationFulfillments: FulfillmentComponentStruct[],
+      nftFullfillments: INFTStruct[],
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -665,19 +719,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    batchCheckSeaportApprovalERC20(
+    batchCheckApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    batchCheckSeaportApprovalERC721orERC1155(
+    batchCheckApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     defaultSwapFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    fulfillAvailableAdvancedOrders(
+    fulfillAvailableAdvancedListingOrders(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
@@ -689,12 +743,24 @@ export interface BatchPurchase extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    fulfillAvailableAdvancedOrdersERC20(
+    fulfillAvailableAdvancedListingOrdersERC20(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
       swapInfo: SwapInfoStruct,
+      fulfillerConduitKey: BytesLike,
+      recipient: string,
+      maximumFulfilled: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    fulfillAvailableAdvancedOfferOrders(
+      advancedOrders: AdvancedOrderStruct[],
+      criteriaResolvers: CriteriaResolverStruct[],
+      offerFulfillments: FulfillmentComponentStruct[],
+      considerationFulfillments: FulfillmentComponentStruct[],
+      nftFullfillments: INFTStruct[],
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -751,19 +817,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    batchCheckSeaportApprovalERC20(
+    batchCheckApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    batchCheckSeaportApprovalERC721orERC1155(
+    batchCheckApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     defaultSwapFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    fulfillAvailableAdvancedOrders(
+    fulfillAvailableAdvancedListingOrders(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
@@ -775,12 +841,24 @@ export interface BatchPurchase extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    fulfillAvailableAdvancedOrdersERC20(
+    fulfillAvailableAdvancedListingOrdersERC20(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
       swapInfo: SwapInfoStruct,
+      fulfillerConduitKey: BytesLike,
+      recipient: string,
+      maximumFulfilled: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    fulfillAvailableAdvancedOfferOrders(
+      advancedOrders: AdvancedOrderStruct[],
+      criteriaResolvers: CriteriaResolverStruct[],
+      offerFulfillments: FulfillmentComponentStruct[],
+      considerationFulfillments: FulfillmentComponentStruct[],
+      nftFullfillments: INFTStruct[],
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
