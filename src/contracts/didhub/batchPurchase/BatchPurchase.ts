@@ -214,8 +214,8 @@ export type DomainPriceInfoStructOutput = [BigNumber, string] & {
 export interface BatchPurchaseInterface extends utils.Interface {
   functions: {
     "approvedPairs(address,address)": FunctionFragment;
-    "batchCheckConduitApprovalERC20((address,uint256)[])": FunctionFragment;
-    "batchCheckConduitApprovalERC721orERC1155((address,uint256)[])": FunctionFragment;
+    "batchCheckSeaportApprovalERC20((address,uint256)[])": FunctionFragment;
+    "batchCheckSeaportApprovalERC721orERC1155((address,uint256)[])": FunctionFragment;
     "defaultSwapFee()": FunctionFragment;
     "fulfillAvailableAdvancedOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
     "fulfillAvailableAdvancedOrdersERC20(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
@@ -234,11 +234,11 @@ export interface BatchPurchaseInterface extends utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "batchCheckConduitApprovalERC20",
+    functionFragment: "batchCheckSeaportApprovalERC20",
     values: [IFTStruct[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "batchCheckConduitApprovalERC721orERC1155",
+    functionFragment: "batchCheckSeaportApprovalERC721orERC1155",
     values: [INFTStruct[]]
   ): string;
   encodeFunctionData(
@@ -306,11 +306,11 @@ export interface BatchPurchaseInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "batchCheckConduitApprovalERC20",
+    functionFragment: "batchCheckSeaportApprovalERC20",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "batchCheckConduitApprovalERC721orERC1155",
+    functionFragment: "batchCheckSeaportApprovalERC721orERC1155",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -400,12 +400,12 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    batchCheckConduitApprovalERC20(
+    batchCheckSeaportApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<[boolean[]]>;
 
-    batchCheckConduitApprovalERC721orERC1155(
+    batchCheckSeaportApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<[boolean[]]>;
@@ -485,12 +485,12 @@ export interface BatchPurchase extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  batchCheckConduitApprovalERC20(
+  batchCheckSeaportApprovalERC20(
     tokens: IFTStruct[],
     overrides?: CallOverrides
   ): Promise<boolean[]>;
 
-  batchCheckConduitApprovalERC721orERC1155(
+  batchCheckSeaportApprovalERC721orERC1155(
     tokens: INFTStruct[],
     overrides?: CallOverrides
   ): Promise<boolean[]>;
@@ -570,12 +570,12 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    batchCheckConduitApprovalERC20(
+    batchCheckSeaportApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<boolean[]>;
 
-    batchCheckConduitApprovalERC721orERC1155(
+    batchCheckSeaportApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<boolean[]>;
@@ -665,12 +665,12 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    batchCheckConduitApprovalERC20(
+    batchCheckSeaportApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    batchCheckConduitApprovalERC721orERC1155(
+    batchCheckSeaportApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -751,12 +751,12 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    batchCheckConduitApprovalERC20(
+    batchCheckSeaportApprovalERC20(
       tokens: IFTStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    batchCheckConduitApprovalERC721orERC1155(
+    batchCheckSeaportApprovalERC721orERC1155(
       tokens: INFTStruct[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

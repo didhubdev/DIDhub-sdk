@@ -200,7 +200,7 @@ export interface IOpensea {
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
-    batchCheckConduitApprovalERC721orERC1155: (
+    batchCheckSeaportApprovalERC721orERC1155: (
         tokens: INFTStruct[]
     ) => Promise<boolean[]>
     
@@ -211,7 +211,7 @@ export interface IOpensea {
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
-    batchCheckConduitApprovalERC20: (
+    batchCheckSeaportApprovalERC20: (
         tokens: IFTStruct[]
     ) => Promise<boolean[]>
 
@@ -222,7 +222,7 @@ export interface IOpensea {
      * 
      * @returns contract transaction or null if the token is already approved
      */
-    approveConduitERC721orERC1155Tokens: (
+    approveSeaportERC721orERC1155Tokens: (
         tokenAddress: string
     ) => Promise<ContractTransaction | null>,
 
@@ -234,7 +234,7 @@ export interface IOpensea {
      * 
      * @returns contract transaction or null if the token is already approved
      */
-    approveConduitERC20Tokens: (
+    approveSeaportERC20Tokens: (
         tokenAddress: string,
         amount: BigNumberish
     ) => Promise<ContractTransaction | null>

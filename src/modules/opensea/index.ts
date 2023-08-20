@@ -1,5 +1,5 @@
 import { CreateOrderInput, Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
-import { OPENSEA_CONDUIT_ADDRESS, ZERO_ADDRESS } from "../../config";
+import { CONTRACTS, ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
     IOpensea,
@@ -490,19 +490,19 @@ export const openseaInit: IOpenseaInit = (
       return data;
     }
 
-    const batchCheckConduitApprovalERC721orERC1155 = async (
+    const batchCheckSeaportApprovalERC721orERC1155 = async (
       tokens: INFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const approvals = await batchPurchaseContract.batchCheckConduitApprovalERC721orERC1155(tokens);
+      const approvals = await batchPurchaseContract.batchCheckSeaportApprovalERC721orERC1155(tokens);
       return approvals;
     }
 
-    const batchCheckConduitApprovalERC20 = async (
+    const batchCheckSeaportApprovalERC20 = async (
       tokens: IFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const approvals = await batchPurchaseContract.batchCheckConduitApprovalERC20(tokens);
+      const approvals = await batchPurchaseContract.batchCheckSeaportApprovalERC20(tokens);
       return approvals;
     }
 
@@ -523,18 +523,18 @@ export const openseaInit: IOpenseaInit = (
         return null;
     }
 
-    const approveConduitERC721orERC1155Tokens = async (
+    const approveSeaportERC721orERC1155Tokens = async (
       tokenAddress: string
     ): Promise<ContractTransaction | null> => { 
-      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, OPENSEA_CONDUIT_ADDRESS);
+      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, CONTRACTS.MARKETPLACE.SEAPORT1_5);
       return tx;
     }
 
-    const approveConduitERC20Tokens = async (
+    const approveSeaportERC20Tokens = async (
       tokenAddress: string,
       tokenAmount: BigNumberish
     ): Promise<ContractTransaction | null> => {
-      const tx = await projectUtils(provider).approveERC20Tokens(tokenAddress, OPENSEA_CONDUIT_ADDRESS, tokenAmount);
+      const tx = await projectUtils(provider).approveERC20Tokens(tokenAddress, CONTRACTS.MARKETPLACE.SEAPORT1_5, tokenAmount);
       return tx;
     }
 
@@ -552,10 +552,10 @@ export const openseaInit: IOpenseaInit = (
         getSwapInfo: getSwapInfo,
         cancelOrders: cancelOrders,
         approveERC20Tokens: approveERC20Tokens,
-        batchCheckConduitApprovalERC721orERC1155: batchCheckConduitApprovalERC721orERC1155,
-        batchCheckConduitApprovalERC20: batchCheckConduitApprovalERC20,
-        approveConduitERC721orERC1155Tokens: approveConduitERC721orERC1155Tokens,
-        approveConduitERC20Tokens: approveConduitERC20Tokens
+        batchCheckSeaportApprovalERC721orERC1155: batchCheckSeaportApprovalERC721orERC1155,
+        batchCheckSeaportApprovalERC20: batchCheckSeaportApprovalERC20,
+        approveSeaportERC721orERC1155Tokens: approveSeaportERC721orERC1155Tokens,
+        approveSeaportERC20Tokens: approveSeaportERC20Tokens
     }
 
 }
