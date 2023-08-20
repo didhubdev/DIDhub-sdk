@@ -135,6 +135,18 @@ export const openseaInit: IOpenseaInit = (
       return order.fulfillment_data.orders[0];
     }
 
+    const fetchOpenseaOfferOrder = async (
+      orderId: string
+    ): Promise<OrderWithCounter> => {
+
+      const response = await getOpenseaOfferData(orderId, await provider.getAddress());
+      if (response.code !== 1) {
+        throw new Error(response.message);
+      }
+      const order = response.data;
+      return order.fulfillment_data.orders[0];
+    }
+
     const fulfillListing = async (
       orderId: string
     ):Promise<ContractTransaction> => {  
@@ -235,13 +247,36 @@ export const openseaInit: IOpenseaInit = (
       };
     }
 
-    const getAdvancedOrders = async (
+    const getAdvancedListingOrders = async (
       orderIds: string[]
     ): Promise<AdvancedOrderStruct[]> => {
       let advancedOrders = [];
       
       for (let i = 0; i < orderIds.length; i++) {
         const orderWithCounter = await fetchOpenseaListingOrder(orderIds[i]);
+        const {
+          counter: counter,
+          ...params
+        } = orderWithCounter.parameters;
+
+        advancedOrders.push({
+          "parameters": params,
+          "numerator": 1,
+          "denominator": 1,
+          "signature": orderWithCounter.signature,
+          "extraData": "0x"
+        });
+      }
+      return advancedOrders;
+    }
+
+    const getAdvancedOfferOrders = async (
+      orderIds: string[]
+    ): Promise<AdvancedOrderStruct[]> => {
+      let advancedOrders = [];
+      
+      for (let i = 0; i < orderIds.length; i++) {
+        const orderWithCounter = await fetchOpenseaOfferOrder(orderIds[i]);
         const {
           counter: counter,
           ...params
@@ -478,7 +513,8 @@ export const openseaInit: IOpenseaInit = (
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
         fulfillOffers: fulfillOffers,
-        getAdvancedOrders: getAdvancedOrders,
+        getAdvancedListingOrders: getAdvancedListingOrders,
+        getAdvancedOfferOrders: getAdvancedOfferOrders,
         getSwapInfo: getSwapInfo,
         fulfillListings: fulfillListings,
         cancelOrders: cancelOrders,

@@ -46,12 +46,22 @@ function VestingInterface() {
   );
 
   const fulfillOffer = async () => {
-    const tx = await sdk.opensea.fulfillOffer(
-      orderId
+    // const tx = await sdk.opensea.fulfillOffer(
+    //   orderId
+    // );
+    // const data = await tx.wait();
+    // console.log(data);
+
+    const advancedOrders = await sdk.opensea.getAdvancedOrders(
+      [orderId]
+    );
+    const tx = await sdk.opensea.fulfillOffers(
+      advancedOrders
     );
     const data = await tx.wait();
     console.log(data);
   };
+
 
   const fulfillListing = async () => {
     const tx = await sdk.opensea.fulfillListing(

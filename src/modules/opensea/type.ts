@@ -118,7 +118,17 @@ export interface IOpensea {
      * 
      * @returns advanced orders
      */
-    getAdvancedOrders: (
+    getAdvancedListingOrders: (
+        orderIds: string[]
+    ) => Promise<AdvancedOrderStruct[]>,
+
+    /**
+     * 
+     * @param orderIds the order ids of the offers
+     * 
+     * @returns advanced orders
+     */
+    getAdvancedOfferOrders: (
         orderIds: string[]
     ) => Promise<AdvancedOrderStruct[]>,
 
