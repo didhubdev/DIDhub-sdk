@@ -58,17 +58,23 @@ function VestingInterface() {
 
     let tokensToTransfer = advancedOrders.map((order) => {
         const token = order.parameters.consideration.filter(c=>c.itemType == 2)[0];
-        return token.token;
+        return {
+          tokenContract: token.token,
+          tokenId: token.identifierOrCriteria,
+        };
     });
-    let tokenSet = [...new Set(tokensToTransfer)];
 
     // make approvals
-    for (let i = 0; i < tokenSet.length; i++) {
-        const token = tokenSet[i];
-        // check approval
-        // const approved = await sdk.utils.;
-        const tx = sdk.utils.approveAllERC721or1155Tokens(token);
-        await tx.wait();
+    const approvals = await sdk.opensea.batchCheckConduitApprovalERC721orERC1155(tokensToTransfer);
+
+    // get tokens that are not approved
+    const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
+
+    // approve tokens
+    for (const token of tokensToApprove) {
+      const approveTx = await sdk.opensea.(token.tokenContract, token.tokenId);
+      if (approveTx) await approveTx.wait();
+      console.log(`Approved ERC721/1155 Tokens`);
     }
 
     if (paymentToken !== ZERO_ADDRESS) {    

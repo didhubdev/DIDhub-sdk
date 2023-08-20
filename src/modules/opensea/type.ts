@@ -196,7 +196,7 @@ export interface IOpensea {
     /**
      * @note This function checks whether the opensea conduit have been given approvel to use the given tokens
      * 
-     * @params tokens a list of Non-fungible tokens to check. Each token denoted as a tokenContract and tokenId
+     * @param tokens a list of Non-fungible tokens to check. Each token denoted as a tokenContract and tokenId
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
@@ -207,11 +207,35 @@ export interface IOpensea {
     /**
      * @note This function checks whether the opensea conduit have been given approvel to use the given tokens
      * 
-     * @params tokens a list of Fungible tokens to check. Each token denoted as a tokenContract and amount
+     * @param tokens a list of Fungible tokens to check. Each token denoted as a tokenContract and amount
      * 
      * @returns a list of boolean indicating whether the token is approved
      */
     batchCheckConduitApprovalERC20: (
         tokens: IFTStruct[]
     ) => Promise<boolean[]>
+
+    /**
+     * @note This function is used to approve a list of ERC721 or ERC1155 tokens on Opensea conduit address
+     * 
+     * @param tokenAddress the address of the token
+     * 
+     * @returns contract transaction or null if the token is already approved
+     */
+    approveConduitERC721orERC1155Tokens: (
+        tokenAddress: string
+    ) => Promise<ContractTransaction | null>,
+
+    /**
+     * @note This function is used to approve a list of ERC20 tokens on Opensea conduit address
+     * 
+     * @param tokenAddress the address of the token
+     * @param amount the amount of token to approve
+     * 
+     * @returns contract transaction or null if the token is already approved
+     */
+    approveConduitERC20Tokens: (
+        tokenAddress: string,
+        amount: BigNumberish
+    ) => Promise<ContractTransaction | null>
 }
