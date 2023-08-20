@@ -18,6 +18,20 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "../../common";
 
+export type IFTStruct = { tokenContract: string; amount: BigNumberish };
+
+export type IFTStructOutput = [string, BigNumber] & {
+  tokenContract: string;
+  amount: BigNumber;
+};
+
+export type INFTStruct = { tokenContract: string; tokenId: BigNumberish };
+
+export type INFTStructOutput = [string, BigNumber] & {
+  tokenContract: string;
+  tokenId: BigNumber;
+};
+
 export type OfferItemStruct = {
   itemType: BigNumberish;
   token: string;
@@ -200,12 +214,17 @@ export type DomainPriceInfoStructOutput = [BigNumber, string] & {
 export interface BatchPurchaseInterface extends utils.Interface {
   functions: {
     "approvedPairs(address,address)": FunctionFragment;
+    "batchCheckConduitApprovalERC20((address,uint256)[])": FunctionFragment;
+    "batchCheckConduitApprovalERC721orERC1155((address,uint256)[])": FunctionFragment;
+    "defaultSwapFee()": FunctionFragment;
     "fulfillAvailableAdvancedOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
     "fulfillAvailableAdvancedOrdersERC20(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
     "getIndividualPrice((uint256,address)[],address)": FunctionFragment;
     "getTotalPrice((uint256,address)[],address)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setSpecificSwapFee(address,address,uint24)": FunctionFragment;
+    "specificSwapFee(address,address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "withdraw(address,uint256)": FunctionFragment;
   };
@@ -213,6 +232,18 @@ export interface BatchPurchaseInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "approvedPairs",
     values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "batchCheckConduitApprovalERC20",
+    values: [IFTStruct[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "batchCheckConduitApprovalERC721orERC1155",
+    values: [INFTStruct[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "defaultSwapFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "fulfillAvailableAdvancedOrders",
@@ -254,6 +285,14 @@ export interface BatchPurchaseInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setSpecificSwapFee",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "specificSwapFee",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
@@ -264,6 +303,18 @@ export interface BatchPurchaseInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "approvedPairs",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "batchCheckConduitApprovalERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "batchCheckConduitApprovalERC721orERC1155",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "defaultSwapFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -285,6 +336,14 @@ export interface BatchPurchaseInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSpecificSwapFee",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "specificSwapFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -341,6 +400,18 @@ export interface BatchPurchase extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    batchCheckConduitApprovalERC20(
+      tokens: IFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<[boolean[]]>;
+
+    batchCheckConduitApprovalERC721orERC1155(
+      tokens: INFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<[boolean[]]>;
+
+    defaultSwapFee(overrides?: CallOverrides): Promise<[number]>;
+
     fulfillAvailableAdvancedOrders(
       advancedOrders: AdvancedOrderStruct[],
       criteriaResolvers: CriteriaResolverStruct[],
@@ -383,6 +454,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setSpecificSwapFee(
+      tokenIn: string,
+      tokenOut: string,
+      swapFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    specificSwapFee(
+      arg0: string,
+      arg1: string,
+      overrides?: CallOverrides
+    ): Promise<[number]>;
+
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -400,6 +484,18 @@ export interface BatchPurchase extends BaseContract {
     arg1: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  batchCheckConduitApprovalERC20(
+    tokens: IFTStruct[],
+    overrides?: CallOverrides
+  ): Promise<boolean[]>;
+
+  batchCheckConduitApprovalERC721orERC1155(
+    tokens: INFTStruct[],
+    overrides?: CallOverrides
+  ): Promise<boolean[]>;
+
+  defaultSwapFee(overrides?: CallOverrides): Promise<number>;
 
   fulfillAvailableAdvancedOrders(
     advancedOrders: AdvancedOrderStruct[],
@@ -443,6 +539,19 @@ export interface BatchPurchase extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setSpecificSwapFee(
+    tokenIn: string,
+    tokenOut: string,
+    swapFee: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  specificSwapFee(
+    arg0: string,
+    arg1: string,
+    overrides?: CallOverrides
+  ): Promise<number>;
+
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -460,6 +569,18 @@ export interface BatchPurchase extends BaseContract {
       arg1: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    batchCheckConduitApprovalERC20(
+      tokens: IFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<boolean[]>;
+
+    batchCheckConduitApprovalERC721orERC1155(
+      tokens: INFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<boolean[]>;
+
+    defaultSwapFee(overrides?: CallOverrides): Promise<number>;
 
     fulfillAvailableAdvancedOrders(
       advancedOrders: AdvancedOrderStruct[],
@@ -501,6 +622,19 @@ export interface BatchPurchase extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    setSpecificSwapFee(
+      tokenIn: string,
+      tokenOut: string,
+      swapFee: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    specificSwapFee(
+      arg0: string,
+      arg1: string,
+      overrides?: CallOverrides
+    ): Promise<number>;
+
     transferOwnership(
       newOwner: string,
       overrides?: CallOverrides
@@ -530,6 +664,18 @@ export interface BatchPurchase extends BaseContract {
       arg1: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    batchCheckConduitApprovalERC20(
+      tokens: IFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    batchCheckConduitApprovalERC721orERC1155(
+      tokens: INFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    defaultSwapFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     fulfillAvailableAdvancedOrders(
       advancedOrders: AdvancedOrderStruct[],
@@ -573,6 +719,19 @@ export interface BatchPurchase extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setSpecificSwapFee(
+      tokenIn: string,
+      tokenOut: string,
+      swapFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    specificSwapFee(
+      arg0: string,
+      arg1: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -591,6 +750,18 @@ export interface BatchPurchase extends BaseContract {
       arg1: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    batchCheckConduitApprovalERC20(
+      tokens: IFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    batchCheckConduitApprovalERC721orERC1155(
+      tokens: INFTStruct[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    defaultSwapFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     fulfillAvailableAdvancedOrders(
       advancedOrders: AdvancedOrderStruct[],
@@ -632,6 +803,19 @@ export interface BatchPurchase extends BaseContract {
 
     renounceOwnership(
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSpecificSwapFee(
+      tokenIn: string,
+      tokenOut: string,
+      swapFee: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    specificSwapFee(
+      arg0: string,
+      arg1: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(

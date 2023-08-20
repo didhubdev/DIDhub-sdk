@@ -46,10 +46,6 @@ export const getBatchPurchaseContract = async (provider: providers.JsonRpcSigner
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.POLYGON
             );
-        case 56:
-            return (new BatchPurchase__factory(provider)).attach(
-                CONTRACTS.DIDHUB.BATCH_PURCHASE.BNB
-            );
         case 42161:
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.ARBITRUM

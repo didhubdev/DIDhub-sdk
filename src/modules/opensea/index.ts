@@ -11,7 +11,7 @@ import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { ContractTransaction, providers, BigNumber, BigNumberish } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { ERC20__factory, getBatchPurchaseContract } from "../../contracts";
-import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -492,18 +492,34 @@ export const openseaInit: IOpenseaInit = (
     const approveERC20Tokens = async (
       paymentToken: string,
       paymentMax: BigNumberish
-  ): Promise<ContractTransaction | null> => {
+    ): Promise<ContractTransaction | null> => {
+        const batchPurchaseContract = await getBatchPurchaseContract(provider);
+        const signerAddress = await provider.getAddress();
+        // attach ERC20 token to contract and create an instance of ERC20 contract
+        const erc20Contract = new ERC20__factory(batchPurchaseContract.signer).attach(paymentToken);
+        const allowance = await erc20Contract.allowance(signerAddress, batchPurchaseContract.address);
+        if (allowance.lt(paymentMax)) {
+            const tx = await erc20Contract.approve(batchPurchaseContract.address, paymentMax);
+            return tx;
+        }
+        return null;
+    }
+
+    const batchCheckConduitApprovalERC721orERC1155 = async (
+      tokens: INFTStruct[]
+    ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const signerAddress = await provider.getAddress();
-      // attach ERC20 token to contract and create an instance of ERC20 contract
-      const erc20Contract = new ERC20__factory(batchPurchaseContract.signer).attach(paymentToken);
-      const allowance = await erc20Contract.allowance(signerAddress, batchPurchaseContract.address);
-      if (allowance.lt(paymentMax)) {
-          const tx = await erc20Contract.approve(batchPurchaseContract.address, paymentMax);
-          return tx;
-      }
-      return null;
-  }
+      const approvals = await batchPurchaseContract.batchCheckConduitApprovalERC721orERC1155(tokens);
+      return approvals;
+    }
+
+    const batchCheckConduitApprovalERC20 = async (
+      tokens: IFTStruct[]
+    ) => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const approvals = await batchPurchaseContract.batchCheckConduitApprovalERC20(tokens);
+      return approvals;
+    }
 
     return {
         listDomain: listDomain,
@@ -513,6 +529,8 @@ export const openseaInit: IOpenseaInit = (
         fulfillListing: fulfillListing,
         fulfillOffer: fulfillOffer,
         fulfillOffers: fulfillOffers,
+        batchCheckConduitApprovalERC721orERC1155: batchCheckConduitApprovalERC721orERC1155,
+        batchCheckConduitApprovalERC20: batchCheckConduitApprovalERC20,
         getAdvancedListingOrders: getAdvancedListingOrders,
         getAdvancedOfferOrders: getAdvancedOfferOrders,
         getSwapInfo: getSwapInfo,

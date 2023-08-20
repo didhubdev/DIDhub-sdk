@@ -1,7 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { SwapInfoStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { IFTStruct, SwapInfoStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { BigNumberish, ContractTransaction, providers } from "ethers";
-import { AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 
 export enum ItemType {
     NATIVE = 0,
@@ -193,4 +192,26 @@ export interface IOpensea {
         paymentToken: string,
         paymentMax: BigNumberish
     ) => Promise<ContractTransaction | null>
+
+    /**
+     * @note This function checks whether the opensea conduit have been given approvel to use the given tokens
+     * 
+     * @params tokens a list of Non-fungible tokens to check. Each token denoted as a tokenContract and tokenId
+     * 
+     * @returns a list of boolean indicating whether the token is approved
+     */
+    batchCheckConduitApprovalERC721orERC1155: (
+        tokens: INFTStruct[]
+    ) => Promise<boolean[]>
+    
+    /**
+     * @note This function checks whether the opensea conduit have been given approvel to use the given tokens
+     * 
+     * @params tokens a list of Fungible tokens to check. Each token denoted as a tokenContract and amount
+     * 
+     * @returns a list of boolean indicating whether the token is approved
+     */
+    batchCheckConduitApprovalERC20: (
+        tokens: IFTStruct[]
+    ) => Promise<boolean[]>
 }

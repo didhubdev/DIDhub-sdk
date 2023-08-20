@@ -52,12 +52,37 @@ function VestingInterface() {
     // const data = await tx.wait();
     // console.log(data);
 
-    const advancedOrders = await sdk.opensea.getAdvancedOrders(
+    const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(
       [orderId]
     );
+
+    let tokensToTransfer = advancedOrders.map((order) => {
+        const token = order.parameters.consideration.filter(c=>c.itemType == 2)[0];
+        return token.token;
+    });
+    let tokenSet = [...new Set(tokensToTransfer)];
+
+    // make approvals
+    for (let i = 0; i < tokenSet.length; i++) {
+        const token = tokenSet[i];
+        // check approval
+        // const approved = await sdk.utils.;
+        const tx = sdk.utils.approveAllERC721or1155Tokens(token);
+        await tx.wait();
+    }
+
+    if (paymentToken !== ZERO_ADDRESS) {    
+      // check and approve
+      console.log('Checking Approval');
+      const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+      if (approveTx) await approveTx.wait();
+      console.log(`Approved ERC20 Tokens`);
+    }
+
     const tx = await sdk.opensea.fulfillOffers(
       advancedOrders
     );
+
     const data = await tx.wait();
     console.log(data);
   };

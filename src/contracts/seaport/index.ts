@@ -6,7 +6,7 @@ import { providers } from "ethers";
 export const getSeaportContract = (chain: string, provider: providers.JsonRpcSigner): Seaport => {
     // initialise batch register contract of a particular network
     switch (chain) {
-        case "BNB":
+        case "POLYGON":
             return (new Seaport__factory(provider)).attach(
                 CONTRACTS.MARKETPLACE.SEAPORT1_5
             );
