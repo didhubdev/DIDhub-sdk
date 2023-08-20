@@ -66,7 +66,7 @@ function VestingInterface() {
     console.log(tokensToTransfer);
 
     // make approvals
-    const approvals = await sdk.opensea.batchCheckSeaportApprovalERC721orERC1155(tokensToTransfer);
+    const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
     console.log("Approvals", approvals);
 
     // get tokens that are not approved
@@ -74,13 +74,14 @@ function VestingInterface() {
 
     // approve tokens
     for (const token of tokensToApprove) {
-      const approveTx = await sdk.opensea.approveSeaportERC721orERC1155Tokens(token.tokenContract);
+      const approveTx = await sdk.opensea.approveERC721orERC1155Tokens(token.tokenContract);
       if (approveTx) await approveTx.wait();
       console.log(`Approved ERC721/1155 Tokens`);
     }
 
     const tx = await sdk.opensea.fulfillOffers(
-      advancedOrders
+      advancedOrders,
+      tokensToTransfer
     );
 
     const data = await tx.wait();

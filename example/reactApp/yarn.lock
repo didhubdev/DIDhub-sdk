@@ -1888,10 +1888,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@didhubdev/sdk@0.2.11":
-  version "0.2.11"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.2.11.tgz#5978605ac3bec4e078fd9c5ed94f73534e82a883"
-  integrity sha512-H6VCs6N0/yWneK2/slJ0NvYskMPjR1AfJRYMoVg0C4nR3GNEMZFbWr9FHoNaESmsx99IJkn7GuiVL8RWxA1eUg==
+"@didhubdev/sdk@0.2.12":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-0.2.12.tgz#4ff51ff2dc9cb1456d621ae7849b384175851b79"
+  integrity sha512-6B1ABiAs0u/7/ODZgCvd6WSZzgvxT9cn2VM9cpuF9qZ+M76VeybXq0FMCrlnPzymbS2pax5E5UmDTdTWr7igWw==
   dependencies:
     "@opensea/seaport-js" "^1.3.0"
     cross-fetch "^4.0.0"
