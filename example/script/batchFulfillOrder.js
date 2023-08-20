@@ -42,7 +42,8 @@ console.log(tokensToTransfer);
 // const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
 
 // // approve tokens
-// for (const token of tokensToApprove) {
+// for (const token of tokensToTransfer) {
+//     console.log("approving token");
 //     const approveTx = await sdk.opensea.approveERC721orERC1155Tokens(token.tokenContract);
 //     if (approveTx) await approveTx.wait();
 //     console.log(`Approved ERC721/1155 Tokens`);

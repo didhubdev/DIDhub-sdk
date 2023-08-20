@@ -333,50 +333,50 @@ export const openseaInit: IOpenseaInit = (
       advancedOrders: AdvancedOrderStruct[]
     ): Promise<ContractTransaction> => {
 
-      // const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const seaportContract = await getSeaportContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
       
-      // let fulfillmentItems: IOrderFulfillmentsStruct = {
-      //   nftFullfillments: [],
-      //   ftFullfillments: []
-      // }
+      let fulfillmentItems: IOrderFulfillmentsStruct = {
+        nftFullfillments: [],
+        ftFullfillments: []
+      }
 
-      // advancedOrders.forEach((order) => {
-      //   order.parameters.consideration.forEach(c=> {
-      //     if (c.itemType === ItemType.ERC20) {
-      //       fulfillmentItems.ftFullfillments.push({
-      //         tokenContract: c.token,
-      //         amount: c.startAmount
-      //       });
-      //     } else if (c.itemType === ItemType.ERC721 || c.itemType === ItemType.ERC1155) {
-      //       fulfillmentItems.nftFullfillments.push({
-      //         tokenContract: c.token,
-      //         tokenId: c.identifierOrCriteria
-      //       });
-      //     }
-      //   })
-      // });
+      advancedOrders.forEach((order) => {
+        order.parameters.consideration.forEach(c=> {
+          if (c.itemType === ItemType.ERC20) {
+            fulfillmentItems.ftFullfillments.push({
+              tokenContract: c.token,
+              amount: c.startAmount
+            });
+          } else if (c.itemType === ItemType.ERC721 || c.itemType === ItemType.ERC1155) {
+            fulfillmentItems.nftFullfillments.push({
+              tokenContract: c.token,
+              tokenId: c.identifierOrCriteria
+            });
+          }
+        })
+      });
+      
+      let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
+          advancedOrders,
+          [],
+          getOfferFulfillmentData(advancedOrders),
+          getConsiderationFulfillmentData(advancedOrders),
+          fulfillmentItems,
+          fulfillerConduitKey,
+          await provider.getAddress(),
+          advancedOrders.length
+        );
 
-      let tx = await seaportContract.fulfillAvailableAdvancedOrders(
-            advancedOrders,
-            [],
-            getOfferFulfillmentData(advancedOrders),
-            getConsiderationFulfillmentData(advancedOrders),
-            fulfillerConduitKey,
-            await provider.getAddress(),
-            advancedOrders.length
-      );
-
-      // let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
-      //     advancedOrders,
-      //     [],
-      //     getOfferFulfillmentData(advancedOrders),
-      //     getConsiderationFulfillmentData(advancedOrders),
-      //     fulfillmentItems,
-      //     fulfillerConduitKey,
-      //     await provider.getAddress(),
-      //     advancedOrders.length
-      //   );
+      // const seaportContract = await getSeaportContract(provider);
+      // let tx = await seaportContract.fulfillAvailableAdvancedOrders(
+      //   advancedOrders,
+      //   [],
+      //   getOfferFulfillmentData(advancedOrders),
+      //   getConsiderationFulfillmentData(advancedOrders),
+      //   fulfillerConduitKey,
+      //   await provider.getAddress(),
+      //   advancedOrders.length
+      // );
 
       return tx;
     }
