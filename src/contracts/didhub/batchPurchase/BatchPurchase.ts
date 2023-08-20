@@ -201,6 +201,19 @@ export type SwapInfoStructOutput = [
   paymentMax: BigNumber;
 };
 
+export type IOrderFulfillmentsStruct = {
+  nftFullfillments: INFTStruct[];
+  ftFullfillments: IFTStruct[];
+};
+
+export type IOrderFulfillmentsStructOutput = [
+  INFTStructOutput[],
+  IFTStructOutput[]
+] & {
+  nftFullfillments: INFTStructOutput[];
+  ftFullfillments: IFTStructOutput[];
+};
+
 export type DomainPriceInfoStruct = {
   price: BigNumberish;
   tokenContract: string;
@@ -219,7 +232,7 @@ export interface BatchPurchaseInterface extends utils.Interface {
     "defaultSwapFee()": FunctionFragment;
     "fulfillAvailableAdvancedListingOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
     "fulfillAvailableAdvancedListingOrdersERC20(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((uint256,uint256,address)[],address,uint256),bytes32,address,uint256)": FunctionFragment;
-    "fulfillAvailableAdvancedOfferOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],(address,uint256)[],bytes32,address,uint256)": FunctionFragment;
+    "fulfillAvailableAdvancedOfferOrders(((address,address,(uint8,address,uint256,uint256,uint256)[],(uint8,address,uint256,uint256,uint256,address)[],uint8,uint256,uint256,bytes32,uint256,bytes32,uint256),uint120,uint120,bytes,bytes)[],(uint256,uint8,uint256,uint256,bytes32[])[],tuple[][],tuple[][],((address,uint256)[],(address,uint256)[]),bytes32,address,uint256)": FunctionFragment;
     "getIndividualPrice((uint256,address)[],address)": FunctionFragment;
     "getTotalPrice((uint256,address)[],address)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -279,7 +292,7 @@ export interface BatchPurchaseInterface extends utils.Interface {
       CriteriaResolverStruct[],
       FulfillmentComponentStruct[],
       FulfillmentComponentStruct[],
-      INFTStruct[],
+      IOrderFulfillmentsStruct,
       BytesLike,
       string,
       BigNumberish
@@ -459,7 +472,7 @@ export interface BatchPurchase extends BaseContract {
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
-      nftFullfillments: INFTStruct[],
+      orderFulfillments: IOrderFulfillmentsStruct,
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -556,7 +569,7 @@ export interface BatchPurchase extends BaseContract {
     criteriaResolvers: CriteriaResolverStruct[],
     offerFulfillments: FulfillmentComponentStruct[],
     considerationFulfillments: FulfillmentComponentStruct[],
-    nftFullfillments: INFTStruct[],
+    orderFulfillments: IOrderFulfillmentsStruct,
     fulfillerConduitKey: BytesLike,
     recipient: string,
     maximumFulfilled: BigNumberish,
@@ -653,7 +666,7 @@ export interface BatchPurchase extends BaseContract {
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
-      nftFullfillments: INFTStruct[],
+      orderFulfillments: IOrderFulfillmentsStruct,
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -760,7 +773,7 @@ export interface BatchPurchase extends BaseContract {
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
-      nftFullfillments: INFTStruct[],
+      orderFulfillments: IOrderFulfillmentsStruct,
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,
@@ -858,7 +871,7 @@ export interface BatchPurchase extends BaseContract {
       criteriaResolvers: CriteriaResolverStruct[],
       offerFulfillments: FulfillmentComponentStruct[],
       considerationFulfillments: FulfillmentComponentStruct[],
-      nftFullfillments: INFTStruct[],
+      orderFulfillments: IOrderFulfillmentsStruct,
       fulfillerConduitKey: BytesLike,
       recipient: string,
       maximumFulfilled: BigNumberish,

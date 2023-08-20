@@ -11,7 +11,7 @@ import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { ContractTransaction, providers, BigNumber, BigNumberish, utils } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { ERC20__factory, getBatchPurchaseContract } from "../../contracts";
-import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
 
 export const openseaInit: IOpenseaInit = (
@@ -328,14 +328,34 @@ export const openseaInit: IOpenseaInit = (
       }
       return tx;
     }
-
+    
     const fulfillOffers = async (
-      advancedOrders: AdvancedOrderStruct[],
-      fulfillmentItems: INFTStruct[]
+      advancedOrders: AdvancedOrderStruct[]
     ): Promise<ContractTransaction> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
       
+      let fulfillmentItems: IOrderFulfillmentsStruct = {
+        nftFullfillments: [],
+        ftFullfillments: []
+      }
+
+      advancedOrders.forEach((order) => {
+        order.parameters.consideration.forEach(c=> {
+          if (c.itemType === ItemType.ERC20) {
+            fulfillmentItems.ftFullfillments.push({
+              tokenContract: c.token,
+              amount: c.startAmount
+            });
+          } else if (c.itemType === ItemType.ERC721 || c.itemType === ItemType.ERC1155) {
+            fulfillmentItems.nftFullfillments.push({
+              tokenContract: c.token,
+              tokenId: c.identifierOrCriteria
+            });
+          }
+        })
+      });
+
       let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
           [],
