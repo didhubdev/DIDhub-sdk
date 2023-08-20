@@ -3,14 +3,15 @@ import { Seaport__factory } from "./artifacts/Seaport__factory";
 import { CONTRACTS } from "../../config";
 import { providers } from "ethers";
 
-export const getSeaportContract = (chain: string, provider: providers.JsonRpcSigner): Seaport => {
+export const getSeaportContract = async (provider: providers.JsonRpcSigner): Promise<Seaport> => {
     // initialise batch register contract of a particular network
-    switch (chain) {
-        case "POLYGON":
+    const chainId = await provider.getChainId();
+    switch (chainId) {
+        case 137:
             return (new Seaport__factory(provider)).attach(
                 CONTRACTS.MARKETPLACE.SEAPORT1_5
             );
-        case "ARBITRUM":
+        case 42161:
             return (new Seaport__factory(provider)).attach(
                 CONTRACTS.MARKETPLACE.SEAPORT1_5
             );
