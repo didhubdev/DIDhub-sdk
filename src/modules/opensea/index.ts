@@ -355,7 +355,7 @@ export const openseaInit: IOpenseaInit = (
           }
         })
       });
-      
+
       let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
           [],
@@ -542,7 +542,8 @@ export const openseaInit: IOpenseaInit = (
     const approveERC721orERC1155Tokens = async (
       tokenAddress: string
     ): Promise<ContractTransaction | null> => {
-      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, SEAPORT_CONDUIT_ADDRESS);
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
       return tx;
     }
 

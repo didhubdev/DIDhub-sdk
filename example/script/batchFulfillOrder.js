@@ -35,22 +35,22 @@ console.log(tokensToTransfer);
 
 // make approvals
 
-// const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
-// console.log("Approvals", approvals);
+const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
+console.log("Approvals", approvals);
 
-// // get tokens that are not approved
-// const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
+// get tokens that are not approved
+const tokensToApprove = tokensToTransfer.filter((t, i) => !approvals[i]);
 
-// // approve tokens
-// for (const token of tokensToTransfer) {
-//     console.log("approving token");
-//     const approveTx = await sdk.opensea.approveERC721orERC1155Tokens(token.tokenContract);
-//     if (approveTx) await approveTx.wait();
-//     console.log(`Approved ERC721/1155 Tokens`);
-// }
+// approve tokens
+for (const token of tokensToApprove) {
+    console.log("approving token");
+    const approveTx = await sdk.opensea.approveERC721orERC1155Tokens(token.tokenContract);
+    if (approveTx) await approveTx.wait();
+    console.log(`Approved ERC721/1155 Tokens`);
+}
 
-// const approvals2 = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
-// console.log("Approvals", approvals2);
+const approvals2 = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
+console.log("Approvals", approvals2);
 
 const tx = await sdk.opensea.fulfillOffers(advancedOrders);
 const receipt = await tx.wait();
