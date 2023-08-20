@@ -50,6 +50,6 @@ for (const token of tokensToApprove) {
 const approvals2 = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
 console.log("Approvals", approvals2);
 
-const tx = await sdk.opensea.fulfillOffers(advancedOrders, tokensToTransfer);
+const tx = await sdk.opensea.fulfillOffers(advancedOrders);
 const receipt = await tx.wait();
 console.log("Purchase Completed");
