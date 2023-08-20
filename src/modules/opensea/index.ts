@@ -1,5 +1,5 @@
 import { CreateOrderInput, Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
-import { CONTRACTS, ZERO_ADDRESS } from "../../config";
+import { CONTRACTS, SEAPORT_CONDUIT_ADDRESS, ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
     IOpensea,
@@ -328,7 +328,7 @@ export const openseaInit: IOpenseaInit = (
       }
       return tx;
     }
-    
+
     const fulfillOffers = async (
       advancedOrders: AdvancedOrderStruct[]
     ): Promise<ContractTransaction> => {
@@ -541,9 +541,8 @@ export const openseaInit: IOpenseaInit = (
 
     const approveERC721orERC1155Tokens = async (
       tokenAddress: string
-    ): Promise<ContractTransaction | null> => { 
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
+    ): Promise<ContractTransaction | null> => {
+      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, SEAPORT_CONDUIT_ADDRESS);
       return tx;
     }
 
