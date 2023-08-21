@@ -45,7 +45,7 @@ function VestingInterface() {
     "0x0000000000000000000000000000000000000000000000000000000000000000"
   );
 
-  const fulfillOffer = async () => {
+  const fulfillOffers = async () => {
     // const tx = await sdk.opensea.fulfillOffer(
     //   orderId
     // );
@@ -352,7 +352,7 @@ function VestingInterface() {
           <Tr>
             <Td>
               <Button
-                onClick={fulfillOffer}
+                onClick={fulfillOffers}
                 colorScheme="green"
                 ml={6}
                 isDisabled={false}
