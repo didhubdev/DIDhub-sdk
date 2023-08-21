@@ -28,8 +28,6 @@ const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
 console.log("Fetching Swap Info...");
 const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
 
-console.log(swapInfo);
-
 // approval needed if the paymentToken is not native token
 if (paymentToken !== ZERO_ADDRESS) {    
     // check and approve

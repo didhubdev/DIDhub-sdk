@@ -24,6 +24,7 @@ const sdk = new DIDhubSDK(signer, secret);
 
 const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(orderIds);
 
+// get the domains to transfer according to the offers
 let tokensToTransfer = advancedOrders.map((order) => {
     const token = order.parameters.consideration.filter(c=>[2, 3].includes(c.itemType))[0];
     return {
@@ -33,8 +34,7 @@ let tokensToTransfer = advancedOrders.map((order) => {
 });
 console.log(tokensToTransfer);
 
-// make approvals
-
+// check approvals and make approvals to those tokens
 const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
 console.log("Approvals", approvals);
 
@@ -49,9 +49,11 @@ for (const token of tokensToApprove) {
     console.log(`Approved ERC721/1155 Tokens`);
 }
 
+// check again
 const approvals2 = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
 console.log("Approvals", approvals2);
 
+// fulfill Offers
 const tx = await sdk.opensea.fulfillOffers(advancedOrders);
 const receipt = await tx.wait();
 console.log("Purchase Completed");
