@@ -13,8 +13,9 @@ yarn add @didhubdev/sdk
 ```
 
 # Deployed Smart Contracts
+
 | contract name | chain | address | fee |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | Batch Register | BSC | 0x35580f058022d7BA612D1ba31CedFaCC019091a9 | 10% |
 | Batch Register | ARBITRUM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
 | Batch Register | FANTOM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
