@@ -12,6 +12,16 @@ Install with yarn
 yarn add @didhubdev/sdk
 ```
 
+# Deployed Smart Contracts
+| contract name | chain | address | fee |
+| --- | --- | --- |
+| Batch Register | BSC | 0x35580f058022d7BA612D1ba31CedFaCC019091a9 | 10% |
+| Batch Register | ARBITRUM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
+| Batch Register | FANTOM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
+| Batch Register | ETHEREUM | 0xD7356f1FC4acc3557cA5E213D3f467FdAeC0140f | 10% |
+| Batch Purchase | POLYGON | 0xb2107398C22c28d153977ae85D2ED119b814Ea3B | 0% |
+| Batch Purchase | ARBITRUM | 0x3e9dc22105Fb119936f3E570cFd366F493bb4a6E | 0% |
+
 # Usage
 
 ## Initalise SDK
