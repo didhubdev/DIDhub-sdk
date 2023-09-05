@@ -1,6 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { IFTStruct, SwapInfoStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { BigNumberish, ContractTransaction, providers } from "ethers";
+import { BigNumber, BigNumberish, ContractTransaction, providers } from "ethers";
 
 export enum ItemType {
     NATIVE = 0,
@@ -225,4 +225,21 @@ export interface IOpensea {
         tokenAddress: string,
         amount: BigNumberish
     ) => Promise<ContractTransaction | null>
+
+    estimateGas: {
+        approveERC20Tokens: (
+            tokenAddress: string,
+            amount: BigNumberish
+        ) => Promise<BigNumber>,
+        approveERC721orERC1155Tokens: (
+            tokenAddress: string
+        ) => Promise<BigNumber>,
+        fulfillListings: (
+            advancedOrders: AdvancedOrderStruct[],
+            swapInfo: SwapInfoStruct
+        ) => Promise<BigNumber>,
+        fulfillOffers: (
+            advancedOrders: AdvancedOrderStruct[]
+        ) => Promise<BigNumber>
+    }
 }

@@ -1,5 +1,5 @@
 import { CreateOrderInput, Fee, OrderWithCounter } from "@opensea/seaport-js/lib/types";
-import { CONTRACTS, SEAPORT_CONDUIT_ADDRESS, ZERO_ADDRESS } from "../../config";
+import { ZERO_ADDRESS } from "../../config";
 import { 
     IOpenseaInit, 
     IOpensea,
@@ -8,9 +8,9 @@ import {
 } from "./type"
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { ContractTransaction, providers, BigNumber, BigNumberish, utils } from "ethers";
+import { ContractTransaction, providers, BigNumber, BigNumberish } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
-import { ERC20__factory, getBatchPurchaseContract, getSeaportContract } from "../../contracts";
+import { getBatchPurchaseContract } from "../../contracts";
 import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
 
@@ -556,6 +556,93 @@ export const openseaInit: IOpenseaInit = (
       return tx;
     }
 
+    // estimate gas ===========================================================
+
+    const fulfillListingsEstimateGas = async (
+      advancedOrders: AdvancedOrderStruct[],
+      swapInfo: SwapInfoStruct
+    ): Promise<BigNumber> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      let price = await provider.getGasPrice();
+      let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
+        await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedListingOrders(
+          advancedOrders,
+          [],
+          getOfferFulfillmentData(advancedOrders),
+          getConsiderationFulfillmentData(advancedOrders),
+          swapInfo,
+          fulfillerConduitKey,
+          await provider.getAddress(),
+          advancedOrders.length,
+          {value: swapInfo.paymentMax}
+        ) :
+        await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedListingOrdersERC20(
+          advancedOrders,
+          [],
+          getOfferFulfillmentData(advancedOrders),
+          getConsiderationFulfillmentData(advancedOrders),
+          swapInfo,
+          fulfillerConduitKey,
+          await provider.getAddress(),
+          advancedOrders.length
+        );
+      return estimatedGas.mul(price);
+    }
+
+    const fulfillOffersEstimateGas = async (
+      advancedOrders: AdvancedOrderStruct[]
+    ): Promise<BigNumber> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      
+      let fulfillmentItems: IOrderFulfillmentsStruct = {
+        nftFullfillments: [],
+        ftFullfillments: []
+      }
+      advancedOrders.forEach((order) => {
+        order.parameters.consideration.forEach(c=> {
+          if (c.itemType === ItemType.ERC20) {
+            fulfillmentItems.ftFullfillments.push({
+              tokenContract: c.token,
+              amount: c.startAmount
+            });
+          } else if (c.itemType === ItemType.ERC721 || c.itemType === ItemType.ERC1155) {
+            fulfillmentItems.nftFullfillments.push({
+              tokenContract: c.token,
+              tokenId: c.identifierOrCriteria
+            });
+          }
+        })
+      });
+
+      let price = await provider.getGasPrice();
+      let estimatedGas = await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedOfferOrders(
+          advancedOrders,
+          [],
+          getOfferFulfillmentData(advancedOrders),
+          getConsiderationFulfillmentData(advancedOrders),
+          fulfillmentItems,
+          fulfillerConduitKey,
+          await provider.getAddress(),
+          advancedOrders.length
+        );
+      return estimatedGas.mul(price);
+    }
+    
+    const approveERC721orERC1155TokensEstimateGas = async (
+      tokenAddress: string
+    ): Promise<BigNumber> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      return await projectUtils(provider).estimateGas.approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
+    }
+
+    const approveERC20TokensEstimateGas = async (
+      tokenAddress: string,
+      tokenAmount: BigNumberish
+    ): Promise<BigNumber> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      return await projectUtils(provider).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
+    }
+
     return {
         listDomain: listDomain,
         bulkListDomain: bulkListDomain,
@@ -569,10 +656,17 @@ export const openseaInit: IOpenseaInit = (
         getAdvancedOfferOrders: getAdvancedOfferOrders,
         getSwapInfo: getSwapInfo,
         cancelOrders: cancelOrders,
-        approveERC20Tokens: approveERC20Tokens,
         batchCheckApprovalERC721orERC1155: batchCheckApprovalERC721orERC1155,
         batchCheckApprovalERC20: batchCheckApprovalERC20,
-        approveERC721orERC1155Tokens: approveERC721orERC1155Tokens
+        approveERC20Tokens: approveERC20Tokens,
+        approveERC721orERC1155Tokens: approveERC721orERC1155Tokens,
+
+        estimateGas: {
+          fulfillListings: fulfillListingsEstimateGas,
+          fulfillOffers: fulfillOffersEstimateGas,
+          approveERC20Tokens: approveERC20TokensEstimateGas,
+          approveERC721orERC1155Tokens: approveERC721orERC1155TokensEstimateGas
+        }
     }
 
 }

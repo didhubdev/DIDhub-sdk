@@ -1,4 +1,4 @@
-import { BigNumberish, providers, ContractTransaction } from 'ethers';
+import { BigNumberish, providers, ContractTransaction, BigNumber } from 'ethers';
 
 export interface IBatchTransfer {
     /**
@@ -48,7 +48,13 @@ export interface IBatchTransfer {
      * 
      * @returns ContractTransaction
      */
-    batchTransfer: (domainInfos: string[], to: string) => Promise<ContractTransaction>
+    batchTransfer: (domainInfos: string[], to: string) => Promise<ContractTransaction>,
+
+    estimateGas: {
+        approveDomain: (domainInfo: string) => Promise<BigNumber>,
+        approveAllDomains: (domainInfos: string[]) => Promise<BigNumber>,
+        batchTransfer: (domainInfos: string[], to: string) => Promise<BigNumber>
+    }
 }
 
 export type IBatchTransferInit = (

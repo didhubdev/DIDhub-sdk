@@ -1,4 +1,4 @@
-import { BigNumberish, providers, ContractTransaction } from 'ethers';
+import { BigNumberish, providers, ContractTransaction, BigNumber } from 'ethers';
 
 export interface IBatchENSManager {
     
@@ -93,8 +93,18 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction | null if already approved
      */
-    approveWrappedETH2LDDomains: () => Promise<ContractTransaction | null>
+    approveWrappedETH2LDDomains: () => Promise<ContractTransaction | null>,
 
+
+    /**
+     * @dev Get the gas estimate for the transaction
+     */
+    estimateGas: {
+        batchUnwrap: (nameKeys: string[], to?: string) => Promise<BigNumber>,
+        batchWrap: (nameKeys: string[], to?: string) => Promise<BigNumber>,
+        approveUnwrappedETH2LDDomains: () => Promise<BigNumber>,
+        approveWrappedETH2LDDomains: () => Promise<BigNumber>
+    }
 }
 
 export type IBatchENSManagerInit = (

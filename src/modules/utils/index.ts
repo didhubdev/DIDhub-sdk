@@ -1,5 +1,5 @@
 import { ERC20__factory, ERC721__factory } from "../../contracts";
-import { BigNumberish, ContractTransaction, providers} from "ethers";
+import { BigNumber, BigNumberish, ContractTransaction, providers} from "ethers";
 import { IUtils } from "./type";
 
 export const utils = (provider: providers.JsonRpcSigner) => {
@@ -57,12 +57,39 @@ export const utils = (provider: providers.JsonRpcSigner) => {
             return false;
         }
     }
+
+    // estimate Gas
+    const approveERC20TokensEstimateGas = async (
+        tokenContract: string,
+        to: string,
+        amount: BigNumberish
+    ): Promise<BigNumber> => {
+        // attach ERC20 token to contract and create an instance of ERC20 contract
+        const erc20Contract = new ERC20__factory(provider).attach(tokenContract);
+        const price = await provider.getGasPrice();
+        const estimatedGas = await erc20Contract.estimateGas.approve(to, amount);
+        return estimatedGas.mul(price);
+    }
+
+    const approveAllERC721or1155TokensEstimateGas = async (
+        tokenContract: string,
+        operator: string
+    ): Promise<BigNumber> => {
+        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
+        const price = await provider.getGasPrice();
+        const estimatedGas = await erc721Contract.estimateGas.setApprovalForAll(operator, true);
+        return estimatedGas.mul(price);
+    }
     
     const utils: IUtils = {
         getERC20Balance: getERC20Balance,
         approveERC20Tokens: approveERC20Tokens,
         approveAllERC721or1155Tokens: approveAllERC721or1155Tokens,
-        isERC721Owner: isERC721Owner
+        isERC721Owner: isERC721Owner,
+        estimateGas: {
+            approveERC20Tokens: approveERC20TokensEstimateGas,
+            approveAllERC721or1155Tokens: approveAllERC721or1155TokensEstimateGas   
+        }
     }
 
     return utils;

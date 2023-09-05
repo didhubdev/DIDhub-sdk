@@ -18,12 +18,7 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 const domains = [
     {
         collectionInfo: "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-        nameKey: "ENS:eth.vitalik🍆🍑",
-        duration: 60*60*24*28
-    },
-    {
-        collectionInfo: "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85",
-        nameKey: "ENS:eth.vitalik💰",
+        nameKey: "ENS:eth.vitalik12312321312312312321312321312",
         duration: 60*60*24*28
     }
 ];
@@ -70,6 +65,9 @@ console.log("Got Commitment Info");
 
 if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
     // commit on chain
+    const estimatedGas = await sdk.register.estimateGas.batchCommit(commitmentInfos);
+    console.log("Estimated Gas", estimatedGas.toString());
+
     const commitTx = await sdk.register.batchCommit(commitmentInfos);
     await commitTx.wait();
 
@@ -77,7 +75,6 @@ if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
     console.log("Waiting for 60 seconds for the commitment to be mined...");
     await new Promise(resolve => setTimeout(resolve, 60000));
 }
-
 // get price info for purchase
 console.log("Getting price info for purchase...");
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
@@ -100,6 +97,9 @@ finalCheck.errors.forEach(error => {
 });
 
 console.log(registrationData.paymentMax);
+
+const estimatedGas = await sdk.register.estimateGas.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+console.log("Estimated Gas", estimatedGas.toString());
 
 // // register
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);

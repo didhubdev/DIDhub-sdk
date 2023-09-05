@@ -1,4 +1,4 @@
-import { BigNumberish, ContractTransaction } from "ethers";
+import { BigNumber, BigNumberish, ContractTransaction } from "ethers";
 
 
 export interface IUtils {
@@ -38,4 +38,20 @@ export interface IUtils {
         tokenContract: string,
         tokenId: BigNumberish
     ) => Promise<boolean>;
+    
+    /**
+     * @dev Estimate Gas for the transaction
+     */
+    estimateGas: {
+        approveERC20Tokens: (
+            tokenContract: string,
+            to: string,
+            amount: BigNumberish
+        ) => Promise<BigNumber>
+        
+        approveAllERC721or1155Tokens: (
+            tokenContract: string,
+            operator: string
+        ) => Promise<BigNumber>
+    }
 }

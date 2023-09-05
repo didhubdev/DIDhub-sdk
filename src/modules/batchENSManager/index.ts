@@ -25,7 +25,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         });
         return tokenIds;
     }
-    
+
     const getFixedFee = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
@@ -168,6 +168,67 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         return approvalTx;
     }
         
+    // Estimate gas ===========================================================
+    const batchUnwrapEstimateGas = async (
+        nameKeys: string[],
+        to?: string
+    ) => {
+        if (!to) {
+            to = await provider.getAddress();
+        }
+        const names = nameKey2Names(nameKeys);
+        const tokenIds = name2TokenId(names);
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const fixedFee = await batchENSManagerContract.fixedFee();
+        const price = await provider.getGasPrice();
+        const estimatedGas = await batchENSManagerContract.estimateGas.batchUnwrap(
+            tokenIds,
+            to,
+            {value: fixedFee}
+        );
+        return estimatedGas.mul(price);
+    }
+
+    const batchWrapEstimateGas = async (
+        nameKeys: string[],
+        to?: string
+    ) => {
+        if (!to) {
+            to = await provider.getAddress();
+        }
+        const names = nameKey2Names(nameKeys);
+        const tokenIds = name2TokenId(names);
+        const owner = await provider.getAddress();
+        // get data
+        const datas = getENSTokenWrapParams(names, owner);
+
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const fixedFee = await batchENSManagerContract.fixedFee();
+        const price = await provider.getGasPrice();
+        const estimatedGas = await batchENSManagerContract.estimateGas.batchWrap(
+            tokenIds,
+            datas,
+            to,
+            {value: fixedFee}
+        );
+
+        return estimatedGas.mul(price);
+    }
+
+    const approveUnwrappedETH2LDDomainsEstimateGas = async () => {
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        // select the contract address for approval
+        const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
+        return await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+    }
+
+    const approveWrappedETH2LDDomainsEstimateGas = async () => {
+        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        // select the contract address for approval
+        const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
+        return await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+    }
+
     return {
         getFixedFee: getFixedFee,
         checkFee: checkFee,
@@ -179,7 +240,13 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         batchUnwrap: batchUnwrap,
         batchWrap: batchWrap,
         approveUnwrappedETH2LDDomains: approveUnwrappedETH2LDDomains,
-        approveWrappedETH2LDDomains: approveWrappedETH2LDDomains
+        approveWrappedETH2LDDomains: approveWrappedETH2LDDomains,
+        estimateGas: {
+            batchUnwrap: batchUnwrapEstimateGas,
+            batchWrap: batchWrapEstimateGas,
+            approveUnwrappedETH2LDDomains: approveUnwrappedETH2LDDomainsEstimateGas,
+            approveWrappedETH2LDDomains: approveWrappedETH2LDDomainsEstimateGas
+        }
     }
 
 }

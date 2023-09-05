@@ -14,7 +14,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
 // input params =================================================================
-const orderIds = ["OPENSEA:0xace3b58bb1b084cd58b3a6b15041a066d62ef574a9715e3e56dd54ea20d10d48", "OPENSEA:0x9774f1ef69aabd170b291234e01cf441cc0f8a39f3c67c1a0e4d443c26d25437"];
+const orderIds = ["OPENSEA:0xace3b58bb1b084cd58b3a6b15041a066d62ef574a9715e3e56dd54ea20d10d48"];
 const margin = 3; // 3%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -23,7 +23,7 @@ const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, secret);
 
-const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
+const advancedOrders = await sdk.opensea.getAdvancedListingOrders(orderIds);
 
 console.log("Fetching Swap Info...");
 const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
@@ -37,6 +37,6 @@ if (paymentToken !== ZERO_ADDRESS) {
     console.log(`Approved ERC20 Tokens`);
 }
 
-const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+const tx = await sdk.opensea.fulfillListing(advancedOrders, swapInfo);
 const receipt = await tx.wait();
 console.log("PUrchase Completed");
