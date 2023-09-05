@@ -211,6 +211,28 @@ export interface IBatchRegister {
      * @return The list of supported tokens
      */
     getSupportedTokens: () => Promise<ITokenInfo[]>;
+
+    /**
+     * @dev A set of functions to estimate the gas cost of the transactions
+     */
+    estimateGas: {
+
+        batchCommit: (commitmentInfos: CommitmentInfoStructOutput[]) => Promise<BigNumber>;
+        batchRegister: (
+            requests: RegistrationInfoStruct[],
+            paymentToken: string,
+            paymentMax: BigNumberish
+        ) => Promise<BigNumber>;
+        batchRenew: (
+            requests: RenewInfoStruct[],
+            paymentToken: string,
+            paymentMax: BigNumberish
+        ) => Promise<BigNumber>;
+        approveERC20Tokens: (
+            paymentToken: string,
+            paymentMax: BigNumberish
+        ) => Promise<BigNumber>;
+    }
 }
 
 export type IBatchRegistration = (

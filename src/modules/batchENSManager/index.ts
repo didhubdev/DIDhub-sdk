@@ -3,7 +3,6 @@ import { providers, ethers } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
 import { utils } from '../../modules/utils';
-import { getContractAddressSet } from '../../utils';
 
 export const batchENSManagerInit: IBatchENSManagerInit = (
     provider: providers.JsonRpcSigner
@@ -26,7 +25,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         });
         return tokenIds;
     }
-
+    
     const getFixedFee = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
