@@ -13,7 +13,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
 // input params =================================================================
-const orderIds = ["OPENSEA:0x57972bdd9175c33862767d4371bda040e28deb4ad1229c845a12ca15bfc3c29b"];
+const orderIds = ["OPENSEA:0xd39c7144734f11e19c623659e1984263a96b6d9ea2c8cf381cad773c9cac3ce3", "OPENSEA:0x432faf876e004007c81088ff29a84cb253673afa5e0c909f46c47ae7a2e2e1b0"];
 const margin = 1; // 3%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";

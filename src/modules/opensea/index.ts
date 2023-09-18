@@ -136,7 +136,7 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       return order.fulfillment_data.orders[0];
     }
-    
+
     const fetchOpenseaOfferOrder = async (
       orderId: string
     ): Promise<IOrderData> => {
@@ -149,7 +149,7 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       return {
         orderWithCounter: order.fulfillment_data.orders[0],
-        extraData: order.extra_data
+        extraData: order.fulfillment_data.transaction.input_data.orders[0].extraData ? order.fulfillment_data.transaction.input_data.orders[0].extraData : []
       };
     }
 
