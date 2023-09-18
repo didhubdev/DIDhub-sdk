@@ -19,7 +19,7 @@ class DIDhubSDK implements IDIDhubSDK {
     private ensManager: IBatchENSManager;
 
     public utilsWithProvider: IUtils;
-
+    
     /**
      * @dev instantiate the didhub sdk
      * 

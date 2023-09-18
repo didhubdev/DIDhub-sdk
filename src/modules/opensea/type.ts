@@ -1,6 +1,7 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { IFTStruct, SwapInfoStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { BigNumber, BigNumberish, ContractTransaction, providers } from "ethers";
+import { BigNumber, BigNumberish, Bytes, BytesLike, ContractTransaction, providers } from "ethers";
+import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
 
 export enum ItemType {
     NATIVE = 0,
@@ -32,6 +33,11 @@ export interface IOrderRequestData {
     paymentToken: string,
     paymentAmount: string,
     endInDays: number
+}
+
+export interface IOrderData {
+    orderWithCounter: OrderWithCounter,
+    extraData: BytesLike
 }
 
 export interface IOpensea {

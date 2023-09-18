@@ -12,25 +12,20 @@ const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
 
-const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
-
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
-        nameKey: "SpaceId:bnb.100100100100100",
-        duration: 60*60*24*28 // renew duration
-    },
-    {
-        collectionInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6",
-        nameKey: "SpaceId:bnb.fakeweb3",
-        duration: 60*60*24*28
+        collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
+        nameKey: "ENS:eth.didhubdev",
+        duration: 60*60*24*365 // renew duration
     }
 ];
 const margin = 1; // 3%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = ZERO_ADDRESS;
 // =============================================================================
+
+let secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, secret);
@@ -67,6 +62,6 @@ finalCheck.errors.forEach(error => {
 console.log(renewData.paymentMax);
 
 // // register
-const registerTx = await sdk.register.batchRenew(renewData.requests, renewData.paymentToken, renewData.paymentMax);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// const registerTx = await sdk.register.batchRenew(renewData.requests, renewData.paymentToken, renewData.paymentMax);
+// await registerTx.wait();
+// console.log(`Register transaction hash: ${registerTx.hash}`);

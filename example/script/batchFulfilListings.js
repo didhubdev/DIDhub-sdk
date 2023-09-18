@@ -37,6 +37,6 @@ if (paymentToken !== ZERO_ADDRESS) {
     console.log(`Approved ERC20 Tokens`);
 }
 
-const tx = await sdk.opensea.fulfillListing(advancedOrders, swapInfo);
+const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
 const receipt = await tx.wait();
 console.log("PUrchase Completed");

@@ -13,7 +13,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
 // input params =================================================================
-const orderIds = ["OPENSEA:0xbc8548f58dcf9faff7bee5562edce04704727c031ee9f25cc31a8800eb67d48a"];
+const orderIds = ["OPENSEA:0x57972bdd9175c33862767d4371bda040e28deb4ad1229c845a12ca15bfc3c29b"];
 const margin = 1; // 3%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -32,9 +32,10 @@ let tokensToTransfer = advancedOrders.map((order) => {
       tokenId: token.identifierOrCriteria,
     };
 });
-console.log(tokensToTransfer);
+console.log(advancedOrders);
 
 // check approvals and make approvals to those tokens
+console.log("checking approval");
 const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
 console.log("Approvals", approvals);
 

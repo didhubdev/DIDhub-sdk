@@ -53,7 +53,7 @@ function VestingInterface() {
     // console.log(data);
 
     const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(
-      [orderId]
+      [orderId, orderId2]
     );
 
     let tokensToTransfer = advancedOrders.map((order) => {
@@ -63,7 +63,7 @@ function VestingInterface() {
           tokenId: token.identifierOrCriteria,
         };
     });
-    console.log(tokensToTransfer);
+    console.log(advancedOrders);
 
     // make approvals
     const approvals = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToTransfer);
@@ -78,6 +78,8 @@ function VestingInterface() {
       if (approveTx) await approveTx.wait();
       console.log(`Approved ERC721/1155 Tokens`);
     }
+
+    console.log("fulfilling");
 
     const tx = await sdk.opensea.fulfillOffers(
       advancedOrders,

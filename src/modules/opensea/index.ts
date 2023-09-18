@@ -4,7 +4,8 @@ import {
     IOpenseaInit, 
     IOpensea,
     ItemType,
-    IOrderRequestData
+    IOrderRequestData,
+    IOrderData
 } from "./type"
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
@@ -135,17 +136,21 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       return order.fulfillment_data.orders[0];
     }
-
+    
     const fetchOpenseaOfferOrder = async (
       orderId: string
-    ): Promise<OrderWithCounter> => {
-
-      const response = await getOpenseaOfferData(orderId, await provider.getAddress());
+    ): Promise<IOrderData> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      // the batch purchase contract is the intermediate step that receives the nft and deliver to the users
+      const response = await getOpenseaOfferData(orderId, batchPurchaseContract.address);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
       const order = response.data;
-      return order.fulfillment_data.orders[0];
+      return {
+        orderWithCounter: order.fulfillment_data.orders[0],
+        extraData: order.extra_data
+      };
     }
 
     const fulfillListing = async (
@@ -277,7 +282,7 @@ export const openseaInit: IOpenseaInit = (
       let advancedOrders = [];
       
       for (let i = 0; i < orderIds.length; i++) {
-        const orderWithCounter = await fetchOpenseaOfferOrder(orderIds[i]);
+        const {orderWithCounter, extraData} = await fetchOpenseaOfferOrder(orderIds[i]);
         const {
           counter: counter,
           ...params
@@ -288,7 +293,7 @@ export const openseaInit: IOpenseaInit = (
           "numerator": 1,
           "denominator": 1,
           "signature": orderWithCounter.signature,
-          "extraData": "0x"
+          "extraData": extraData
         });
       }
       return advancedOrders;
