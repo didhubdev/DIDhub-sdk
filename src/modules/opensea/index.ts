@@ -149,7 +149,7 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       return {
         orderWithCounter: order.fulfillment_data.orders[0],
-        extraData: order.fulfillment_data.transaction.input_data.orders[0].extraData ? order.fulfillment_data.transaction.input_data.orders[0].extraData : []
+        extraData: order.fulfillment_data.transaction.input_data.orders ? order.fulfillment_data.transaction.input_data.orders[0].extraData : []
       };
     }
 
@@ -288,12 +288,17 @@ export const openseaInit: IOpenseaInit = (
           ...params
         } = orderWithCounter.parameters;
 
+        const offer = params.offer[0].endAmount;
+        const fee = params.consideration[1].endAmount;
+        const feePercentage = BigNumber.from(fee).mul(10000).div(BigNumber.from(offer)).toNumber();
+
         advancedOrders.push({
           "parameters": params,
           "numerator": 1,
           "denominator": 1,
           "signature": orderWithCounter.signature,
-          "extraData": extraData
+          "extraData": extraData,
+          "fee": feePercentage
         });
       }
       return advancedOrders;

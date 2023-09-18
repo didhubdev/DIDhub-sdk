@@ -15,7 +15,7 @@ export const CONTRACTS = {
             "POLYGON": "0xBd4C4981030FAf9FdF8020c02368ada299dA2661",
             // "BNB": "0xa307781E7De8A8543f198B446d1253D7C6004029", not supported anymore
             "ARBITRUM": "0x5Fef6c434a3b2966f9057e8C2982134bd3145ea7",
-            // "ETHEREUM": "",
+            "ETHEREUM": "0xC240b3d3bFd1296509881dA24Da4751250261eD4",
             "AVALANCHE": "0x9C70D9eafD623C5Be32F83F1aE50f79AA1448fce"
             // "FANTOM":  "",
             // "KLAYTN": "",
@@ -24,7 +24,9 @@ export const CONTRACTS = {
             "POLYGON": "0x9610fDdF5721e9d727d82bE318b864eC7d4967c7",
             "BNB": "0x62D09c810F0AD579E4fbcD8f60d6cD6a487e5646",
             "ARBITRUM": "0x5950286105FEe78216EB51eBEFb8c188A42A5B1b",
-            "AVALANCHE": "",
+            "AVALANCHE": "0x700d05ae51Da2C00E6FeeC912AbaF208B24De0aA",
+            "FANTOM": "0xB6A819c02EAddbdAe4C7e9912029B77bE03A2068",
+            "ETHEREUM": "0xefb0Cf219C4FCF22132d2C3330970A1Ff29AC0B7"
         }, 
         "BATCH_ENS_MANAGER": {
             "ETHEREUM": "0x373e91FbF9Ac403BcBAb680A1349e767FB87E57B"

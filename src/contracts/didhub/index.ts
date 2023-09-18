@@ -42,6 +42,10 @@ export const getBatchPurchaseContract = async (provider: providers.JsonRpcSigner
     // initialise batch register contract of a particular network
     const chainId = await provider.getChainId();
     switch (chainId) {
+        case 1:
+            return (new BatchPurchase__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_PURCHASE.ETHEREUM
+            );
         case 137:
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.POLYGON
@@ -49,6 +53,10 @@ export const getBatchPurchaseContract = async (provider: providers.JsonRpcSigner
         case 42161:
             return (new BatchPurchase__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_PURCHASE.ARBITRUM
+            );
+        case 43114:
+            return (new BatchPurchase__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_PURCHASE.AVALANCHE
             );
         default:
             throw Error(`Chain ${chainId} is not supported`);
@@ -59,17 +67,29 @@ export const getBatchTransferContract = async (provider: providers.JsonRpcSigner
     // initialise batch register contract of a particular network
     const chainId = await provider.getChainId();
     switch (chainId) {
-        case 137:
+        case 1:
             return (new BatchTransfer__factory(provider)).attach(
-                CONTRACTS.DIDHUB.BATCH_TRANSFER.POLYGON
+                CONTRACTS.DIDHUB.BATCH_TRANSFER.ETHEREUM
             );
         case 56:
             return (new BatchTransfer__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_TRANSFER.BNB
             );
+        case 137:
+            return (new BatchTransfer__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_TRANSFER.POLYGON
+            );
+        case 250:
+            return (new BatchTransfer__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_TRANSFER.FANTOM
+            );
         case 42161:
             return (new BatchTransfer__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_TRANSFER.ARBITRUM
+            );
+        case 43114:
+            return (new BatchTransfer__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_TRANSFER.AVALANCHE
             );
         default:
             throw Error(`Chain ${chainId} is not supported`);

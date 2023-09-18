@@ -13,7 +13,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8";
 
 // input params =================================================================
-const orderIds = ["OPENSEA:0xd39c7144734f11e19c623659e1984263a96b6d9ea2c8cf381cad773c9cac3ce3", "OPENSEA:0x432faf876e004007c81088ff29a84cb253673afa5e0c909f46c47ae7a2e2e1b0"];
+const orderIds = ["OPENSEA:0x39d99308691cb063bd669ddde025b8ab5d1ec60a4b6c28afe61f71ac4bbe91af"];
 const margin = 1; // 3%
 // const paymentToken = ZERO_ADDRESS;
 const paymentToken = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -55,6 +55,6 @@ const approvals2 = await sdk.opensea.batchCheckApprovalERC721orERC1155(tokensToT
 console.log("Approvals", approvals2);
 
 // fulfill Offers
-const tx = await sdk.opensea.fulfillOffers(advancedOrders);
-const receipt = await tx.wait();
-console.log("Purchase Completed");
+// const tx = await sdk.opensea.fulfillOffers(advancedOrders);
+// const receipt = await tx.wait();
+// console.log("Purchase Completed");
