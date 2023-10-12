@@ -7,7 +7,7 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 // const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 // const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.BSC_URL);
+const provider = new ethers.providers.JsonRpcProvider(process.env.GOERLI_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
@@ -15,9 +15,9 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
-        nameKey: "ENS:eth.didhubdev",
-        duration: 60*60*24*365 // renew duration
+        collectionInfo: "GOERLI:0x114d4603199df73e7d157787f8778e21fcd13066",
+        nameKey: "ENS:eth.henrybb",
+        duration: 60*60*24*10 // renew duration
     }
 ];
 const margin = 1; // 3%
@@ -62,6 +62,6 @@ finalCheck.errors.forEach(error => {
 console.log(renewData.paymentMax);
 
 // // register
-// const registerTx = await sdk.register.batchRenew(renewData.requests, renewData.paymentToken, renewData.paymentMax);
-// await registerTx.wait();
-// console.log(`Register transaction hash: ${registerTx.hash}`);
+const renewTx = await sdk.register.batchRenew(renewData.requests, renewData.paymentToken, renewData.paymentMax);
+await renewTx.wait();
+console.log(`Renew transaction hash: ${registerTx.hash}`);
