@@ -33,6 +33,7 @@ const sdk = new DIDhubSDK(signer, secret);
 // check if the signer is also the owner of the two tokens
 
 // get price
+console.log("Getting price...");
 const individualPrices = await sdk.register.getIndividualPrice(domains);
 individualPrices.forEach((price, index) => {
     console.log(`Prices: ${price.price} ${paymentToken} for ${domains[index].nameKey}`);
