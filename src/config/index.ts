@@ -30,7 +30,7 @@ export const CONTRACTS = {
         }, 
         "BATCH_ENS_MANAGER": {
             "ETHEREUM": "0x373e91FbF9Ac403BcBAb680A1349e767FB87E57B",
-            "GOERLI": "0xefb0Cf219C4FCF22132d2C3330970A1Ff29AC0B7"
+            "GOERLI": "0x792e3797482F25899938Ca5F2e013713C637f905"
         }
     },
     "MARKETPLACE": {
