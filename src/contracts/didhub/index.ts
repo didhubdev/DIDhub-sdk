@@ -104,6 +104,10 @@ export const getBatchENSManagerContract = async (provider: providers.JsonRpcSign
             return (new BatchENSManager__factory(provider)).attach(
                 CONTRACTS.DIDHUB.BATCH_ENS_MANAGER.ETHEREUM
             );
+        case 5:
+            return (new BatchENSManager__factory(provider)).attach(
+                CONTRACTS.DIDHUB.BATCH_ENS_MANAGER.GOERLI
+            );
         default:
             throw Error(`Chain ${chainId} is not supported`);
     }
