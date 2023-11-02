@@ -8,7 +8,7 @@ export const getOpenseaListingData = async (
     signer: string,
     useCache: boolean = true
 ) => {
-
+    
     // read from cache
     if (useCache && cache[orderId + signer]) {
       return cache[orderId + signer];
@@ -107,6 +107,12 @@ export const postOpenseaOfferData = async (
     }
 
     const data = await response.json();
+
+    // save to cache
+    if (data.code !== 1) {
+      throw new Error(data.message);
+    }
+
     return data;
 }
 
@@ -140,6 +146,12 @@ export const postOpenseaListingData = async (
     }
 
     const data = await response.json();
+
+    // save to cache
+    if (data.code !== 1) {
+      throw new Error(data.message);
+    }
+
     return data;
 }
 
@@ -165,5 +177,11 @@ export const getOrders = async (
     }
     
     const data = await response.json();
+    
+    // save to cache
+    if (data.code !== 1) {
+      throw new Error(data.message);
+    }
+    
     return data.data;
 }
