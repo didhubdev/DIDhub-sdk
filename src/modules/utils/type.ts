@@ -39,6 +39,29 @@ export interface IUtils {
         tokenId: BigNumberish
     ) => Promise<boolean>;
     
+
+    /**
+     * @dev Wrap ETH to WETH
+     * 
+     * @param amount amount of ETH to wrap
+     * 
+     * @returns ContractTransaction
+     */
+    wrapEth2Weth: (
+        amount: BigNumberish
+    ) => Promise<ContractTransaction>;
+
+    /**
+     * @dev Unwrap WETH to ETH
+     * 
+     * @param amount amount of WETH to unwrap
+     * 
+     * @returns ContractTransaction
+     */
+    unwrapWeth2Eth: (
+        amount: BigNumberish
+    ) => Promise<ContractTransaction>;
+
     /**
      * @dev Estimate Gas for the transaction
      */
@@ -53,5 +76,19 @@ export interface IUtils {
             tokenContract: string,
             operator: string
         ) => Promise<BigNumber>
+
+        wrapEth2Weth: (
+            amount: BigNumberish
+        ) => Promise<BigNumber>
+        
+        unwrapWeth2Eth: (
+            amount: BigNumberish
+        ) => Promise<BigNumber>
+    },
+
+    serviceFee: {
+
+        register: () => Promise<number>
+        
     }
 }

@@ -17,8 +17,6 @@ export const CONTRACTS = {
             "ARBITRUM": "0x5Fef6c434a3b2966f9057e8C2982134bd3145ea7",
             "ETHEREUM": "0xC240b3d3bFd1296509881dA24Da4751250261eD4",
             "AVALANCHE": "0x9C70D9eafD623C5Be32F83F1aE50f79AA1448fce"
-            // "FANTOM":  "",
-            // "KLAYTN": "",
         },
         "BATCH_TRANSFER": {
             "POLYGON": "0x9610fDdF5721e9d727d82bE318b864eC7d4967c7",
@@ -35,5 +33,14 @@ export const CONTRACTS = {
     },
     "MARKETPLACE": {
         "SEAPORT1_5": "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC"
+    },
+    "WTOKEN": {
+        "ETHEREUM": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "BNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "ARBITRUM": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "POLYGON": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+        "AVALANCHE": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        "FANTOM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+        "GOERLI": "0x0B1ba0af832d7C05fD64161E0Db78E85978E8082"
     }
 }

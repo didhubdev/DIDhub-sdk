@@ -103,7 +103,7 @@ class DIDhubSDK implements IDIDhubSDK {
         }
         return this.batchTransfer! as IBatchTransfer;
     }
-
+    
     get ens(): IBatchENSManager {
         if (this.ensManager === null) {
             throw Error("Batch ENS operations is not yet supported in this network");

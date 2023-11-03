@@ -51,6 +51,7 @@ individualPrices.forEach((price, index) => {
 // get commitment status
 const commitmentStatus = await sdk.register.batchCheckCommitment(domainsAvailable);
 console.log(commitmentStatus);
+
 // if status is not 2 nor 4, try to commit
 let domainsToCommit = [];
 commitmentStatus.forEach((status, index) => {
@@ -63,45 +64,48 @@ console.log("Domains to Commit", domainsToCommit);
 const commitmentInfos = await sdk.register.batchMakeCommitments(domainsToCommit);
 console.log("Got Commitment Info");
 
-if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
-    // commit on chain
-    const estimatedGas = await sdk.register.estimateGas.batchCommit(commitmentInfos);
-    console.log("Estimated Gas", estimatedGas.toString());
+const estimatedGas = await sdk.register.estimateGas.batchCommit(commitmentInfos);
+console.log(estimatedGas.toString());
 
-    const commitTx = await sdk.register.batchCommit(commitmentInfos);
-    await commitTx.wait();
+// if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
+//     // commit on chain
+//     const estimatedGas = await sdk.register.estimateGas.batchCommit(commitmentInfos);
+//     console.log("Estimated Gas", estimatedGas.toString());
 
-    // wait some time (20 seconds should be sufficient for bsc)
-    console.log("Waiting for 60 seconds for the commitment to be mined...");
-    await new Promise(resolve => setTimeout(resolve, 60000));
-}
-// get price info for purchase
-console.log("Getting price info for purchase...");
-const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
-console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
+//     const commitTx = await sdk.register.batchCommit(commitmentInfos);
+//     await commitTx.wait();
 
-// // approval needed if the paymentToken is not native token
-if (paymentToken !== ZERO_ADDRESS) {
-    // check and approve
-    const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
-    if (approveTx) await approveTx.wait();
-    console.log(`Approved ERC20 Tokens`);
-}
+//     // wait some time (20 seconds should be sufficient for bsc)
+//     console.log("Waiting for 60 seconds for the commitment to be mined...");
+//     await new Promise(resolve => setTimeout(resolve, 60000));
+// }
+// // get price info for purchase
+// console.log("Getting price info for purchase...");
+// const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
+// console.log(`Total required tokens for ${paymentToken} is ${registrationData.paymentMax.toString()}`);
 
-// final check 
-const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
-console.log(`Final check: ${finalCheck.success}`);
-// print error if any
-finalCheck.errors.forEach(error => {
-    throw Error(`Error: ${error}`);
-});
+// // // approval needed if the paymentToken is not native token
+// if (paymentToken !== ZERO_ADDRESS) {
+//     // check and approve
+//     const approveTx = await sdk.register.approveERC20Tokens(paymentToken, registrationData.paymentMax);
+//     if (approveTx) await approveTx.wait();
+//     console.log(`Approved ERC20 Tokens`);
+// }
 
-console.log(registrationData.paymentMax);
+// // final check 
+// const finalCheck = await sdk.register.checkPurchaseConditions(domainsAvailable, registrationData.paymentToken, registrationData.paymentMax);
+// console.log(`Final check: ${finalCheck.success}`);
+// // print error if any
+// finalCheck.errors.forEach(error => {
+//     throw Error(`Error: ${error}`);
+// });
 
-const estimatedGas = await sdk.register.estimateGas.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-console.log("Estimated Gas", estimatedGas.toString());
+// console.log(registrationData.paymentMax);
 
-// // register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// const estimatedGas = await sdk.register.estimateGas.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+// console.log("Estimated Gas", estimatedGas.toString());
+
+// // // register
+// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
+// await registerTx.wait();
+// console.log(`Register transaction hash: ${registerTx.hash}`);
