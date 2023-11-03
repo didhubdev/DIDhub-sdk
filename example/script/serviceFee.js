@@ -13,10 +13,4 @@ let secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85de8
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, secret);
 
-// test wrap token
-
-const depositTx = await sdk.utils.wrapEth2Weth(ethers.utils.parseEther("0.0001"));
-await tx.wait();
-
-const withdrawTx = await sdk.utils.unwrapWeth2Eth(ethers.utils.parseEther("0.0001"));
-await tx.wait();
+console.log(await sdk.utils.serviceFee.register());

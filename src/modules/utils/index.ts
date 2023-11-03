@@ -123,7 +123,7 @@ export const utils = (provider: providers.JsonRpcSigner) => {
     const getRegisterServiceFee = async (): Promise<number> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
         const serviceFee = await batchRegisterContract.feeBasisPt();
-        const serviceFeePercentage = serviceFee.toNumber() / 10000.0;
+        const serviceFeePercentage = serviceFee.toNumber() / 100.0;
         return serviceFeePercentage;
     }
 
