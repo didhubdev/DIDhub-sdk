@@ -1,7 +1,7 @@
 import { providers } from "ethers";
 import { WETH } from "./WETH";
 import { WETH__factory } from "./WETH__factory";
-import { CONTRACTS } from "config";
+import { CONTRACTS } from "../../config";
 
 export const getWrapTokenContract = async (provider: providers.JsonRpcSigner): Promise<WETH> => {
     // initialise batch register contract of a particular network
