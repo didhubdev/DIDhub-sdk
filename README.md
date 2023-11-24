@@ -20,10 +20,23 @@ yarn add @didhubdev/sdk
 | Batch Register | ARBITRUM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
 | Batch Register | FANTOM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
 | Batch Register | ETHEREUM | 0xD7356f1FC4acc3557cA5E213D3f467FdAeC0140f | 10% |
-| Batch Purchase | POLYGON | 0xb2107398C22c28d153977ae85D2ED119b814Ea3B | 0% |
-| Batch Purchase | ARBITRUM | 0x3e9dc22105Fb119936f3E570cFd366F493bb4a6E | 0% |
+
+| Batch Transfer | BSC | 0x62D09c810F0AD579E4fbcD8f60d6cD6a487e5646 | 0% |
+| Batch Transfer | ARBITRUM | 0x5950286105FEe78216EB51eBEFb8c188A42A5B1b | 0% |
+| Batch Transfer | FANTOM | 0xB6A819c02EAddbdAe4C7e9912029B77bE03A2068 | 0% |
+| Batch Transfer | ETHEREUM | 0xefb0Cf219C4FCF22132d2C3330970A1Ff29AC0B7 | 0% |
+| Batch Transfer | POLYGON | 0x9610fDdF5721e9d727d82bE318b864eC7d4967c7 | 0% |
+| Batch Transfer | AVALANCHE | 0x700d05ae51Da2C00E6FeeC912AbaF208B24De0aA | 0% |
+
+| Batch ENS Manager | ETHEREUM | 0x373e91FbF9Ac403BcBAb680A1349e767FB87E57B | 0% |
 
 # Usage
+
+This SDK primarily exposes a clean interface to the DIDhub smart contracts that enable batch operation on domain 
+registration, renewal and management for public use. These functions are already integrated into the [DIDhub official website](https://didhub.com). Detail examples are provided in the example/script folder for testing.
+
+The SDK also contains logic that involves batch list, offer and purchase of 
+domains on Opensea. However such functions are currently limited for use only on the DIDhub official website.
 
 ## Initalise SDK
 ```
@@ -137,90 +150,6 @@ Use the registration data as input for the purchase. The SDK will handle cases o
 const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax);
 ```
 
-## Functions to interact with Opensea
-
-Supported Chains: BNB, ARBITRUM, POLYGON
-
-
-### Make Offer
-Note that it is not possible to offer native token. \
-Approval process is automatically handled.
-```
-const data = await sdk.opensea.offerDomain(domainInfo, paymentToken, amount, days);
-```
-
-### Batch Make Offers
-Batch offer an array of domains
-```
-const data = await sdk.opensea.bulkOfferDomain(offerDataArray);
-```
-where offerDataArray is given as follows
-```
-const offerDataArray = {
-    domainInfo: domainInfo,
-    paymentToken: paymentToken,
-    amount: amount, 
-    days: days
-}
-```
-
-### List Domain
-Approval is automatically handled.
-```
-const data = await sdk.opensea.listDomain(domainInfo, paymentToken, amount, days);
-```
-
-### Batch List Domain
-Batch list an array of domains
-```
-const data = await sdk.opensea.bulkListDomain(listingDataArray);
-```
-where listingDataArray is given as follows
-```
-const listingDataArray = {
-    domainInfo: domainInfo,
-    paymentToken: paymentToken,
-    amount: amount, 
-    days: days
-}
-```
-
-### Accept Offer
-```
-const tx = await sdk.opensea.fulfillOffer(orderId);
-```
-
-### Fulfill Listing
-```
-const tx = await sdk.opensea.fulfillListing(orderId);
-```
-
-### Cancel Order
-This can take in an array of both offer or listing orders
-```
-const tx = await sdk.opensea.cancelOrders(orderIds);
-```
-
-### Fulfill Multiple Listings
-Fulfill multiple listings in one transaction, using a single token type as input. If the orders require payment of different token types, the input tokens will be swapped to the targe token type. There are 3 steps to complete this operation:
-
-1. Obtain the advanced order information using orderId. It is recommended to do this at the time when users add items to cart, instead of doing it in one go during checkout.
-```
-const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
-```
-2. Before transaction, the user will choose a token type to complete the purchase, and select the slippage that he/she will toleration in case the target price cannot be met.
-```
-const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
-```
-3. Approve the DIDHub for the amount of token that will be used in the purchase if needded
-```
-const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
-```
-4. Finally, complete the transaction with the obtained in the previous functions
-```
-const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
-```
-
 ## Batch Transfer NFT Functions
 
 ### Check Fixed Fees
@@ -308,4 +237,88 @@ const wrapTx = await sdk.ens.batchWrap(nameKeys);
 Batch unwrap the domain. Fee is paid internally
 ```
 const wrapTx = await sdk.ens.batchUnwrap(nameKeys);
+```
+
+## Functions to interact with Opensea (Not for public use)
+
+Supported Chains: BNB, ARBITRUM, POLYGON
+
+
+### Make Offer
+Note that it is not possible to offer native token. \
+Approval process is automatically handled.
+```
+const data = await sdk.opensea.offerDomain(domainInfo, paymentToken, amount, days);
+```
+
+### Batch Make Offers
+Batch offer an array of domains
+```
+const data = await sdk.opensea.bulkOfferDomain(offerDataArray);
+```
+where offerDataArray is given as follows
+```
+const offerDataArray = {
+    domainInfo: domainInfo,
+    paymentToken: paymentToken,
+    amount: amount, 
+    days: days
+}
+```
+
+### List Domain
+Approval is automatically handled.
+```
+const data = await sdk.opensea.listDomain(domainInfo, paymentToken, amount, days);
+```
+
+### Batch List Domain
+Batch list an array of domains
+```
+const data = await sdk.opensea.bulkListDomain(listingDataArray);
+```
+where listingDataArray is given as follows
+```
+const listingDataArray = {
+    domainInfo: domainInfo,
+    paymentToken: paymentToken,
+    amount: amount, 
+    days: days
+}
+```
+
+### Accept Offer
+```
+const tx = await sdk.opensea.fulfillOffer(orderId);
+```
+
+### Fulfill Listing
+```
+const tx = await sdk.opensea.fulfillListing(orderId);
+```
+
+### Cancel Order
+This can take in an array of both offer or listing orders
+```
+const tx = await sdk.opensea.cancelOrders(orderIds);
+```
+
+### Fulfill Multiple Listings
+Fulfill multiple listings in one transaction, using a single token type as input. If the orders require payment of different token types, the input tokens will be swapped to the targe token type. There are 3 steps to complete this operation:
+
+1. Obtain the advanced order information using orderId. It is recommended to do this at the time when users add items to cart, instead of doing it in one go during checkout.
+```
+const advancedOrders = await sdk.opensea.getAdvancedOrders(orderIds);
+```
+2. Before transaction, the user will choose a token type to complete the purchase, and select the slippage that he/she will toleration in case the target price cannot be met.
+```
+const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
+```
+3. Approve the DIDHub for the amount of token that will be used in the purchase if needded
+```
+const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+```
+4. Finally, complete the transaction with the obtained in the previous functions
+```
+const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
 ```

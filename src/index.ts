@@ -54,7 +54,7 @@ class DIDhubSDK implements IDIDhubSDK {
         this.ensManager = batchENSManagerInit(
             provider as providers.JsonRpcSigner
         );
-
+        
         this.seaport = openseaInit(
             this.seaportSDK,
             provider as providers.JsonRpcSigner
