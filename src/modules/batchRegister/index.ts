@@ -86,7 +86,7 @@ export const batchRegistration: IBatchRegistration = (
         // add contract fee to total price
         let fee = await batchRegisterContract.feeBasisPt();
         totalPrice = totalPrice.map(p=>p.mul(fee.toNumber()+10000).div(10000));
-
+        
         return totalPrice;
     }
 
@@ -280,20 +280,23 @@ export const batchRegistration: IBatchRegistration = (
     const batchRegister = async (
         requests: RegistrationInfoStruct[],
         paymentToken: string,
-        paymentMax: BigNumberish
+        paymentMax: BigNumberish,
+        maxPriorityFeePerGas?: BigNumberish,
     ): Promise<ContractTransaction> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
         if (paymentToken == ZERO_ADDRESS) {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
-                gasLimit: estimatedGas.mul(120).div(100)
+                gasLimit: estimatedGas.mul(120).div(100),
+                maxPriorityFeePerGas: maxPriorityFeePerGas
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
-                gasLimit: estimatedGas.mul(120).div(100)
+                gasLimit: estimatedGas.mul(120).div(100),
+                maxPriorityFeePerGas: maxPriorityFeePerGas
             });
             return tx;
         }
