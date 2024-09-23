@@ -285,23 +285,19 @@ export const batchRegistration: IBatchRegistration = (
 
         const batchRegisterContract = await getBatchRegisterContract(provider);
         const feeData = await provider.getFeeData();
-        const chainId = await provider.getChainId();
-        const baseFeeMultiplier = chainId === 137 ? 200 : 1;
         if (paymentToken == ZERO_ADDRESS) {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxFeePerGas: feeData.maxFeePerGas!,
-                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!.mul(baseFeeMultiplier)
+                gasPrice: feeData.gasPrice!
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxFeePerGas: feeData.maxFeePerGas!,
-                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!.mul(baseFeeMultiplier)
+                gasPrice: feeData.gasPrice!
             });
             return tx;
         }
