@@ -1,6 +1,6 @@
 {
   "name": "@didhubdev/sdk",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "The didhub sdk for interacting with the didhub smart contracts.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
