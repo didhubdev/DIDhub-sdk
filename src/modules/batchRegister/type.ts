@@ -162,7 +162,7 @@ export interface IBatchRegister {
         requests: RegistrationInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish,
-        maxPriorityFeePerGas?: BigNumberish
+        maxFeePerGas?: BigNumberish
     ) => Promise<ContractTransaction>;
 
     /**

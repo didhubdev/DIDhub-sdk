@@ -281,7 +281,7 @@ export const batchRegistration: IBatchRegistration = (
         requests: RegistrationInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish,
-        maxPriorityFeePerGas?: BigNumberish,
+        maxFeePerGas?: BigNumberish,
     ): Promise<ContractTransaction> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
         if (paymentToken == ZERO_ADDRESS) {
@@ -289,14 +289,14 @@ export const batchRegistration: IBatchRegistration = (
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxPriorityFeePerGas: maxPriorityFeePerGas
+                maxFeePerGas: maxFeePerGas
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxPriorityFeePerGas: maxPriorityFeePerGas
+                maxFeePerGas: maxFeePerGas
             });
             return tx;
         }
