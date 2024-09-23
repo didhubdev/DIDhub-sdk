@@ -291,7 +291,7 @@ export const batchRegistration: IBatchRegistration = (
                 value: paymentMax,
                 gasLimit: estimatedGas.mul(120).div(100),
                 maxFeePerGas: feeData.maxFeePerGas!,
-                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!
+                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!.mul(2)
             });
             return tx;
         } else {
@@ -299,7 +299,7 @@ export const batchRegistration: IBatchRegistration = (
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
                 gasLimit: estimatedGas.mul(120).div(100),
                 maxFeePerGas: feeData.maxFeePerGas!,
-                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!
+                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!.mul(2)
             });
             return tx;
         }
