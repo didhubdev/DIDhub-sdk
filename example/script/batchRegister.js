@@ -6,7 +6,7 @@ dotenv.config();
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const maxFeePerGas = BigNumber.from("25") // 25 gwei
+const maxFeePerGas = BigNumber.from("50000000000") // 25 gwei
 
 const provider = new ethers.providers.JsonRpcBatchProvider(process.env.POLYGON_URL);
 // init signer from private key

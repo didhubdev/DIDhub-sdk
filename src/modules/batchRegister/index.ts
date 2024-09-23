@@ -3,7 +3,7 @@ import { ERC20__factory } from '../../contracts/tokens';
 import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct, RenewInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
 import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo, IRenewData, IRegistrationData, IRenewCheck } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult, getRenewInfo } from '../../utils';
-import { BigNumber, BigNumberish, ContractTransaction, providers } from 'ethers';
+import { BigNumber, BigNumberish, ContractTransaction, ethers, providers } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
 
 export const batchRegistration: IBatchRegistration = (
@@ -280,23 +280,28 @@ export const batchRegistration: IBatchRegistration = (
     const batchRegister = async (
         requests: RegistrationInfoStruct[],
         paymentToken: string,
-        paymentMax: BigNumberish,
-        maxFeePerGas?: BigNumberish,
+        paymentMax: BigNumberish
     ): Promise<ContractTransaction> => {
+
         const batchRegisterContract = await getBatchRegisterContract(provider);
+        const feeData = await provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxFeePerGas: maxFeePerGas
+                gasPrice: feeData.gasPrice!,
+                maxFeePerGas: feeData.maxFeePerGas!,
+                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
                 gasLimit: estimatedGas.mul(120).div(100),
-                maxFeePerGas: maxFeePerGas
+                gasPrice: feeData.gasPrice!,
+                maxFeePerGas: feeData.maxFeePerGas!,
+                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!
             });
             return tx;
         }
