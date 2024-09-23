@@ -78,10 +78,15 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<BigNumber[]> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
         const priceRequestStructs  = getPriceRequest(domains);
-        const totalPrice = await batchRegisterContract.callStatic.getTotalPrice(
+        let totalPrice = await batchRegisterContract.callStatic.getTotalPrice(
             priceRequestStructs,
             paymentToken
         );
+        
+        // add contract fee to total price
+        let fee = await batchRegisterContract.feeBasisPt();
+        totalPrice = totalPrice.map(p=>p.mul(fee.toNumber()+10000).div(10000));
+
         return totalPrice;
     }
 
