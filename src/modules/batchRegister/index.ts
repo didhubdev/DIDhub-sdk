@@ -33,10 +33,14 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<ContractTransaction> => {
         
         const batchRegisterContract = await getBatchRegisterContract(provider);
+        const feeData = await provider.getFeeData();
         const estimatedGas = await batchRegisterContract.estimateGas.batchCommit(commitmentInfos);
         const tx = await batchRegisterContract.batchCommit(
             commitmentInfos,
-            {gasLimit: estimatedGas.mul(120).div(100)}
+            {
+                gasLimit: estimatedGas.mul(120).div(100),
+                gasPrice: feeData.gasPrice!
+            }
         );
         return tx;
     }
@@ -309,17 +313,20 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<ContractTransaction> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
+        const feeData = await provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRenew(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRenew(requests, {
                 value: paymentMax,
-                gasLimit: estimatedGas.mul(120).div(100)
+                gasLimit: estimatedGas.mul(120).div(100),
+                gasPrice: feeData.gasPrice!
             });
             return tx;
         } else {
             const estimatedGas = await batchRegisterContract.estimateGas.batchRenewERC20(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRenewERC20(requests, paymentToken, paymentMax, {
-                gasLimit: estimatedGas.mul(120).div(100)
+                gasLimit: estimatedGas.mul(120).div(100),
+                gasPrice: feeData.gasPrice!
             });
             return tx;
         }
@@ -345,6 +352,14 @@ export const batchRegistration: IBatchRegistration = (
                     {
                         name: "USDC",
                         address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+                        decimals: 18
+                    }
+                ]
+            case 137:
+                return [
+                    {
+                        name: "MATIC",
+                        address: "0x0000000000000000000000000000000000000000",
                         decimals: 18
                     }
                 ]
