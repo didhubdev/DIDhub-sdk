@@ -213,6 +213,14 @@ export interface IBatchRegister {
      */
     getSupportedTokens: () => Promise<ITokenInfo[]>;
 
+    
+    /**
+     * @dev Get the fee for the batch register
+     * 
+     * @return The percentage fee for the batch register collected by DIDhub
+     */
+    didhubFee: () => Promise<BigNumber>;
+
     /**
      * @dev A set of functions to estimate the gas cost of the transactions
      */

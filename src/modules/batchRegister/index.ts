@@ -448,6 +448,11 @@ export const batchRegistration: IBatchRegistration = (
         return estimatedGas.mul(gasPrice);
     }
 
+    const didhubFee = async (): Promise<BigNumber> => {
+        const batchRegisterContract = await getBatchRegisterContract(provider);
+        return await batchRegisterContract.feeBasisPt();
+    }
+
     return {
         batchCheckCommitment: batchCheckCommitment,
         batchMakeCommitments: batchMakeCommitments,
@@ -464,6 +469,7 @@ export const batchRegistration: IBatchRegistration = (
         batchRegister: batchRegister,
         batchRenew: batchRenew,
         getSupportedTokens: getSupportedTokens,
+        didhubFee: didhubFee,
         estimateGas: {
             batchCommit: batchCommitEstimateGasFee,
             batchRegister: batchRegisterEstimateGasFee,
