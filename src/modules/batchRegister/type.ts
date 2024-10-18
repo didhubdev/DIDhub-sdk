@@ -217,9 +217,9 @@ export interface IBatchRegister {
     /**
      * @dev Get the fee for the batch register
      * 
-     * @return The percentage fee for the batch register collected by DIDhub
+     * @return The percentage fee for the batch register collected by DIDhub. 10 means 10%
      */
-    didhubFee: () => Promise<BigNumber>;
+    didhubFee: () => Promise<number>;
 
     /**
      * @dev A set of functions to estimate the gas cost of the transactions

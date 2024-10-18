@@ -448,9 +448,10 @@ export const batchRegistration: IBatchRegistration = (
         return estimatedGas.mul(gasPrice);
     }
 
-    const didhubFee = async (): Promise<BigNumber> => {
+    const didhubFee = async (): Promise<number> => {
         const batchRegisterContract = await getBatchRegisterContract(provider);
-        return await batchRegisterContract.feeBasisPt();
+        const basisPt = await batchRegisterContract.feeBasisPt();
+        return basisPt.toNumber() / 100;
     }
 
     return {
