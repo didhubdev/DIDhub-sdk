@@ -33,10 +33,8 @@ const paymentToken = ZERO_ADDRESS;
 const sdk = new DIDhubSDK(signer, secret);
 
 // check platform fee
-const platformFee = await sdk.register.getPlatformFee();
+const platformFee = await sdk.register.didhubFee();
 console.log(`Platform fee is ${platformFee.toString()}`);
-
-process.exit(0);
 
 // get availablity status
 let domainsAvailable = [];
