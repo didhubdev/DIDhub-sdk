@@ -1,5 +1,5 @@
 import { getBatchENSManagerContract } from '../../contracts/didhub';
-import { providers, ethers } from 'ethers'
+import { providers, ethers, BigNumber } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
 import { utils } from '../../modules/utils';
@@ -181,12 +181,16 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
         const price = await provider.getGasPrice();
-        const estimatedGas = await batchENSManagerContract.estimateGas.batchUnwrap(
-            tokenIds,
-            to,
-            {value: fixedFee}
-        );
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await batchENSManagerContract.estimateGas.batchUnwrap(
+                tokenIds,
+                to,
+                {value: fixedFee}
+            );
+            return estimatedGas.mul(price);
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const batchWrapEstimateGas = async (
@@ -205,28 +209,43 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         const fixedFee = await batchENSManagerContract.fixedFee();
         const price = await provider.getGasPrice();
-        const estimatedGas = await batchENSManagerContract.estimateGas.batchWrap(
-            tokenIds,
-            datas,
-            to,
-            {value: fixedFee}
-        );
-
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await batchENSManagerContract.estimateGas.batchWrap(
+                tokenIds,
+                datas,
+                to,
+                {value: fixedFee}
+            );
+            return estimatedGas.mul(price);
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const approveUnwrappedETH2LDDomainsEstimateGas = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         // select the contract address for approval
         const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
-        return await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        const price = await provider.getGasPrice();
+        try {
+            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+            return estimatedGas.mul(price);    
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const approveWrappedETH2LDDomainsEstimateGas = async () => {
         const batchENSManagerContract = await getBatchENSManagerContract(provider);
         // select the contract address for approval
         const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
-        return await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        const price = await provider.getGasPrice();
+        try {
+            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+            return estimatedGas.mul(price);
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     return {

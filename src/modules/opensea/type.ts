@@ -25,7 +25,8 @@ export interface IDIDhubResponse {
 
 export type IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
-    provider: providers.JsonRpcSigner
+    provider: providers.JsonRpcSigner,
+    environment: "production" | "dev"
 ) => IOpensea;
 
 export interface IOrderRequestData {

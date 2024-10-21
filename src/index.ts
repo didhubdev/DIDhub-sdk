@@ -17,6 +17,7 @@ class DIDhubSDK implements IDIDhubSDK {
     private seaport: IOpensea;
     private batchTransfer: IBatchTransfer;
     private ensManager: IBatchENSManager;
+    private environment: "production" | "dev";
 
     public utilsWithProvider: IUtils;
     
@@ -24,10 +25,12 @@ class DIDhubSDK implements IDIDhubSDK {
      * @dev instantiate the didhub sdk
      * 
      * @param provider a signer that can sign and send transactions
+     * @param environment the environment to use, either production or dev, default to production
      * @param {string} [secret] the secret a 32 bytes hex string
      */
     public constructor(
         provider: any,
+        environment: "production" | "dev" = "production",
         secret?: string
     ) {
 
@@ -57,12 +60,15 @@ class DIDhubSDK implements IDIDhubSDK {
         
         this.seaport = openseaInit(
             this.seaportSDK,
-            provider as providers.JsonRpcSigner
+            provider as providers.JsonRpcSigner,
+            environment
         );
 
         this.utilsWithProvider = utils(
             provider as providers.JsonRpcSigner
         );
+
+        this.environment = environment;
     }
 
     // get secret from current time

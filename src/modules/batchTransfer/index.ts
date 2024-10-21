@@ -78,8 +78,15 @@ export const batchTransferInit: IBatchTransferInit = (
     ) => {
         const batchTransferContract = await getBatchTransferContract(provider);
         // select the contract address for approval
+        const price = await provider.getGasPrice();
         const contractAddresses = getContractAddressSet([domainInfo])[0];
-        return await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchTransferContract.address);
+        try {
+            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchTransferContract.address);
+            return estimatedGas.mul(price);
+
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const approveAllDomainsEstimateGas = async (
@@ -89,11 +96,16 @@ export const batchTransferInit: IBatchTransferInit = (
         // select the contract address for approval
         const contractAddresses = getContractAddressSet(domainInfos);
         let totalGas = BigNumber.from(0);
+        const price = await provider.getGasPrice();
         for (let i = 0 ; i < contractAddresses.length; i++) {
-            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses[i], batchTransferContract.address);
-            totalGas = totalGas.add(estimatedGas);
+            try {
+                const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses[i], batchTransferContract.address);
+                totalGas = totalGas.add(estimatedGas);
+            } catch {
+                return BigNumber.from(0);
+            }
         }
-        return totalGas;
+        return totalGas.mul(price);
     }
 
     const batchTransferEstimateGas = async (
@@ -104,13 +116,16 @@ export const batchTransferInit: IBatchTransferInit = (
         const batchTransferContract = await getBatchTransferContract(provider);
         const fixedFee = await batchTransferContract.fixedFee();
         const price = await provider.getGasPrice();
-        const estimatedGas = await batchTransferContract.estimateGas.batchTransfer(
-            tokens,
-            to,
-            {value: fixedFee}
-        );
-
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await batchTransferContract.estimateGas.batchTransfer(
+                tokens,
+                to,
+                {value: fixedFee}
+            );
+            return estimatedGas.mul(price);
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     return {

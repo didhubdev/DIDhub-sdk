@@ -85,8 +85,12 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         // attach ERC20 token to contract and create an instance of ERC20 contract
         const erc20Contract = new ERC20__factory(provider).attach(tokenContract);
         const price = await provider.getGasPrice();
-        const estimatedGas = await erc20Contract.estimateGas.approve(to, amount);
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await erc20Contract.estimateGas.approve(to, amount);
+            return estimatedGas.mul(price);    
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const approveAllERC721or1155TokensEstimateGas = async (
@@ -95,8 +99,12 @@ export const utils = (provider: providers.JsonRpcSigner) => {
     ): Promise<BigNumber> => {
         const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
         const price = await provider.getGasPrice();
-        const estimatedGas = await erc721Contract.estimateGas.setApprovalForAll(operator, true);
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await erc721Contract.estimateGas.setApprovalForAll(operator, true);
+            return estimatedGas.mul(price);    
+        } catch {
+            return BigNumber.from(0);
+        }
     }
     
     const wrapEth2WethEstimateGas = async (
@@ -104,10 +112,14 @@ export const utils = (provider: providers.JsonRpcSigner) => {
     ): Promise<BigNumber> => {
         const wethContract = await getWrapTokenContract(provider);
         const price = await provider.getGasPrice();
-        const estimatedGas = await wethContract.estimateGas.deposit({
-            value: amount
-        });
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await wethContract.estimateGas.deposit({
+                value: amount
+            });
+            return estimatedGas.mul(price);    
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     const unwrapWeth2EthEstimateGas = async (
@@ -115,8 +127,12 @@ export const utils = (provider: providers.JsonRpcSigner) => {
     ): Promise<BigNumber> => {
         const wethContract = await getWrapTokenContract(provider);
         const price = await provider.getGasPrice();
-        const estimatedGas = await wethContract.estimateGas.withdraw(amount);
-        return estimatedGas.mul(price);
+        try {
+            const estimatedGas = await wethContract.estimateGas.withdraw(amount);
+            return estimatedGas.mul(price);
+        } catch {
+            return BigNumber.from(0);
+        }
     }
 
     // service fee

@@ -3,10 +3,19 @@ import fetch from 'cross-fetch';
 
 let cache: Record<string, OrderWithCounter> = {};
 
+const getAPIDomain = (environment: "production" | "dev") => {
+    if (environment === "production") {
+        return "https://api.didhub.com";
+    } else {
+        return "https://stage-api.didhub.com";
+    }
+}
+
 export const getOpenseaListingData = async (
     orderId: string,
     signer: string,
-    useCache: boolean = true
+    useCache: boolean = true,
+    environment: "production" | "dev" = "production"
 ) => {
     
     // read from cache
@@ -14,8 +23,10 @@ export const getOpenseaListingData = async (
       return cache[orderId + signer];
     }
 
+    const API_DOMAIN = getAPIDomain(environment);
+
     const response = await fetch(
-        `https://api.didhub.com/nftmarketplace/v1/opensea/listing?orderId=${orderId}&signer=${signer}`,
+        `${API_DOMAIN}/nftmarketplace/v1/opensea/listing?orderId=${orderId}&signer=${signer}`,
         {
             method: 'GET',
             headers: {
@@ -43,7 +54,8 @@ export const getOpenseaListingData = async (
 export const getOpenseaOfferData = async (
     orderId: string,
     signer: string,
-    useCache: boolean = true
+    useCache: boolean = true,
+    environment: "production" | "dev" = "production"
 ) => {
 
     // read from cache
@@ -51,8 +63,9 @@ export const getOpenseaOfferData = async (
       return cache[orderId + signer];
     }
 
+    const API_DOMAIN = getAPIDomain(environment);
     const response = await fetch(
-        `https://api.didhub.com/nftmarketplace/v1/opensea/offer?orderId=${orderId}&signer=${signer}`,
+        `${API_DOMAIN}/nftmarketplace/v1/opensea/offer?orderId=${orderId}&signer=${signer}`,
         {
             method: 'GET',
             headers: {
@@ -79,7 +92,8 @@ export const getOpenseaOfferData = async (
 
 export const postOpenseaOfferData = async (
     orders: OrderWithCounter[],
-    chain: string
+    chain: string,
+    environment: "production" | "dev" = "production"
 ) => {
 
     let orderData = orders.map((o) => {
@@ -91,8 +105,9 @@ export const postOpenseaOfferData = async (
       }
     });
 
+    const API_DOMAIN = getAPIDomain(environment);
     const response = await fetch(
-      "https://api.didhub.com/nftmarketplace/v1/opensea/offer",
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/offer`,
       {
         method: "POST",
         headers: {
@@ -118,7 +133,8 @@ export const postOpenseaOfferData = async (
 
 export const postOpenseaListingData = async (
     order: OrderWithCounter[],
-    chain: string
+    chain: string,
+    environment: "production" | "dev" = "production"
 ) => {
 
     let orderData = order.map((o) => {
@@ -130,8 +146,9 @@ export const postOpenseaListingData = async (
       }
     });
 
+    const API_DOMAIN = getAPIDomain(environment);
     const response = await fetch(
-        "https://api.didhub.com/nftmarketplace/v1/opensea/listing",
+        `${API_DOMAIN}/nftmarketplace/v1/opensea/listing`,
         {
           method: "POST",
           headers: {
@@ -156,11 +173,13 @@ export const postOpenseaListingData = async (
 }
 
 export const getOrders = async (
-    orderIds: string[]
+    orderIds: string[],
+    environment: "production" | "dev" = "production"
 ) => {
 
+    const API_DOMAIN = getAPIDomain(environment);
     const response = await fetch(
-        "https://api.didhub.com/nftmarketplace/v1/opensea/orders",
+        `${API_DOMAIN}/nftmarketplace/v1/opensea/orders`,
         {
             method: "POST",
             headers: {

@@ -8,7 +8,7 @@ const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const maxFeePerGas = BigNumber.from("50000000000") // 25 gwei
 
-const provider = new ethers.providers.JsonRpcBatchProvider(process.env.POLYGON_URL);
+const provider = new ethers.providers.JsonRpcBatchProvider(process.env.MAINNET_URL);
 // init signer from private key
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 // swap the above with metamask provider if used in frontend
@@ -18,8 +18,8 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "POLYGON:0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945",
-        nameKey: "Lens Protocol:lens.henrywfyeung123456kkk",
+        collectionInfo: "ETHEREUM:0x2a187453064356c898cae034eaed119e1663acb8",
+        nameKey: "Decentraland Names:eth.dcl.ellite",
         duration: 365,
     }
 ];
@@ -111,6 +111,6 @@ const estimatedGas = await sdk.register.estimateGas.batchRegister(registrationDa
 console.log("Estimated Gas", estimatedGas.toString());
 
 // // register
-const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax, maxFeePerGas);
-await registerTx.wait();
-console.log(`Register transaction hash: ${registerTx.hash}`);
+// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax, maxFeePerGas);
+// await registerTx.wait();
+// console.log(`Register transaction hash: ${registerTx.hash}`);

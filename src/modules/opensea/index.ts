@@ -17,8 +17,11 @@ import { utils as projectUtils } from "../utils";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
-    provider: providers.JsonRpcSigner
+    provider: providers.JsonRpcSigner,
+    environment: "production" | "dev"
 ): IOpensea => {
+
+    const USE_CACHE = true;
 
     const fulfillerConduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000";
     
@@ -108,7 +111,7 @@ export const openseaInit: IOpenseaInit = (
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
         
         const order = await executeAllActions();
-        const data = await postOpenseaListingData([order], chain);
+        const data = await postOpenseaListingData([order], chain, environment);
         
         return data;
     }
@@ -129,7 +132,7 @@ export const openseaInit: IOpenseaInit = (
       orderId: string
     ): Promise<OrderWithCounter> => {
 
-      const response = await getOpenseaListingData(orderId, await provider.getAddress());
+      const response = await getOpenseaListingData(orderId, await provider.getAddress(), USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -142,7 +145,7 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<IOrderData> => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
       // the batch purchase contract is the intermediate step that receives the nft and deliver to the users
-      const response = await getOpenseaOfferData(orderId, batchPurchaseContract.address);
+      const response = await getOpenseaOfferData(orderId, batchPurchaseContract.address, USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -165,7 +168,7 @@ export const openseaInit: IOpenseaInit = (
       orderId: string
     ):Promise<ContractTransaction> => {  
       // fetch data from opensea
-      const response = await getOpenseaOfferData(orderId, await provider.getAddress());
+      const response = await getOpenseaOfferData(orderId, await provider.getAddress(), USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -394,7 +397,7 @@ export const openseaInit: IOpenseaInit = (
     const cancelOrders = async (
         orderIds: string[]
     ) => {
-        const orderComponents = await getOrders(orderIds);
+        const orderComponents = await getOrders(orderIds, environment);
         const nonNullOrders = orderComponents.filter((order: any) => order !== null);
         if (nonNullOrders.length === 0) {
             throw new Error("No existing orders found");
@@ -430,7 +433,7 @@ export const openseaInit: IOpenseaInit = (
       );
       
       const orders = await executeAllActions();
-      const data = await postOpenseaListingData(orders, chain);
+      const data = await postOpenseaListingData(orders, chain, environment);
 
       return data;
     }
@@ -509,7 +512,7 @@ export const openseaInit: IOpenseaInit = (
       );
       
       const orders = await executeAllActions();
-      const data = await postOpenseaOfferData(orders, chain);
+      const data = await postOpenseaOfferData(orders, chain, environment);
 
       return data;
     }
@@ -528,7 +531,7 @@ export const openseaInit: IOpenseaInit = (
       const { executeAllActions } = await seaportSDK.createOrder(orderInput,signerAddress);
       
       const order = await executeAllActions();
-      const data = await postOpenseaOfferData([order], chain);
+      const data = await postOpenseaOfferData([order], chain, environment);
       
       return data;
     }
@@ -574,7 +577,8 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<BigNumber> => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
       let price = await provider.getGasPrice();
-      let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
+      try {
+        let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
         await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedListingOrders(
           advancedOrders,
           [],
@@ -597,6 +601,9 @@ export const openseaInit: IOpenseaInit = (
           advancedOrders.length
         );
       return estimatedGas.mul(price);
+      } catch {
+        return BigNumber.from(0);
+      }
     }
 
     const fulfillOffersEstimateGas = async (
@@ -625,7 +632,8 @@ export const openseaInit: IOpenseaInit = (
       });
 
       let price = await provider.getGasPrice();
-      let estimatedGas = await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedOfferOrders(
+      try {
+        let estimatedGas = await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
@@ -636,13 +644,22 @@ export const openseaInit: IOpenseaInit = (
           advancedOrders.length
         );
       return estimatedGas.mul(price);
+      } catch {
+        return BigNumber.from(0);
+      }
     }
     
     const approveERC721orERC1155TokensEstimateGas = async (
       tokenAddress: string
     ): Promise<BigNumber> => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      return await projectUtils(provider).estimateGas.approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
+      let price = await provider.getGasPrice();
+      try {
+        const estimatedGas = await projectUtils(provider).estimateGas.approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
+        return estimatedGas.mul(price);
+      } catch {
+        return BigNumber.from(0);
+      }
     }
 
     const approveERC20TokensEstimateGas = async (
@@ -650,7 +667,13 @@ export const openseaInit: IOpenseaInit = (
       tokenAmount: BigNumberish
     ): Promise<BigNumber> => {
       const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      return await projectUtils(provider).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
+      let price = await provider.getGasPrice();
+      try {
+        const estimatedGas = await projectUtils(provider).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
+        return estimatedGas.mul(price);  
+      } catch {
+        return BigNumber.from(0);
+      }
     }
 
     return {
