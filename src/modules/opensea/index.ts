@@ -10,7 +10,7 @@ import {
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { ContractTransaction, providers, BigNumber, BigNumberish } from "ethers";
-import { getOpenseaListingData, getOpenseaOfferData, getOrders, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -126,6 +126,13 @@ export const openseaInit: IOpenseaInit = (
       });
       const tx = await executeAllFulfillActions();
       return tx;
+    }
+
+    const checkOrderValidity = async (
+      orderIds: string[]
+    ): Promise<boolean[]> => {
+      const isValid = await getOrdersValidity(orderIds, environment);
+      return isValid;
     }
 
     const fetchOpenseaListingOrder = async (
@@ -693,6 +700,7 @@ export const openseaInit: IOpenseaInit = (
         batchCheckApprovalERC20: batchCheckApprovalERC20,
         approveERC20Tokens: approveERC20Tokens,
         approveERC721orERC1155Tokens: approveERC721orERC1155Tokens,
+        checkOrderValidity: checkOrderValidity,
 
         estimateGas: {
           fulfillListings: fulfillListingsEstimateGas,

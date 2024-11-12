@@ -233,6 +233,18 @@ export interface IOpensea {
         amount: BigNumberish
     ) => Promise<ContractTransaction | null>
 
+    /**
+     * @note This function is used to check whether a list of orders are still valid. Orders 
+     * could be invalid if the listing has been cancelled or accepted, or the token has been 
+     * transferred to another address
+     * 
+     * @param orderIds a list of orderId to check
+     * @returns boolean array indicating whether the corresponding order is valid
+     */
+    checkOrderValidity: (
+        orderIds: string[]
+    ) => Promise<boolean[]>
+
     estimateGas: {
         approveERC20Tokens: (
             tokenAddress: string,

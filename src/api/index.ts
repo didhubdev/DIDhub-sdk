@@ -204,3 +204,36 @@ export const getOrders = async (
     
     return data.data;
 }
+
+export const getOrdersValidity = async (
+  orderIds: string[],
+  environment: "production" | "dev" = "production"
+) => {
+
+  const API_DOMAIN = getAPIDomain(environment);
+  const response = await fetch(
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/orders/validity`,
+      {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            orderIds: orderIds
+          })
+        },
+  );
+  
+  if (response.status === 429) {
+    throw new Error('Too Many Requests');
+  }
+  
+  const data = await response.json();
+  
+  // save to cache
+  if (data.code !== 1) {
+    throw new Error(data.message);
+  }
+  
+  return data.data;
+}

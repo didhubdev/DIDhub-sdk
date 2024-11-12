@@ -18,9 +18,9 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "ETHEREUM:0x2a187453064356c898cae034eaed119e1663acb8",
-        nameKey: "Decentraland Names:eth.dcl.ellite",
-        duration: 365,
+        collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
+        nameKey: "ENS:eth.satoshirave1",
+        duration: 365 * 86500, // 365 days
     }
 ];
 
@@ -30,7 +30,7 @@ const paymentToken = ZERO_ADDRESS;
 // =============================================================================
 
 // instantiate SDK
-const sdk = new DIDhubSDK(signer, secret);
+const sdk = new DIDhubSDK(signer, "dev", secret);
 
 // check platform fee
 const platformFee = await sdk.register.didhubFee();
@@ -45,7 +45,7 @@ availabilityStatus.forEach((status, index) => {
         domainsAvailable.push(domains[index]);
     }
     console.log(`Domain ${domains[index].nameKey} is ${status ? "available" : "not available"}`);
-});  
+});
 
 // get price
 const individualPrices = await sdk.register.getIndividualPrice(domainsAvailable);
@@ -82,8 +82,14 @@ if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
 
     // wait some time (20 seconds should be sufficient for bsc)
     console.log("Waiting for 60 seconds for the commitment to be mined...");
-    await new Promise(resolve => setTimeout(resolve, 60000));
+    await new Promise(resolve => setTimeout(resolve, 65000));
+
+    // get commitment status
+    console.log('Fetching Commit Status Again')
+    const commitmentStatusAgain = await sdk.register.batchCheckCommitment(domainsAvailable);
+    console.log(commitmentStatusAgain);
 }
+
 // get price info for purchase
 console.log("Getting price info for purchase...");
 const registrationData = await sdk.register.getPriceWithMargin(domainsAvailable, paymentToken, margin);
