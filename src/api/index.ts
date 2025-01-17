@@ -100,7 +100,7 @@ export const postOpenseaOfferData = async (
       return {
         parameters: o.parameters,
         signature: o.signature,
-        protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+        protocolAddress: "0x0000000000000068f116a894984e2db1123eb395",
         chain: chain
       }
     });
@@ -141,7 +141,7 @@ export const postOpenseaListingData = async (
       return {
         parameters: o.parameters,
         signature: o.signature,
-        protocolAddress: "0x00000000000000ADc04C56Bf30aC9d3c0aAF14dC",
+        protocolAddress: "0x0000000000000068f116a894984e2db1123eb395",
         chain: chain
       }
     });
