@@ -7,7 +7,7 @@ import { BigNumberish, ContractTransactionResponse, JsonRpcSigner, ethers } from
 import { ZERO_ADDRESS } from '../../config';
 
 export const batchRegistration: IBatchRegistration = (
-    signer: JsonRpcSigner,
+    signer:  JsonRpcSigner,
     secret: string
 ): IBatchRegister => {;
 

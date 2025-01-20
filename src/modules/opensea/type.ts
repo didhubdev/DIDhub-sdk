@@ -1,6 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { Data, IFTStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { BigNumberish, BytesLike, ContractTransaction, ContractTransactionResponse, JsonRpcSigner } from "ethers";
+import { BigNumberish, BytesLike, ContractTransaction, ContractTransactionResponse, JsonRpcSigner, TransactionResponse } from "ethers";
 import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
 
 export enum ItemType {
@@ -185,7 +185,7 @@ export interface IOpensea {
      */
     cancelOrders: (
         orderIds: string[]
-    ) => Promise<ContractTransaction>,
+    ) => Promise<TransactionResponse>,
 
     /**
      * @note This function checks whether the opensea conduit have been given approvel to use the given tokens

@@ -1,4 +1,4 @@
-import { JsonRpcSigner, isBytesLike, solidityPackedKeccak256 } from "ethers";
+import { BrowserProvider, JsonRpcSigner, Signer, isBytesLike, solidityPackedKeccak256 } from "ethers";
 
 import { batchRegistration, IBatchRegister, IOpensea, IUtils, openseaInit, batchTransferInit, batchENSManagerInit, utils } from "./modules";
 import { IDIDhubSDK } from "./type";
@@ -29,13 +29,13 @@ class DIDhubSDK implements IDIDhubSDK {
      * @param {string} [secret] the secret a 32 bytes hex string
      */
     public constructor(
-        signer: any,
+        signer: JsonRpcSigner,
         environment: "production" | "dev" = "production",
         secret?: string
     ) {
 
         this.seaportSDK = new SeaportSDK(
-            signer
+            signer as any
         )
         
         if (secret === undefined) {
@@ -46,7 +46,7 @@ class DIDhubSDK implements IDIDhubSDK {
         this.secret = secret;
         
         this.did = batchRegistration(
-            signer as JsonRpcSigner,
+            signer,
             this.secret
         );
 

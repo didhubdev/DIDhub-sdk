@@ -1,5 +1,5 @@
 import { getBatchENSManagerContract } from '../../contracts/didhub';
-import { JsonRpcSigner, ethers, keccak256, namehash, toUtf8Bytes } from 'ethers'
+import { BrowserProvider, JsonRpcSigner, Signer, ethers, keccak256, namehash, toUtf8Bytes } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
 import { utils } from '../../modules/utils';

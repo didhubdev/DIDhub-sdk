@@ -176,6 +176,7 @@ function VestingInterface() {
   };
 
   const cancelOrder = async () => {
+    console.log(`Cancelling order ${orderId}`);
     const tx = await sdk.opensea.cancelOrders(
       [orderId]
     );

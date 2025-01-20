@@ -8,7 +8,7 @@ import {
     IOrderData
 } from "./type"
 
-import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse } from "ethers";
+import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
@@ -405,7 +405,7 @@ export const openseaInit: IOpenseaInit = (
 
     const cancelOrders = async (
         orderIds: string[]
-    ) => {
+    ): Promise<TransactionResponse> => {
         const orderComponents = await getOrders(orderIds, environment);
         const nonNullOrders = orderComponents.filter((order: any) => order !== null);
         if (nonNullOrders.length === 0) {
@@ -416,7 +416,7 @@ export const openseaInit: IOpenseaInit = (
           orderComponents,
             signerAddress
         );
-        const tx = await transaction.buildTransaction();
+        const tx = await transaction.transact();
         return tx;
     }
 
