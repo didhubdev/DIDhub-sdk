@@ -1,7 +1,7 @@
 // VestingInterface.js
 
-import React, { useState } from 'react';
-import { ethers } from 'ethers';
+import React, { useEffect, useState } from 'react';
+import { BrowserProvider } from 'ethers';
 
 import { DIDhubSDK } from '@didhubdev/sdk';
 
@@ -24,28 +24,37 @@ dotenv.config();
 
 function VestingInterface() {
 
-  const [chain, setChain] = useState("ARBITRUM");
+  const [chain, setChain] = useState("POLYGON");
   const [orderId, setOrderId] = useState();
-  const [tokenAddress, setTokenAddress] = useState("0x5d482d501b369f5ba034dec5c5fb7a50d2d6ca20");
-  const [tokenId, setTokenId] = useState("52492076887691664011327311101779585587025155497779924969137510609172948393659");
+  const [tokenAddress, setTokenAddress] = useState("0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945");
+  const [tokenId, setTokenId] = useState("21804149240512519351319157421600715564218877079961204561257730983429600051210");
   const [amount, setAmount] = useState();
-  const [paymentToken, setPaymentToken] = useState("0x0000000000000000000000000000000000000000");
+  const [paymentToken, setPaymentToken] = useState("0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359");
 
   const [orderId2, setOrderId2] = useState();
-  const [tokenAddress2, setTokenAddress2] = useState("0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6");
-  const [tokenId2, setTokenId2] = useState("62989861101794962219924061081957215181955279530765526469477249127872642808190");
+  const [tokenAddress2, setTokenAddress2] = useState("0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945");
+  const [tokenId2, setTokenId2] = useState("58870960196819387276912420065978610371126417477681201313179941299885900374123");
   const [amount2, setAmount2] = useState();
 
-  const metamask = window.ethereum;
+  const [sdk, setSdk] = useState();
 
-  const provider = new ethers.providers.Web3Provider(metamask);
-  const signer = provider.getSigner();
-  const sdk = new DIDhubSDK(
-    signer,
-    "0x0000000000000000000000000000000000000000000000000000000000000000"
-  );
+  useEffect(() => {
+    const metamask = window.ethereum;
+    const provider = new BrowserProvider(metamask);
+    provider.getSigner().then((signer) => {
+      const sdk = new DIDhubSDK(
+        signer,
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      );
+      setSdk(sdk);
+    })
+  });
+
 
   const fulfillOffers = async () => {
+
+    if (!sdk) return;
+
     // const tx = await sdk.opensea.fulfillOffer(
     //   orderId
     // );

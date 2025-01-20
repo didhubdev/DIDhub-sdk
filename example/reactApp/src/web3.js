@@ -1,12 +1,9 @@
 import { InjectedConnector } from '@web3-react/injected-connector';
-import { ethers } from 'ethers';
+import { BrowserProvider } from 'ethers';
 
-// export const provider = new ethers.providers.JsonRpcProvider(
-//   "https://data-seed-prebsc-1-s1.binance.org:8545"
-// );
 
 export const getProvider = (provider) =>
-  new ethers.providers.Web3Provider(provider);
+  new BrowserProvider(provider);
 
 export function web3Callback(resolve, reject) {
   return (error, value) => {
