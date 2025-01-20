@@ -1,7 +1,6 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { IFTStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { SwapInfoStruct } from "../../contracts/seaport/artifacts";
-import { BigNumberish, BytesLike, ContractTransaction, JsonRpcSigner } from "ethers";
+import { Data, IFTStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { BigNumberish, BytesLike, ContractTransaction, ContractTransactionResponse, JsonRpcSigner } from "ethers";
 import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
 
 export enum ItemType {
@@ -153,7 +152,7 @@ export interface IOpensea {
         advancedOrders: AdvancedOrderStruct[],
         paymentToken: string,
         margin: number
-    ) => Promise<SwapInfoStruct>,
+    ) => Promise<Data.SwapInfoStruct>,
 
     /**
      * @note This function is used to fulfill a list of listings on Opensea
@@ -165,8 +164,8 @@ export interface IOpensea {
      */
     fulfillListings: (
         advancedOrders: AdvancedOrderStruct[],
-        swapInfo: SwapInfoStruct
-    ) => Promise<ContractTransaction>,
+        swapInfo: Data.SwapInfoStruct
+    ) => Promise<ContractTransactionResponse>,
 
         /**
      * @note This function is used to fulfill a list of offers on Opensea
@@ -177,7 +176,7 @@ export interface IOpensea {
      */
     fulfillOffers: (
         advancedOrders: AdvancedOrderStruct[]
-    ) => Promise<ContractTransaction>,
+    ) => Promise<ContractTransactionResponse>,
     
     /**
      * @note This function is used to cancel a list of listings on Opensea
@@ -219,7 +218,7 @@ export interface IOpensea {
      */
     approveERC721orERC1155Tokens: (
         tokenAddress: string
-    ) => Promise<ContractTransaction | null>,
+    ) => Promise<ContractTransactionResponse | null>,
 
     /**
      * @note This function is used to approve a list of ERC20 tokens on Opensea conduit address
@@ -232,7 +231,7 @@ export interface IOpensea {
     approveERC20Tokens: (
         tokenAddress: string,
         amount: BigNumberish
-    ) => Promise<ContractTransaction | null>
+    ) => Promise<ContractTransactionResponse | null>
 
     /**
      * @note This function is used to check whether a list of orders are still valid. Orders 
@@ -256,7 +255,7 @@ export interface IOpensea {
         ) => Promise<bigint>,
         fulfillListings: (
             advancedOrders: AdvancedOrderStruct[],
-            swapInfo: SwapInfoStruct
+            swapInfo: Data.SwapInfoStruct
         ) => Promise<bigint>,
         fulfillOffers: (
             advancedOrders: AdvancedOrderStruct[]

@@ -8,7 +8,7 @@ import {
     IOrderData
 } from "./type"
 
-import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike } from "ethers";
+import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
@@ -188,8 +188,8 @@ export const openseaInit: IOpenseaInit = (
 
     const getOfferFulfillmentData = (
       advancedOrders: AdvancedOrderStruct[]
-    ): FulfillmentComponentStruct[] =>{
-      let offerData: FulfillmentComponentStruct[] = [];
+    ): FulfillmentComponentStruct[][] =>{
+      let offerData: FulfillmentComponentStruct[][] = [];
       for (let i = 0; i < advancedOrders.length; i++) {
         advancedOrders[i].parameters.offer.forEach((item, j)=>{
           offerData.push([{orderIndex: i, itemIndex: j}]);
@@ -200,8 +200,8 @@ export const openseaInit: IOpenseaInit = (
 
     const getConsiderationFulfillmentData = (
       advancedOrders: AdvancedOrderStruct[]
-    ): FulfillmentComponentStruct[]  => {
-      let considerationData: FulfillmentComponentStruct[] = [];
+    ): FulfillmentComponentStruct[][]  => {
+      let considerationData: FulfillmentComponentStruct[][] = [];
       for (let i = 0; i < advancedOrders.length; i++) {
         advancedOrders[i].parameters.consideration.forEach((item, j)=>{
           considerationData.push([{orderIndex: i, itemIndex: j}]);
@@ -319,7 +319,7 @@ export const openseaInit: IOpenseaInit = (
     const fulfillListings = async (
       advancedOrders: AdvancedOrderStruct[],
       swapInfo: Data.SwapInfoStruct
-    ): Promise<ContractTransaction> => {
+    ): Promise<ContractTransactionResponse> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
 
@@ -353,7 +353,7 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillOffers = async (
       advancedOrders: AdvancedOrderStruct[]
-    ): Promise<ContractTransaction> => {
+    ): Promise<ContractTransactionResponse> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
       
@@ -416,7 +416,7 @@ export const openseaInit: IOpenseaInit = (
           orderComponents,
             signerAddress
         );
-        const tx = await transaction.transact();
+        const tx = await transaction.buildTransaction();
         return tx;
     }
 
@@ -563,7 +563,7 @@ export const openseaInit: IOpenseaInit = (
 
     const approveERC721orERC1155Tokens = async (
       tokenAddress: string
-    ): Promise<ContractTransaction | null> => {
+    ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
       const tx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress());
       return tx;
@@ -572,7 +572,7 @@ export const openseaInit: IOpenseaInit = (
     const approveERC20Tokens = async (
       tokenAddress: string,
       tokenAmount: BigNumberish
-    ): Promise<ContractTransaction | null> => {
+    ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
       const tx = await projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount);
       return tx;
@@ -583,9 +583,9 @@ export const openseaInit: IOpenseaInit = (
     const fulfillListingsEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[],
       swapInfo: Data.SwapInfoStruct
-    ): Promise<BigInt> => {
+    ): Promise<bigint> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      let price = await signer.getGasPrice();
+      const feeData = await signer.provider.getFeeData();
       try {
         let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
         await batchPurchaseContract.fulfillAvailableAdvancedListingOrders.estimateGas(
@@ -609,7 +609,7 @@ export const openseaInit: IOpenseaInit = (
           await signer.getAddress(),
           advancedOrders.length
         );
-      return estimatedGas * BigInt(price);
+      return estimatedGas * feeData.gasPrice!;
       } catch {
         return BigInt(0);
       }
@@ -617,7 +617,7 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillOffersEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[]
-    ): Promise<BigInt> => {
+    ): Promise<bigint> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
       
       let fulfillmentItems: IOrderFulfillmentsStruct = {
@@ -640,7 +640,7 @@ export const openseaInit: IOpenseaInit = (
         })
       });
 
-      let price = await signer.getGasPrice();
+      const feeData = await signer.provider.getFeeData();
       try {
         let estimatedGas = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders.estimateGas(
           advancedOrders,
@@ -652,7 +652,7 @@ export const openseaInit: IOpenseaInit = (
           await signer.getAddress(),
           advancedOrders.length
         );
-      return estimatedGas * BigInt(price);
+      return estimatedGas * feeData.gasPrice!;
       } catch {
         return BigInt(0);
       }
@@ -660,12 +660,12 @@ export const openseaInit: IOpenseaInit = (
     
     const approveERC721orERC1155TokensEstimateGas = async (
       tokenAddress: string
-    ): Promise<BigInt> => {
+    ): Promise<bigint> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      let price = await signer.getGasPrice();
+      const feeData = await signer.provider.getFeeData();
       try {
-        const estimatedGas = await projectUtils(signer).approveAllERC721or1155Tokens.estimateGas(tokenAddress, await batchPurchaseContract.getAddress());
-        return estimatedGas * BigInt(price);
+        const estimatedGas = await projectUtils(signer).estimateGas.approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress());
+        return estimatedGas * feeData.gasPrice!;
       } catch {
         return BigInt(0);
       }
@@ -674,14 +674,14 @@ export const openseaInit: IOpenseaInit = (
     const approveERC20TokensEstimateGas = async (
       tokenAddress: string,
       tokenAmount: BigNumberish
-    ): Promise<BigInt> => {
+    ): Promise<bigint> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      let price = await signer.getGasPrice();
+      const feeData = await signer.provider.getFeeData();
       try {
-        const estimatedGas = await projectUtils(signer).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
-        return estimatedGas.mul(price);  
+        const estimatedGas = await projectUtils(signer).estimateGas.approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount);
+        return estimatedGas * feeData.gasPrice!;  
       } catch {
-        return BigNumber.from(0);
+        return BigInt(0);
       }
     }
 

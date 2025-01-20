@@ -67,7 +67,7 @@ export interface IBatchRegister {
      * 
      * @return The transaction object
      */
-    batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<ContractTransaction>;
+    batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<ContractTransactionResponse>;
 
     /**
      * @dev check the availability status of the domain
