@@ -1,4 +1,4 @@
-import { BigNumberish, providers, ContractTransaction, BigNumber } from 'ethers';
+import { BigNumberish, ContractTransactionResponse, JsonRpcSigner } from 'ethers';
 
 export interface IBatchENSManager {
     
@@ -69,7 +69,7 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction
      */
-    batchUnwrap: (nameKeys: string[], to?: string) => Promise<ContractTransaction>,
+    batchUnwrap: (nameKeys: string[], to?: string) => Promise<ContractTransactionResponse>,
 
     /**
      * @dev Wrap the 2LD domain name
@@ -79,34 +79,34 @@ export interface IBatchENSManager {
      * 
      * @return ContractTransaction
      */
-    batchWrap: (nameKeys: string[], to?: string) => Promise<ContractTransaction>
+    batchWrap: (nameKeys: string[], to?: string) => Promise<ContractTransactionResponse>
 
     /**
      * @dev Approve the base implementation contract (Old ENS contract) to spend the token
      * 
      * @return ContractTransaction | null if already approved
      */
-    approveUnwrappedETH2LDDomains: () => Promise<ContractTransaction | null>,
+    approveUnwrappedETH2LDDomains: () => Promise<ContractTransactionResponse | null>,
 
     /**
      * @dev Approve the name wrapper contract to spend the token
      * 
      * @return ContractTransaction | null if already approved
      */
-    approveWrappedETH2LDDomains: () => Promise<ContractTransaction | null>,
+    approveWrappedETH2LDDomains: () => Promise<ContractTransactionResponse | null>,
 
 
     /**
      * @dev Get the gas estimate for the transaction
      */
     estimateGas: {
-        batchUnwrap: (nameKeys: string[], to?: string) => Promise<BigNumber>,
-        batchWrap: (nameKeys: string[], to?: string) => Promise<BigNumber>,
-        approveUnwrappedETH2LDDomains: () => Promise<BigNumber>,
-        approveWrappedETH2LDDomains: () => Promise<BigNumber>
+        batchUnwrap: (nameKeys: string[], to?: string) => Promise<bigint>,
+        batchWrap: (nameKeys: string[], to?: string) => Promise<bigint>,
+        approveUnwrappedETH2LDDomains: () => Promise<bigint>,
+        approveWrappedETH2LDDomains: () => Promise<bigint>
     }
 }
 
 export type IBatchENSManagerInit = (
-    provider: providers.JsonRpcSigner
+    signer: JsonRpcSigner
 ) => IBatchENSManager;

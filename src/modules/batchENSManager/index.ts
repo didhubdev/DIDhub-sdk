@@ -1,11 +1,11 @@
 import { getBatchENSManagerContract } from '../../contracts/didhub';
-import { providers, ethers, BigNumber } from 'ethers'
+import { JsonRpcSigner, ethers, keccak256, namehash, toUtf8Bytes } from 'ethers'
 import { IBatchENSManager, IBatchENSManagerInit } from './type';
 import { getENSTokenWrapParams } from '../../utils';
 import { utils } from '../../modules/utils';
 
 export const batchENSManagerInit: IBatchENSManagerInit = (
-    provider: providers.JsonRpcSigner
+    signer: JsonRpcSigner
 ): IBatchENSManager => {
 
     const nameKey2Names = (nameKeys: string[]) => {
@@ -19,24 +19,24 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     const name2TokenId = (names: string[]) => {
         // convert name into tokenIds
         const tokenIds = names.map(name => {
-            return ethers.utils.keccak256(
-                ethers.utils.toUtf8Bytes(name)
+            return keccak256(
+                toUtf8Bytes(name)
             );
         });
         return tokenIds;
     }
 
     const getFixedFee = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
         return fixedFee;
     }
     
     const checkFee = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
-        const balance = await provider.getBalance(await provider.getAddress());
-        return balance.gt(fixedFee);
+        const balance = await signer.provider.getBalance(await signer.getAddress());
+        return balance > fixedFee;
     }
 
     const batchCheckWrapStatus = async (
@@ -44,7 +44,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     ) => {
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const wrapStatus = await batchENSManagerContract.isWrapped(
             tokenIds
         );
@@ -57,7 +57,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
         const ownerStatus = await Promise.all(tokenIds.map(async (tokenId) => {
-            return await utils(provider).isERC721Owner(
+            return await utils(signer).isERC721Owner(
                 "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85", // ENS Base Implementation
                 tokenId
             );
@@ -71,11 +71,11 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         const names = nameKey2Names(nameKeys);
         // convert 2LD name into name wrapper node
         const nodes = names.map(name => {
-            return ethers.utils.namehash(name + ".eth");
+            return namehash(name + ".eth");
         });
 
         const ownerStatus = await Promise.all(nodes.map(async (node) => {
-            return await utils(provider).isERC721Owner(
+            return await utils(signer).isERC721Owner(
                 "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401", // ENS Name Wrapper
                 node
             );
@@ -88,7 +88,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     ) => {
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const checkApproval = await batchENSManagerContract.hasApproval(
             tokenIds
         );
@@ -100,11 +100,11 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         to?: string
     ) => {
         if (!to) {
-            to = await provider.getAddress();
+            to = await signer.getAddress();
         }
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
         const batchUnwrapTx = await batchENSManagerContract.batchUnwrap(
             tokenIds,
@@ -120,7 +120,7 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     ) => {
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const checkApproval = await batchENSManagerContract.hasApprovalNameWrapper(
             tokenIds
         );
@@ -132,15 +132,15 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         to?: string
     ) => {
         if (!to) {
-            to = await provider.getAddress();
+            to = await signer.getAddress();
         }
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const owner = await provider.getAddress();
+        const owner = await signer.getAddress();
         // get data
         const datas = getENSTokenWrapParams(names, owner);
 
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
         const batchWrapTx = await batchENSManagerContract.batchWrap(
             tokenIds,
@@ -153,18 +153,18 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
     }
 
     const approveUnwrappedETH2LDDomains = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         // select the contract address for approval
         const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
-        const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        const approvalTx = await utils(signer).approveAllERC721or1155Tokens(contractAddresses, await batchENSManagerContract.getAddress());
         return approvalTx;
     }
 
     const approveWrappedETH2LDDomains = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         // select the contract address for approval
         const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
-        const approvalTx = await utils(provider).approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
+        const approvalTx = await utils(signer).approveAllERC721or1155Tokens(contractAddresses, await batchENSManagerContract.getAddress());
         return approvalTx;
     }
         
@@ -174,22 +174,22 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         to?: string
     ) => {
         if (!to) {
-            to = await provider.getAddress();
+            to = await signer.getAddress();
         }
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
-        const price = await provider.getGasPrice();
+        const feeData = await signer.provider.getFeeData();
         try {
-            const estimatedGas = await batchENSManagerContract.estimateGas.batchUnwrap(
+            const estimatedGas = await batchENSManagerContract.batchUnwrap.estimateGas(
                 tokenIds,
                 to,
                 {value: fixedFee}
             );
-            return estimatedGas.mul(price);
+            return estimatedGas * feeData.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
@@ -198,53 +198,53 @@ export const batchENSManagerInit: IBatchENSManagerInit = (
         to?: string
     ) => {
         if (!to) {
-            to = await provider.getAddress();
+            to = await signer.getAddress();
         }
         const names = nameKey2Names(nameKeys);
         const tokenIds = name2TokenId(names);
-        const owner = await provider.getAddress();
+        const owner = await signer.getAddress();
         // get data
         const datas = getENSTokenWrapParams(names, owner);
 
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         const fixedFee = await batchENSManagerContract.fixedFee();
-        const price = await provider.getGasPrice();
+        const feeData = await signer.provider.getFeeData();
         try {
-            const estimatedGas = await batchENSManagerContract.estimateGas.batchWrap(
+            const estimatedGas = await batchENSManagerContract.batchWrap.estimateGas(
                 tokenIds,
                 datas,
                 to,
                 {value: fixedFee}
             );
-            return estimatedGas.mul(price);
+            return estimatedGas * feeData.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const approveUnwrappedETH2LDDomainsEstimateGas = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         // select the contract address for approval
         const contractAddresses = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85"; // unlikely to change
-        const price = await provider.getGasPrice();
+        const feeData = await signer.provider.getFeeData();
         try {
-            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
-            return estimatedGas.mul(price);    
+            const estimatedGas = await utils(signer).estimateGas.approveAllERC721or1155Tokens(contractAddresses, await batchENSManagerContract.getAddress());
+            return estimatedGas * feeData.gasPrice!;    
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const approveWrappedETH2LDDomainsEstimateGas = async () => {
-        const batchENSManagerContract = await getBatchENSManagerContract(provider);
+        const batchENSManagerContract = await getBatchENSManagerContract(signer);
         // select the contract address for approval
         const contractAddresses = "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401"; // unlikely to change
-        const price = await provider.getGasPrice();
+        const feeData = await signer.provider.getFeeData();
         try {
-            const estimatedGas = await utils(provider).estimateGas.approveAllERC721or1155Tokens(contractAddresses, batchENSManagerContract.address);
-            return estimatedGas.mul(price);
+            const estimatedGas = await utils(signer).estimateGas.approveAllERC721or1155Tokens(contractAddresses, await batchENSManagerContract.getAddress());
+            return estimatedGas * feeData.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 

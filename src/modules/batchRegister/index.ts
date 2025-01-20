@@ -1,24 +1,24 @@
 import { getBatchRegisterContract } from '../../contracts/didhub';
 import { ERC20__factory } from '../../contracts/tokens';
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct, RenewInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
+import { Data } from '../../contracts/didhub/batchRegister/BatchRegister';
 import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, ITokenInfo, IRenewData, IRegistrationData, IRenewCheck } from './type';
 import { getPriceRequest, getRegistrationInfo, unwrapResult, getRenewInfo } from '../../utils';
-import { BigNumber, BigNumberish, ContractTransaction, ethers, providers } from 'ethers';
+import { BigNumberish, ContractTransactionResponse, JsonRpcSigner, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
 
 export const batchRegistration: IBatchRegistration = (
-    provider: providers.JsonRpcSigner,
+    signer: JsonRpcSigner,
     secret: string
 ): IBatchRegister => {;
 
     const batchMakeCommitments = async (
         domains: IDomainInfo[]
-    ): Promise<CommitmentInfoStructOutput[]> => {
+    ): Promise<Data.CommitmentInfoStructOutput[]> => {
 
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const registrationInfo  = getRegistrationInfo(
             domains,
-            await batchRegisterContract.signer.getAddress(),
+            await signer.getAddress(),
             secret
         )
         
@@ -29,16 +29,16 @@ export const batchRegistration: IBatchRegistration = (
     }
 
     const batchCommit = async (
-        commitmentInfos: CommitmentInfoStructOutput[]
-    ): Promise<ContractTransaction> => {
+        commitmentInfos: Data.CommitmentInfoStructOutput[]
+    ): Promise<ContractTransactionResponse> => {
         
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const feeData = await provider.getFeeData();
-        const estimatedGas = await batchRegisterContract.estimateGas.batchCommit(commitmentInfos);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const feeData = await signer.provider.getFeeData()
+        const estimatedGas = await batchRegisterContract.batchCommit.estimateGas(commitmentInfos);
         const tx = await batchRegisterContract.batchCommit(
             commitmentInfos,
             {
-                gasLimit: estimatedGas.mul(120).div(100),
+                gasLimit: estimatedGas * BigInt(120) / BigInt(100),
                 gasPrice: feeData.gasPrice!
             }
         );
@@ -48,7 +48,7 @@ export const batchRegistration: IBatchRegistration = (
     const batchCheckCommitment = async (
         domains: IDomainInfo[]
     ): Promise<number[]> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos = await batchMakeCommitments(domains);       
         let commitmentStatusResult = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
@@ -60,10 +60,10 @@ export const batchRegistration: IBatchRegistration = (
     const batchCheckAvailability = async (
         domains: IDomainInfo[]
     ): Promise<boolean[]> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const registrationInfo = getRegistrationInfo(
             domains,
-            await batchRegisterContract.signer.getAddress(),
+            await signer.getAddress(),
             secret
         );
 
@@ -79,30 +79,30 @@ export const batchRegistration: IBatchRegistration = (
     const getTotalPrice = async (
         domains: IDomainInfo[],
         paymentToken: string
-    ): Promise<BigNumber[]> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+    ): Promise<bigint[]> => {
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const priceRequestStructs  = getPriceRequest(domains);
-        let totalPrice = await batchRegisterContract.callStatic.getTotalPrice(
+        let totalPrice = await batchRegisterContract.getTotalPrice.staticCall(
             priceRequestStructs,
             paymentToken
         );
         
         // add contract fee to total price
         let fee = await batchRegisterContract.feeBasisPt();
-        totalPrice = totalPrice.map(p=>p.mul(fee.toNumber()+10000).div(10000));
+        totalPrice = totalPrice.map(p=>p * (fee + BigInt(10000)) / BigInt(10000));
         
         return totalPrice;
     }
 
     const getIndividualPrice = async (
         domains: IDomainInfo[]
-    ): Promise<DomainPriceInfoStruct[]> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+    ): Promise<Data.DomainPriceInfoStruct[]> => {
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const priceRequestStructs  = getPriceRequest(domains);
-        const individualPrices = await batchRegisterContract.callStatic.getIndividualPrices(
+        const individualPrices = await batchRegisterContract.getIndividualPrices.staticCall(
             priceRequestStructs
         );
-        const priceList: DomainPriceInfoStruct[] = unwrapResult(domains, individualPrices, "prices");
+        const priceList: Data.DomainPriceInfoStruct[] = unwrapResult(domains, individualPrices, "prices");
         return priceList;
     }
 
@@ -111,8 +111,8 @@ export const batchRegistration: IBatchRegistration = (
         paymentToken: string,
         margin: number
     ): Promise<IRegistrationData> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const owner = await batchRegisterContract.signer.getAddress();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const owner = await signer.getAddress();
         let requests = getRegistrationInfo(domains, owner, secret);
         const totalPrices = await getTotalPrice(domains, paymentToken);
 
@@ -122,11 +122,11 @@ export const batchRegistration: IBatchRegistration = (
         // enrich request
         requests = requests.map((r, i) => {
             r.paymentToken = paymentToken;
-            r.paymentMax = totalPrices[i].mul(100 + margin).div(100);
+            r.paymentMax = totalPrices[i] * BigInt(100 + margin) / BigInt(100);
             return r;
         });
-        const totalPrice = totalPrices.map(p=>p.mul(100 + margin).div(100)).reduce((a,b)=>a.add(b));
-        const totalPriceWithFee = totalPrice.mul(didhubFee.toNumber()+10000).div(10000);
+        const totalPrice = totalPrices.map(p=>p * BigInt(100 + margin) / BigInt(100)).reduce((a,b)=>a + b);
+        const totalPriceWithFee = totalPrice * (didhubFee + BigInt(10000)) / BigInt(10000);
         return {
             requests: requests,
             paymentToken: paymentToken,
@@ -139,8 +139,8 @@ export const batchRegistration: IBatchRegistration = (
         paymentToken: string,
         margin: number
     ): Promise<IRenewData> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const owner = await batchRegisterContract.signer.getAddress();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const owner = await signer.getAddress();
         let requests = getRenewInfo(domains, owner, secret);
         const totalPrices = await getTotalPrice(domains, paymentToken);
 
@@ -150,11 +150,11 @@ export const batchRegistration: IBatchRegistration = (
         // enrich request
         requests = requests.map((r, i) => {
             r.paymentToken = paymentToken;
-            r.paymentMax = totalPrices[i].mul(100 + margin).div(100);
+            r.paymentMax = totalPrices[i] * BigInt(100 + margin) / BigInt(100);
             return r;
         });
-        const totalPrice = totalPrices.map(p=>p.mul(100 + margin).div(100)).reduce((a,b)=>a.add(b));
-        const totalPriceWithFee = totalPrice.mul(didhubFee.toNumber()+10000).div(10000);
+        const totalPrice = totalPrices.map(p=>p * BigInt(100 + margin) / BigInt(100)).reduce((a,b)=>a + b);
+        const totalPriceWithFee = totalPrice * (didhubFee + BigInt(10000)) / BigInt(10000);
         return {
             requests: requests,
             paymentToken: paymentToken,
@@ -169,25 +169,25 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<IPurchaseCheck> => {
         
         let errorList: string[] = [];
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const signerAddress = await batchRegisterContract.signer.getAddress();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const signerAddress = await signer.getAddress();
 
         // check total price and balance is sufficient
         if (paymentToken == ZERO_ADDRESS) {
-            const ethBalance = await batchRegisterContract.signer.getBalance();
-            if (ethBalance.lt(paymentMax)) {
+            const ethBalance = await signer.provider.getBalance(signer.address);
+            if (ethBalance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ETH balance");
             }
         } else {
             // attach ERC20 token to contract and create an instance of ERC20 contract
-            const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+            const erc20Contract = ERC20__factory.connect(paymentToken, signer);
             const erc20Balance = await erc20Contract.balanceOf(signerAddress);
-            if (erc20Balance.lt(paymentMax)) {
+            if (erc20Balance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ERC20 balance");
             };
             // check Allowance
-            const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);
-            if (allowance.lt(paymentMax)) {
+            const allowance = await erc20Contract.allowance(signerAddress, await batchRegisterContract.getAddress());
+            if (allowance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ERC20 allowance");
             }
         }   
@@ -226,25 +226,25 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<IRenewCheck> => {
         
         let errorList: string[] = [];
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const signerAddress = await batchRegisterContract.signer.getAddress();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const signerAddress = await signer.getAddress();
 
         // check total price and balance is sufficient
         if (paymentToken == ZERO_ADDRESS) {
-            const ethBalance = await batchRegisterContract.signer.getBalance();
-            if (ethBalance.lt(paymentMax)) {
+            const ethBalance = await signer.provider.getBalance(signer.address);
+            if (ethBalance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ETH balance");
             }
         } else {
             // attach ERC20 token to contract and create an instance of ERC20 contract
-            const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+            const erc20Contract = ERC20__factory.connect(paymentToken, signer);
             const erc20Balance = await erc20Contract.balanceOf(signerAddress);
-            if (erc20Balance.lt(paymentMax)) {
+            if (erc20Balance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ERC20 balance");
             };
             // check Allowance
-            const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);
-            if (allowance.lt(paymentMax)) {
+            const allowance = await erc20Contract.allowance(signerAddress, await batchRegisterContract.getAddress());
+            if (allowance < ethers.toBigInt(paymentMax)) {
                 errorList.push("Insufficient ERC20 allowance");
             }
         }
@@ -257,10 +257,10 @@ export const batchRegistration: IBatchRegistration = (
 
     const getERC20Balance = async (
         paymentToken: string
-    ): Promise<BigNumberish> => {
-        const signerAddress = await provider.getAddress();
+    ): Promise<bigint> => {
+        const signerAddress = await signer.getAddress();
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(provider).attach(paymentToken);
+        const erc20Contract = ERC20__factory.connect(paymentToken, signer);
         const erc20Balance = await erc20Contract.balanceOf(signerAddress);
         return erc20Balance;
     }
@@ -268,39 +268,39 @@ export const batchRegistration: IBatchRegistration = (
     const approveERC20Tokens = async (
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<ContractTransaction | null> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const signerAddress = await provider.getAddress();
+    ): Promise<ContractTransactionResponse | null> => {
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const signerAddress = await signer.getAddress();
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
-        const allowance = await erc20Contract.allowance(signerAddress, batchRegisterContract.address);
-        if (allowance.lt(paymentMax)) {
-            const tx = await erc20Contract.approve(batchRegisterContract.address, paymentMax);
+        const erc20Contract = ERC20__factory.connect(paymentToken, signer);
+        const allowance = await erc20Contract.allowance(signerAddress, await batchRegisterContract.getAddress());
+        if (allowance < ethers.toBigInt(paymentMax)) {
+            const tx = await erc20Contract.approve(await batchRegisterContract.getAddress(), paymentMax);
             return tx;
         }
         return null;
     }
 
     const batchRegister = async (
-        requests: RegistrationInfoStruct[],
+        requests: Data.RegistrationInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<ContractTransaction> => {
+    ): Promise<ContractTransactionResponse> => {
 
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const feeData = await provider.getFeeData();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const feeData = await signer.provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
-            const estimatedGas = await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax});
+            const estimatedGas = await batchRegisterContract.batchRegister.estimateGas(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRegister(requests, {
                 value: paymentMax,
-                gasLimit: estimatedGas.mul(120).div(100),
+                gasLimit: estimatedGas * BigInt(120) / BigInt(100),
                 gasPrice: feeData.gasPrice!
             });
             return tx;
         } else {
-            const estimatedGas = await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
+            const estimatedGas = await batchRegisterContract.batchRegisterERC20.estimateGas(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
-                gasLimit: estimatedGas.mul(120).div(100),
+                gasLimit: estimatedGas * BigInt(120) / BigInt(100),
                 gasPrice: feeData.gasPrice!
             });
             return tx;
@@ -308,24 +308,24 @@ export const batchRegistration: IBatchRegistration = (
     }
 
     const batchRenew = async (
-        requests: RenewInfoStruct[],
+        requests: Data.RenewInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<ContractTransaction> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const feeData = await provider.getFeeData();
+    ): Promise<ContractTransactionResponse> => {
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const feeData = await signer.provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
-            const estimatedGas = await batchRegisterContract.estimateGas.batchRenew(requests, {value: paymentMax});
+            const estimatedGas = await batchRegisterContract.batchRenew.estimateGas(requests, {value: paymentMax});
             const tx = await batchRegisterContract.batchRenew(requests, {
                 value: paymentMax,
-                gasLimit: estimatedGas.mul(120).div(100),
+                gasLimit: estimatedGas * BigInt(120) / BigInt(100),
                 gasPrice: feeData.gasPrice!
             });
             return tx;
         } else {
-            const estimatedGas = await batchRegisterContract.estimateGas.batchRenewERC20(requests, paymentToken, paymentMax);
+            const estimatedGas = await batchRegisterContract.batchRenewERC20.estimateGas(requests, paymentToken, paymentMax);
             const tx = await batchRegisterContract.batchRenewERC20(requests, paymentToken, paymentMax, {
-                gasLimit: estimatedGas.mul(120).div(100),
+                gasLimit: estimatedGas * BigInt(120) / BigInt(100),
                 gasPrice: feeData.gasPrice!
             });
             return tx;
@@ -334,10 +334,10 @@ export const batchRegistration: IBatchRegistration = (
 
     const getSupportedTokens = async (): Promise<ITokenInfo[]> => {
         // check current chain
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const chainId = await batchRegisterContract.signer.getChainId();
-        switch (chainId) {
-            case 56:
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const network = await signer.provider.getNetwork();
+        switch (network.chainId) {
+            case BigInt(56):
                 return [
                     {
                         name: "BNB",
@@ -355,7 +355,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case 137:
+            case BigInt(137):
                 return [
                     {
                         name: "MATIC",
@@ -363,7 +363,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case 250:
+            case BigInt(250):
                 return [
                     {
                         name: "FTM",
@@ -376,7 +376,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case 42161:
+            case BigInt(42161):
                 return [
                     {
                         name: "ETH",
@@ -402,72 +402,72 @@ export const batchRegistration: IBatchRegistration = (
     // GAS ESTIMATION ===========================================================
     
     const batchCommitEstimateGasFee = async(
-        commitmentInfos: CommitmentInfoStructOutput[]
-    ): Promise<BigNumber> => { 
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        commitmentInfos: Data.CommitmentInfoStructOutput[]
+    ): Promise<bigint> => { 
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         try {
-            const estimatedGas = await batchRegisterContract.estimateGas.batchCommit(commitmentInfos);
-            const gasPrice = await provider.getGasPrice();  
-            return estimatedGas.mul(gasPrice);    
+            const estimatedGas = await batchRegisterContract.batchCommit.estimateGas(commitmentInfos);
+            const feeData = await signer.provider.getFeeData();  
+            return estimatedGas * feeData.gasPrice!;    
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const batchRegisterEstimateGasFee = async (
-        requests: RegistrationInfoStruct[],
+        requests: Data.RegistrationInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<BigNumber> => {
-        const gasPrice = await provider.getGasPrice();
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+    ): Promise<bigint> => {
+        const feeData = await signer.provider.getFeeData();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         try {
             let estimatedGas = paymentToken == ZERO_ADDRESS ?
-            await batchRegisterContract.estimateGas.batchRegister(requests, {value: paymentMax}) :
-            await batchRegisterContract.estimateGas.batchRegisterERC20(requests, paymentToken, paymentMax);
-            return estimatedGas.mul(gasPrice);
+            await batchRegisterContract.batchRegister.estimateGas(requests, {value: paymentMax}) :
+            await batchRegisterContract.batchRegisterERC20.estimateGas(requests, paymentToken, paymentMax);
+            return estimatedGas * feeData.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const batchRenewEstimateGasFee = async (
-        requests: RenewInfoStruct[],
+        requests: Data.RenewInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<BigNumber> => {
-        const gasPrice = await provider.getGasPrice();
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+    ): Promise<bigint> => {
+        const feeData = await signer.provider.getFeeData();
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         try {
             let estimatedGas = paymentToken == ZERO_ADDRESS ? 
-            await batchRegisterContract.estimateGas.batchRenew(requests, {value: paymentMax}): 
-            await batchRegisterContract.estimateGas.batchRenewERC20(requests, paymentToken, paymentMax);
-            return estimatedGas.mul(gasPrice);
+            await batchRegisterContract.batchRenew.estimateGas(requests, {value: paymentMax}): 
+            await batchRegisterContract.batchRenewERC20.estimateGas(requests, paymentToken, paymentMax);
+            return estimatedGas * feeData.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const approveERC20TokensEstimateGasFee = async (
         paymentToken: string,
         paymentMax: BigNumberish
-    ): Promise<BigNumber> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
-        const gasPrice = await provider.getGasPrice();
+    ): Promise<bigint> => {
+        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const network = await signer.provider.getFeeData();
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(batchRegisterContract.signer).attach(paymentToken);
+        const erc20Contract = ERC20__factory.connect(paymentToken, signer);
         try {
-            const estimatedGas = await erc20Contract.estimateGas.approve(batchRegisterContract.address, paymentMax);
-            return estimatedGas.mul(gasPrice);
+            const estimatedGas = await erc20Contract.approve.estimateGas(await batchRegisterContract.getAddress(), paymentMax);
+            return estimatedGas * network.gasPrice!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const didhubFee = async (): Promise<number> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const basisPt = await batchRegisterContract.feeBasisPt();
-        return basisPt.toNumber() / 100;
+        return Number(basisPt) / 100;
     }
 
     return {

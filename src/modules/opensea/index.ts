@@ -8,16 +8,18 @@ import {
     IOrderData
 } from "./type"
 
-import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { ContractTransaction, providers, BigNumber, BigNumberish } from "ethers";
+import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike } from "ethers";
 import { getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
-import { AdvancedOrderStruct, FulfillmentComponentStruct, SwapInfoStruct, DomainPriceInfoStruct, INFTStruct, IFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
+
+import { Seaport as SeaportSDK } from "@opensea/seaport-js";
+import { AdvancedOrderStruct, FulfillmentComponentStruct } from "@opensea/seaport-js/lib/typechain-types/seaport/contracts/Seaport";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
-    provider: providers.JsonRpcSigner,
+    signer: JsonRpcSigner,
     environment: "production" | "dev"
 ): IOpensea => {
 
@@ -104,7 +106,7 @@ export const openseaInit: IOpenseaInit = (
         paymentAmount: string,
         endInDays: number
     ) => {
-        const signerAddress = await provider.getAddress();
+        const signerAddress = await signer.getAddress();
         const chain = domainInfo.split(":")[0];
         const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
 
@@ -119,7 +121,7 @@ export const openseaInit: IOpenseaInit = (
     const fulfillOrder = async (
       order: OrderWithCounter
     ): Promise<ContractTransaction> => {
-      const signerAddress = await provider.getAddress();
+      const signerAddress = await signer.getAddress();
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress
@@ -139,7 +141,7 @@ export const openseaInit: IOpenseaInit = (
       orderId: string
     ): Promise<OrderWithCounter> => {
 
-      const response = await getOpenseaListingData(orderId, await provider.getAddress(), USE_CACHE, environment);
+      const response = await getOpenseaListingData(orderId, await signer.getAddress(), USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -150,9 +152,9 @@ export const openseaInit: IOpenseaInit = (
     const fetchOpenseaOfferOrder = async (
       orderId: string
     ): Promise<IOrderData> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       // the batch purchase contract is the intermediate step that receives the nft and deliver to the users
-      const response = await getOpenseaOfferData(orderId, batchPurchaseContract.address, USE_CACHE, environment);
+      const response = await getOpenseaOfferData(orderId, await batchPurchaseContract.getAddress(), USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -175,7 +177,7 @@ export const openseaInit: IOpenseaInit = (
       orderId: string
     ):Promise<ContractTransaction> => {  
       // fetch data from opensea
-      const response = await getOpenseaOfferData(orderId, await provider.getAddress(), USE_CACHE, environment);
+      const response = await getOpenseaOfferData(orderId, await signer.getAddress(), USE_CACHE, environment);
       if (response.code !== 1) {
         throw new Error(response.message);
       }
@@ -210,17 +212,17 @@ export const openseaInit: IOpenseaInit = (
 
     const getPriceInfo = (
       advancedOrders: AdvancedOrderStruct[]
-    ): DomainPriceInfoStruct[] => {
-      let priceInfo: DomainPriceInfoStruct[] = [];
-      let priceMap = new Map<string, BigNumber>();
+    ): Data.DomainPriceInfoStruct[] => {
+      let priceInfo: Data.DomainPriceInfoStruct[] = [];
+      let priceMap = new Map<AddressLike, bigint>();
       for (let i = 0; i < advancedOrders.length; i++) {
-        let totalPrice = BigNumber.from(0);
+        let totalPrice = BigInt(0);
         advancedOrders[i].parameters.consideration.forEach((item, j)=>{
-          totalPrice = totalPrice.add(BigNumber.from(item.startAmount));
+          totalPrice = totalPrice + BigInt(item.startAmount);
         });
         let tokenContract = advancedOrders[i].parameters.consideration[0].token;
         if (priceMap.has(tokenContract)) { 
-          priceMap.set(tokenContract, priceMap.get(tokenContract)!.add(totalPrice));
+          priceMap.set(tokenContract, priceMap.get(tokenContract)! + BigInt(totalPrice));
         } else {
           priceMap.set(tokenContract, totalPrice);
         }
@@ -240,20 +242,20 @@ export const openseaInit: IOpenseaInit = (
       advancedOrders: AdvancedOrderStruct[],
       paymentToken: string,
       margin: number
-    ): Promise<SwapInfoStruct> => {
+    ): Promise<Data.SwapInfoStruct> => {
 
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
 
       const priceInfo = getPriceInfo(advancedOrders);
 
-      const individualPrices = await batchPurchaseContract.callStatic.getIndividualPrice(priceInfo, paymentToken);
+      const individualPrices = await batchPurchaseContract.getIndividualPrice.staticCall(priceInfo, paymentToken);
 
       let swapPrices = priceInfo.map((price) => {return {tokenContract: price.tokenContract, amountOut: price.price.toString(), amountInMax: ""}});
-      let total = BigNumber.from(0);
+      let total = BigInt(0);
       individualPrices.forEach((price, i) => {
-          let priceWithMargin = price.mul(100 + margin).div(100);
+          let priceWithMargin = price * BigInt(100 + margin) / BigInt(100);
           swapPrices[i].amountInMax = priceWithMargin.toString();
-          total = total.add(priceWithMargin);
+          total = total + BigInt(priceWithMargin);
       });
 
       return {
@@ -300,7 +302,7 @@ export const openseaInit: IOpenseaInit = (
 
         const offer = params.offer[0].endAmount;
         const fee = params.consideration[1].endAmount;
-        const feePercentage = BigNumber.from(fee).mul(10000).div(BigNumber.from(offer)).toNumber();
+        const feePercentage = BigInt(fee) * BigInt(10000) / BigInt(offer);
 
         advancedOrders.push({
           "parameters": params,
@@ -316,10 +318,10 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillListings = async (
       advancedOrders: AdvancedOrderStruct[],
-      swapInfo: SwapInfoStruct
+      swapInfo: Data.SwapInfoStruct
     ): Promise<ContractTransaction> => {
 
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
 
       let tx; 
       if (swapInfo.paymentToken === ZERO_ADDRESS) {
@@ -330,7 +332,7 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length,
           {value: swapInfo.paymentMax}
         );
@@ -342,7 +344,7 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length
         );
       }
@@ -353,7 +355,7 @@ export const openseaInit: IOpenseaInit = (
       advancedOrders: AdvancedOrderStruct[]
     ): Promise<ContractTransaction> => {
 
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       
       let fulfillmentItems: IOrderFulfillmentsStruct = {
         nftFullfillments: [],
@@ -383,18 +385,18 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           fulfillmentItems,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length
         );
 
-      // const seaportContract = await getSeaportContract(provider);
+      // const seaportContract = await getSeaportContract(signer);
       // let tx = await seaportContract.fulfillAvailableAdvancedOrders(
       //   advancedOrders,
       //   [],
       //   getOfferFulfillmentData(advancedOrders),
       //   getConsiderationFulfillmentData(advancedOrders),
       //   fulfillerConduitKey,
-      //   await provider.getAddress(),
+      //   await signer.getAddress(),
       //   advancedOrders.length
       // );
 
@@ -409,7 +411,7 @@ export const openseaInit: IOpenseaInit = (
         if (nonNullOrders.length === 0) {
             throw new Error("No existing orders found");
         }
-        const signerAddress = await provider.getAddress();
+        const signerAddress = await signer.getAddress();
         const transaction = seaportSDK.cancelOrders(
           orderComponents,
             signerAddress
@@ -421,7 +423,7 @@ export const openseaInit: IOpenseaInit = (
     const bulkListDomain = async (
       orderRequestData: IOrderRequestData[],
     ) => {
-      const signerAddress = await provider.getAddress();
+      const signerAddress = await signer.getAddress();
       // ensure that all domains are from the same chain
       const chain = orderRequestData[0].domainInfo.split(":")[0];
       orderRequestData.forEach((order) => {
@@ -500,7 +502,7 @@ export const openseaInit: IOpenseaInit = (
     const bulkOfferDomain = async (
       orderRequestData: IOrderRequestData[],
     ) => {
-      const signerAddress = await provider.getAddress();
+      const signerAddress = await signer.getAddress();
       // ensure that all domains are from the same chain
       const chain = orderRequestData[0].domainInfo.split(":")[0];
       orderRequestData.forEach((order) => {
@@ -531,7 +533,7 @@ export const openseaInit: IOpenseaInit = (
       endInDays: number
     ) => {
 
-      const signerAddress = await provider.getAddress();
+      const signerAddress = await signer.getAddress();
       const chain = domainInfo.split(":")[0];
       const orderInput = _getOfferData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
       
@@ -546,7 +548,7 @@ export const openseaInit: IOpenseaInit = (
     const batchCheckApprovalERC721orERC1155 = async (
       tokens: INFTStruct[]
     ) => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       const approvals = await batchPurchaseContract.batchCheckApprovalERC721orERC1155(tokens);
       return approvals;
     }
@@ -554,7 +556,7 @@ export const openseaInit: IOpenseaInit = (
     const batchCheckApprovalERC20 = async (
       tokens: IFTStruct[]
     ) => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       const approvals = await batchPurchaseContract.batchCheckApprovalERC20(tokens);
       return approvals;
     }
@@ -562,8 +564,8 @@ export const openseaInit: IOpenseaInit = (
     const approveERC721orERC1155Tokens = async (
       tokenAddress: string
     ): Promise<ContractTransaction | null> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const tx = await projectUtils(provider).approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      const tx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress());
       return tx;
     }
 
@@ -571,8 +573,8 @@ export const openseaInit: IOpenseaInit = (
       tokenAddress: string,
       tokenAmount: BigNumberish
     ): Promise<ContractTransaction | null> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      const tx = await projectUtils(provider).approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      const tx = await projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount);
       return tx;
     }
 
@@ -580,43 +582,43 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillListingsEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[],
-      swapInfo: SwapInfoStruct
-    ): Promise<BigNumber> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      let price = await provider.getGasPrice();
+      swapInfo: Data.SwapInfoStruct
+    ): Promise<BigInt> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      let price = await signer.getGasPrice();
       try {
         let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
-        await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedListingOrders(
+        await batchPurchaseContract.fulfillAvailableAdvancedListingOrders.estimateGas(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length,
           {value: swapInfo.paymentMax}
         ) :
-        await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedListingOrdersERC20(
+        await batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20.estimateGas(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length
         );
-      return estimatedGas.mul(price);
+      return estimatedGas * BigInt(price);
       } catch {
-        return BigNumber.from(0);
+        return BigInt(0);
       }
     }
 
     const fulfillOffersEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[]
-    ): Promise<BigNumber> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
+    ): Promise<BigInt> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       
       let fulfillmentItems: IOrderFulfillmentsStruct = {
         nftFullfillments: [],
@@ -638,45 +640,45 @@ export const openseaInit: IOpenseaInit = (
         })
       });
 
-      let price = await provider.getGasPrice();
+      let price = await signer.getGasPrice();
       try {
-        let estimatedGas = await batchPurchaseContract.estimateGas.fulfillAvailableAdvancedOfferOrders(
+        let estimatedGas = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders.estimateGas(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
           getConsiderationFulfillmentData(advancedOrders),
           fulfillmentItems,
           fulfillerConduitKey,
-          await provider.getAddress(),
+          await signer.getAddress(),
           advancedOrders.length
         );
-      return estimatedGas.mul(price);
+      return estimatedGas * BigInt(price);
       } catch {
-        return BigNumber.from(0);
+        return BigInt(0);
       }
     }
     
     const approveERC721orERC1155TokensEstimateGas = async (
       tokenAddress: string
-    ): Promise<BigNumber> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      let price = await provider.getGasPrice();
+    ): Promise<BigInt> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      let price = await signer.getGasPrice();
       try {
-        const estimatedGas = await projectUtils(provider).estimateGas.approveAllERC721or1155Tokens(tokenAddress, batchPurchaseContract.address);
-        return estimatedGas.mul(price);
+        const estimatedGas = await projectUtils(signer).approveAllERC721or1155Tokens.estimateGas(tokenAddress, await batchPurchaseContract.getAddress());
+        return estimatedGas * BigInt(price);
       } catch {
-        return BigNumber.from(0);
+        return BigInt(0);
       }
     }
 
     const approveERC20TokensEstimateGas = async (
       tokenAddress: string,
       tokenAmount: BigNumberish
-    ): Promise<BigNumber> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(provider);
-      let price = await provider.getGasPrice();
+    ): Promise<BigInt> => {
+      const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      let price = await signer.getGasPrice();
       try {
-        const estimatedGas = await projectUtils(provider).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
+        const estimatedGas = await projectUtils(signer).estimateGas.approveERC20Tokens(tokenAddress, batchPurchaseContract.address, tokenAmount);
         return estimatedGas.mul(price);  
       } catch {
         return BigNumber.from(0);

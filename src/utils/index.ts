@@ -1,8 +1,8 @@
 import { BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
-import { RegistrationInfoStruct, PriceRequestStruct, DomainInfoStruct, RenewInfoStruct } from '../contracts/didhub/batchRegister/BatchRegister';
+import { Data } from '../contracts/didhub/batchRegister/BatchRegister';
 import { IDomainInfo, INFTToken } from './type';
-import { namehash, keccak256, toUtf8Bytes, defaultAbiCoder } from 'ethers/lib/utils';
+import { namehash, keccak256, toUtf8Bytes, AbiCoder } from 'ethers';
 
 interface SelectField<T> {
     [key: string]: T;
@@ -13,8 +13,8 @@ interface ResultStruct<T> extends SelectField<T> {
     [key: string]: any;
 }
 
-export const wrapDomain = (domains: IDomainInfo[]): Record<string, DomainInfoStruct[]>  => {
-    let domainInfo: Record<string, DomainInfoStruct[]> = {};
+export const wrapDomain = (domains: IDomainInfo[]): Record<string, Data.DomainInfoStruct[]>  => {
+    let domainInfo: Record<string, Data.DomainInfoStruct[]> = {};
 
     domains.forEach((domain) => {
         let collectionInfo = domain.collectionInfo;
@@ -58,11 +58,12 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     return unwrappedList;
 }
 
+const abiCoder = new AbiCoder();
 const k256 = (label: string) => keccak256(toUtf8Bytes(label));
-const namehash2LD = (label: string) => keccak256(defaultAbiCoder.encode(["bytes32", "bytes32"], [namehash("eth"), k256(label)]));
+const namehash2LD = (label: string) => keccak256(abiCoder.encode(["bytes32", "bytes32"], [namehash("eth"), k256(label)]));
 
 export const getENSNameResolutionParams = (
-    domains: DomainInfoStruct[],
+    domains: Data.DomainInfoStruct[],
     owner: string
 ): BytesLike => {
     // create nodes for the domain
@@ -77,7 +78,7 @@ export const getENSNameResolutionParams = (
         return [byteString];
     });
 
-    return ethers.utils.defaultAbiCoder.encode(['bytes[][]'], [paramData]);
+    return abiCoder.encode(['bytes[][]'], [paramData]);
 }
 
 export const getENSTokenWrapParams = (
@@ -90,7 +91,7 @@ export const getENSTokenWrapParams = (
     let fuse = 0;
     const dataArray = names.map((n) => {
         console.log(n);
-        const result = ethers.utils.defaultAbiCoder.encode(
+        const result = abiCoder.encode(
             ["string", "address", "uint16", "address"],
             [n, owner.toLowerCase(), fuse, resolver.toLowerCase()]
         );
@@ -106,12 +107,12 @@ export const getRegistrationInfo = (
     secret: string,
     paymentToken: string = ZERO_ADDRESS,
     paymentMax: BigNumberish = 0
-): RegistrationInfoStruct[] => {
+): Data.RegistrationInfoStruct[] => {
 
     let wrappedDomains = wrapDomain(domains);
-    let registrationInfoStructs: RegistrationInfoStruct[] = [];
+    let registrationInfoStructs: Data.RegistrationInfoStruct[] = [];
     Object.keys(wrappedDomains).forEach((contractAddress) => {
-        let params: BytesLike = [];
+        let params: BytesLike = "0x";
         
         // compute params if it is ENS project
         if (
@@ -142,12 +143,12 @@ export const getRenewInfo = (
     domains: IDomainInfo[],
     paymentToken: string = ZERO_ADDRESS,
     paymentMax: BigNumberish = 0
-): RenewInfoStruct[] => {
+): Data.RenewInfoStruct[] => {
 
     let wrappedDomains = wrapDomain(domains);
-    let renewInfoStructs: RenewInfoStruct[] = [];
+    let renewInfoStructs: Data.RenewInfoStruct[] = [];
     Object.keys(wrappedDomains).forEach((contractAddress) => {
-        let params: BytesLike = [];
+        let params: BytesLike = "0x";
         renewInfoStructs.push({
             project: contractAddress,
             domains: wrappedDomains[contractAddress],
@@ -162,10 +163,10 @@ export const getRenewInfo = (
 
 export const getPriceRequest = (
     domains: IDomainInfo[]
-): PriceRequestStruct[] => {
+): Data.PriceRequestStruct[] => {
 
     let wrappedDomains = wrapDomain(domains);
-    let priceRequestStructs: PriceRequestStruct[] = [];
+    let priceRequestStructs: Data.PriceRequestStruct[] = [];
     Object.keys(wrappedDomains).forEach((contractAddress) => {
         priceRequestStructs.push({
             project: contractAddress,

@@ -1,6 +1,7 @@
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
-import { IFTStruct, SwapInfoStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
-import { BigNumber, BigNumberish, Bytes, BytesLike, ContractTransaction, providers } from "ethers";
+import { IFTStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
+import { SwapInfoStruct } from "../../contracts/seaport/artifacts";
+import { BigNumberish, BytesLike, ContractTransaction, JsonRpcSigner } from "ethers";
 import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
 
 export enum ItemType {
@@ -25,7 +26,7 @@ export interface IDIDhubResponse {
 
 export type IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
-    provider: providers.JsonRpcSigner,
+    provider: JsonRpcSigner,
     environment: "production" | "dev"
 ) => IOpensea;
 
@@ -249,16 +250,16 @@ export interface IOpensea {
         approveERC20Tokens: (
             tokenAddress: string,
             amount: BigNumberish
-        ) => Promise<BigNumber>,
+        ) => Promise<bigint>,
         approveERC721orERC1155Tokens: (
             tokenAddress: string
-        ) => Promise<BigNumber>,
+        ) => Promise<bigint>,
         fulfillListings: (
             advancedOrders: AdvancedOrderStruct[],
             swapInfo: SwapInfoStruct
-        ) => Promise<BigNumber>,
+        ) => Promise<bigint>,
         fulfillOffers: (
             advancedOrders: AdvancedOrderStruct[]
-        ) => Promise<BigNumber>
+        ) => Promise<bigint>
     }
 }

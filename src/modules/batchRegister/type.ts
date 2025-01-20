@@ -1,5 +1,5 @@
-import { CommitmentInfoStructOutput, DomainPriceInfoStruct, RegistrationInfoStruct, RenewInfoStruct } from '../../contracts/didhub/batchRegister/BatchRegister';
-import { BigNumber, ContractTransaction, BigNumberish, providers } from 'ethers';
+import { Data } from '../../contracts/didhub/batchRegister/BatchRegister';
+import { ContractTransactionResponse, BigNumberish, JsonRpcSigner } from 'ethers';
 
 export interface IDomainInfo {
     collectionInfo: string
@@ -8,13 +8,13 @@ export interface IDomainInfo {
 }
 
 export interface IRegistrationData {
-    requests: RegistrationInfoStruct[];
+    requests: Data.RegistrationInfoStruct[];
     paymentToken: string;
     paymentMax: BigNumberish;
 }
 
 export interface IRenewData {
-    requests: RenewInfoStruct[];
+    requests: Data.RenewInfoStruct[];
     paymentToken: string;
     paymentMax: BigNumberish;
 }
@@ -58,7 +58,7 @@ export interface IBatchRegister {
      * @param domains The list of domains to check
      * @returns The list of commitment hashes grouped by project
      */
-    batchMakeCommitments: (domains: IDomainInfo[]) => Promise<CommitmentInfoStructOutput[]>;
+    batchMakeCommitments: (domains: IDomainInfo[]) => Promise<Data.CommitmentInfoStructOutput[]>;
     
     /**
      * @dev commit the domains
@@ -67,7 +67,7 @@ export interface IBatchRegister {
      * 
      * @return The transaction object
      */
-    batchCommit: (commitmentInfos: CommitmentInfoStructOutput[]) => Promise<ContractTransaction>;
+    batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<ContractTransaction>;
 
     /**
      * @dev check the availability status of the domain
@@ -85,7 +85,7 @@ export interface IBatchRegister {
      * @param domains The list of domains to check
      * @returns The list of total price of the domains summed by project
      */
-    getTotalPrice: (domains: IDomainInfo[], paymentToken: string) => Promise<BigNumber[]>;
+    getTotalPrice: (domains: IDomainInfo[], paymentToken: string) => Promise<bigint[]>;
 
     /**
      * @dev get individual price of the domains
@@ -94,7 +94,7 @@ export interface IBatchRegister {
      * 
      * @returns The list of individual price of each domains
      */
-    getIndividualPrice: (domains: IDomainInfo[]) => Promise<DomainPriceInfoStruct[]>;
+    getIndividualPrice: (domains: IDomainInfo[]) => Promise<Data.DomainPriceInfoStruct[]>;
     
     /**
      * @dev Get the price data necessary for batch register with a specific margin apply
@@ -148,7 +148,7 @@ export interface IBatchRegister {
     approveERC20Tokens: (
         paymentToken: string,
         paymentMax: BigNumberish
-    ) => Promise<ContractTransaction | null>;
+    ) => Promise<ContractTransactionResponse | null>;
 
     /**
      * @dev Batch register the domains. Use the getPriceWithMargin function to get the necessary data before calling this function.
@@ -159,11 +159,11 @@ export interface IBatchRegister {
      * @returns The transaction object
      */
     batchRegister: (
-        requests: RegistrationInfoStruct[],
+        requests: Data.RegistrationInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish,
         maxFeePerGas?: BigNumberish
-    ) => Promise<ContractTransaction>;
+    ) => Promise<ContractTransactionResponse>;
 
     /**
      * @dev Check whether the domain is ready for renew. Examine based on the token balance of the signer, 
@@ -201,10 +201,10 @@ export interface IBatchRegister {
      * @returns The transaction object
      */
     batchRenew: (
-        requests: RenewInfoStruct[],
+        requests: Data.RenewInfoStruct[],
         paymentToken: string,
         paymentMax: BigNumberish
-    ) => Promise<ContractTransaction>;
+    ) => Promise<ContractTransactionResponse>;
         
     /**
      * @dev Get the list of supported tokens
@@ -226,25 +226,25 @@ export interface IBatchRegister {
      */
     estimateGas: {
 
-        batchCommit: (commitmentInfos: CommitmentInfoStructOutput[]) => Promise<BigNumber>;
+        batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<bigint>;
         batchRegister: (
-            requests: RegistrationInfoStruct[],
+            requests: Data.RegistrationInfoStruct[],
             paymentToken: string,
             paymentMax: BigNumberish
-        ) => Promise<BigNumber>;
+        ) => Promise<bigint>;
         batchRenew: (
-            requests: RenewInfoStruct[],
+            requests: Data.RenewInfoStruct[],
             paymentToken: string,
             paymentMax: BigNumberish
-        ) => Promise<BigNumber>;
+        ) => Promise<bigint>;
         approveERC20Tokens: (
             paymentToken: string,
             paymentMax: BigNumberish
-        ) => Promise<BigNumber>;
+        ) => Promise<bigint>;
     }
 }
 
 export type IBatchRegistration = (
-    batchRegisterContract: providers.JsonRpcSigner,
+    signer: JsonRpcSigner,
     secret: string
 ) => IBatchRegister;

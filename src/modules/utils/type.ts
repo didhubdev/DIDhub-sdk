@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, ContractTransaction } from "ethers";
+import { BigNumberish, ContractTransactionResponse } from "ethers";
 
 
 export interface IUtils {
@@ -11,7 +11,7 @@ export interface IUtils {
         tokenContract: string,
         to: string,
         amount: BigNumberish
-    ) => Promise<ContractTransaction | null>
+    ) => Promise<ContractTransactionResponse | null>
 
     /**
      * @dev Approve all ERC721 or ERC1155 tokens to be spent by the operator
@@ -24,7 +24,7 @@ export interface IUtils {
     approveAllERC721or1155Tokens: (
         tokenContract: string,
         operator: string
-    ) => Promise<ContractTransaction | null>
+    ) => Promise<ContractTransactionResponse | null>
 
     /**
      * @dev Check if the signer is the owner of the token
@@ -49,7 +49,7 @@ export interface IUtils {
      */
     wrapEth2Weth: (
         amount: BigNumberish
-    ) => Promise<ContractTransaction>;
+    ) => Promise<ContractTransactionResponse>;
 
     /**
      * @dev Unwrap WETH to ETH
@@ -60,7 +60,7 @@ export interface IUtils {
      */
     unwrapWeth2Eth: (
         amount: BigNumberish
-    ) => Promise<ContractTransaction>;
+    ) => Promise<ContractTransactionResponse>;
 
     /**
      * @dev Estimate Gas for the transaction
@@ -70,20 +70,20 @@ export interface IUtils {
             tokenContract: string,
             to: string,
             amount: BigNumberish
-        ) => Promise<BigNumber>
+        ) => Promise<bigint>
         
         approveAllERC721or1155Tokens: (
             tokenContract: string,
             operator: string
-        ) => Promise<BigNumber>
+        ) => Promise<bigint>
 
         wrapEth2Weth: (
             amount: BigNumberish
-        ) => Promise<BigNumber>
+        ) => Promise<bigint>
         
         unwrapWeth2Eth: (
             amount: BigNumberish
-        ) => Promise<BigNumber>
+        ) => Promise<bigint>
     },
 
     serviceFee: {

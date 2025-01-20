@@ -1,4 +1,4 @@
-import { BigNumberish, providers, ContractTransaction, BigNumber } from 'ethers';
+import { BigNumberish, ContractTransactionResponse, JsonRpcSigner } from 'ethers';
 
 export interface IBatchTransfer {
     /**
@@ -31,7 +31,7 @@ export interface IBatchTransfer {
      * 
      * @returns ContractTransaction | null if the user has already approved the contract
      */
-    approveDomain: (domainInfo: string) => Promise<ContractTransaction | null>,
+    approveDomain: (domainInfo: string) => Promise<ContractTransactionResponse | null>,
 
     /**
      * @dev Approve all domains to be transferred
@@ -48,15 +48,15 @@ export interface IBatchTransfer {
      * 
      * @returns ContractTransaction
      */
-    batchTransfer: (domainInfos: string[], to: string) => Promise<ContractTransaction>,
+    batchTransfer: (domainInfos: string[], to: string) => Promise<ContractTransactionResponse>,
 
     estimateGas: {
-        approveDomain: (domainInfo: string) => Promise<BigNumber>,
-        approveAllDomains: (domainInfos: string[]) => Promise<BigNumber>,
-        batchTransfer: (domainInfos: string[], to: string) => Promise<BigNumber>
+        approveDomain: (domainInfo: string) => Promise<bigint>,
+        approveAllDomains: (domainInfos: string[]) => Promise<bigint>,
+        batchTransfer: (domainInfos: string[], to: string) => Promise<bigint>
     }
 }
 
 export type IBatchTransferInit = (
-    provider: providers.JsonRpcSigner
+    signer: JsonRpcSigner
 ) => IBatchTransfer;

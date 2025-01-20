@@ -1,15 +1,16 @@
 import { ERC20__factory, ERC721__factory, getBatchRegisterContract, getWrapTokenContract } from "../../contracts";
-import { BigNumber, BigNumberish, ContractTransaction, providers} from "ethers";
+import { BigNumberish, ContractTransactionResponse, JsonRpcSigner} from "ethers";
 import { IUtils } from "./type";
+import { MockERC20 } from "contracts/tokens/ERC20";
 
-export const utils = (provider: providers.JsonRpcSigner) => {
+export const utils = (signer: JsonRpcSigner) => {
 
     const getERC20Balance = async (
         paymentToken: string
-    ): Promise<BigNumberish> => {
+    ): Promise<bigint> => {
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const signerAddress = await provider.getAddress();
-        const erc20Contract = new ERC20__factory(provider).attach(paymentToken);
+        const signerAddress = await signer.getAddress();
+        const erc20Contract = ERC20__factory.connect(paymentToken, signer);
         const erc20Balance = await erc20Contract.balanceOf(signerAddress);
         return erc20Balance;
     }
@@ -18,12 +19,12 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         tokenContract: string,
         to: string,
         amount: BigNumberish
-    ): Promise<ContractTransaction | null> => {
+    ): Promise<ContractTransactionResponse | null> => {
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const signerAddress = await provider.getAddress();
-        const erc20Contract = new ERC20__factory(provider).attach(tokenContract);
+        const signerAddress = await signer.getAddress();
+        const erc20Contract: MockERC20 = ERC20__factory.connect(tokenContract, signer);
         const allowance = await erc20Contract.allowance(signerAddress, to);
-        if (allowance.lt(amount)) {
+        if (allowance < BigInt(amount)) {
             const tx = await erc20Contract.approve(to, amount);
             return tx;
         }
@@ -33,9 +34,9 @@ export const utils = (provider: providers.JsonRpcSigner) => {
     const approveAllERC721or1155Tokens = async (
         tokenContract: string,
         operator: string
-    ): Promise<ContractTransaction | null> => {
-        const signerAddress = await provider.getAddress();
-        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
+    ): Promise<ContractTransactionResponse | null> => {
+        const signerAddress = await signer.getAddress();
+        const erc721Contract = ERC721__factory.connect(tokenContract, signer);
         const isApprovedForAll = await erc721Contract.isApprovedForAll(signerAddress, operator);
         if (!isApprovedForAll) {
             const tx = await erc721Contract.setApprovalForAll(operator, true);
@@ -48,8 +49,8 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         tokenContract: string,
         tokenId: BigNumberish
     ): Promise<boolean> => {
-        const signerAddress = await provider.getAddress();
-        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
+        const signerAddress = await signer.getAddress();
+        const erc721Contract = ERC721__factory.connect(tokenContract, signer);
         try {
             const owner = await erc721Contract.ownerOf(tokenId);
             return owner === signerAddress;
@@ -60,8 +61,8 @@ export const utils = (provider: providers.JsonRpcSigner) => {
 
     const wrapEth2Weth = async (
         amount: BigNumberish
-    ): Promise<ContractTransaction> => {
-        const wethContract = await getWrapTokenContract(provider);
+    ): Promise<ContractTransactionResponse> => {
+        const wethContract = await getWrapTokenContract(signer);
         const tx = await wethContract.deposit({
             value: amount
         });
@@ -70,8 +71,8 @@ export const utils = (provider: providers.JsonRpcSigner) => {
 
     const unwrapWeth2Eth = async (
         amount: BigNumberish
-    ): Promise<ContractTransaction> => {
-        const wethContract = await getWrapTokenContract(provider);
+    ): Promise<ContractTransactionResponse> => {
+        const wethContract = await getWrapTokenContract(signer);
         const tx = await wethContract.withdraw(amount);
         return tx;
     }
@@ -81,65 +82,65 @@ export const utils = (provider: providers.JsonRpcSigner) => {
         tokenContract: string,
         to: string,
         amount: BigNumberish
-    ): Promise<BigNumber> => {
+    ): Promise<bigint> => {
         // attach ERC20 token to contract and create an instance of ERC20 contract
-        const erc20Contract = new ERC20__factory(provider).attach(tokenContract);
-        const price = await provider.getGasPrice();
+        const erc20Contract = ERC20__factory.connect(tokenContract, signer);
+        const price = await signer.provider.getFeeData().then(fee => fee.gasPrice);
         try {
-            const estimatedGas = await erc20Contract.estimateGas.approve(to, amount);
-            return estimatedGas.mul(price);    
+            const estimatedGas = await erc20Contract.approve.estimateGas(to, amount);
+            return estimatedGas * price!;    
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const approveAllERC721or1155TokensEstimateGas = async (
         tokenContract: string,
         operator: string
-    ): Promise<BigNumber> => {
-        const erc721Contract = new ERC721__factory(provider).attach(tokenContract);
-        const price = await provider.getGasPrice();
+    ): Promise<bigint> => {
+        const erc721Contract = ERC721__factory.connect(tokenContract, signer);
+        const price = await signer.provider.getFeeData().then(fee => fee.gasPrice);
         try {
-            const estimatedGas = await erc721Contract.estimateGas.setApprovalForAll(operator, true);
-            return estimatedGas.mul(price);    
+            const estimatedGas = await erc721Contract.setApprovalForAll.estimateGas(operator, true);
+            return estimatedGas * price!;    
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
     
     const wrapEth2WethEstimateGas = async (
         amount: BigNumberish
-    ): Promise<BigNumber> => {
-        const wethContract = await getWrapTokenContract(provider);
-        const price = await provider.getGasPrice();
+    ): Promise<bigint> => {
+        const wethContract = await getWrapTokenContract(signer);
+        const price = await signer.provider.getFeeData().then(fee => fee.gasPrice);
         try {
-            const estimatedGas = await wethContract.estimateGas.deposit({
+            const estimatedGas = await wethContract.deposit.estimateGas({
                 value: amount
             });
-            return estimatedGas.mul(price);    
+            return estimatedGas * price!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     const unwrapWeth2EthEstimateGas = async (
         amount: BigNumberish
-    ): Promise<BigNumber> => {
-        const wethContract = await getWrapTokenContract(provider);
-        const price = await provider.getGasPrice();
+    ): Promise<bigint> => {
+        const wethContract = await getWrapTokenContract(signer);
+        const price = await signer.provider.getFeeData().then(fee => fee.gasPrice);
         try {
-            const estimatedGas = await wethContract.estimateGas.withdraw(amount);
-            return estimatedGas.mul(price);
+            const estimatedGas = await wethContract.withdraw.estimateGas(amount);
+            return estimatedGas * price!;
         } catch {
-            return BigNumber.from(0);
+            return BigInt(0);
         }
     }
 
     // service fee
     const getRegisterServiceFee = async (): Promise<number> => {
-        const batchRegisterContract = await getBatchRegisterContract(provider);
+        const batchRegisterContract = await getBatchRegisterContract(signer);
         const serviceFee = await batchRegisterContract.feeBasisPt();
-        const serviceFeePercentage = serviceFee.toNumber() / 100.0;
+        const serviceFeePercentage = Number(serviceFee) / 100.0;
         return serviceFeePercentage;
     }
 
