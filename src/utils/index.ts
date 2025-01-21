@@ -1,4 +1,4 @@
-import { BigNumberish, BytesLike, ethers } from 'ethers';
+import { AddressLike, BigNumberish, BytesLike, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../config';
 import { Data } from '../contracts/didhub/batchRegister/BatchRegister';
 import { IDomainInfo, INFTToken } from './type';
@@ -9,7 +9,7 @@ interface SelectField<T> {
 }
 
 interface ResultStruct<T> extends SelectField<T> {
-    project: string;
+    project: AddressLike;
     [key: string]: any;
 }
 
@@ -49,7 +49,7 @@ export const unwrapResult = <T>(domains: IDomainInfo[], result: ResultStruct<T>[
     domains.forEach(d=>{
         let project = d.collectionInfo.split(":").slice(1).join(":").toLowerCase();
         resultClone.forEach(r=>{
-            if (project == r.project.toLowerCase()) {
+            if (project == (r.project as string).toLowerCase()) {
                 unwrappedList.push(r[field][0]);
                 r[field] = r[field].length > 0 ? r[field].slice(1) : [];
             }

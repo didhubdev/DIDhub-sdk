@@ -50,7 +50,7 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos = await batchMakeCommitments(domains);       
-        let commitmentStatusResult = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
+        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
         // unwrap results to list
         let commitmentStatus: number[] = unwrapResult(domains, commitmentStatusResult, "status");
@@ -67,7 +67,7 @@ export const batchRegistration: IBatchRegistration = (
             secret
         );
 
-        const availabilityStatusResult = await batchRegisterContract.batchCheckAvailability(
+        const availabilityStatusResult: Data.AvalibilityStatusResponseStruct[] = await batchRegisterContract.batchCheckAvailability(
             registrationInfo
         );
 
@@ -99,7 +99,7 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<Data.DomainPriceInfoStruct[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
         const priceRequestStructs  = getPriceRequest(domains);
-        const individualPrices = await batchRegisterContract.getIndividualPrices.staticCall(
+        const individualPrices: Data.ProjectPriceResponseStruct[] = await batchRegisterContract.getIndividualPrices.staticCall(
             priceRequestStructs
         );
         const priceList: Data.DomainPriceInfoStruct[] = unwrapResult(domains, individualPrices, "prices");
