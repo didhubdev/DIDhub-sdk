@@ -50,6 +50,7 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos: Data.CommitmentInfoStruct[] = await batchMakeCommitments(domains);       
+        
         let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
         // unwrap results to list
