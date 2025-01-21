@@ -86,8 +86,8 @@ export declare namespace Data {
 
   export type CommitmentStatusResponseStructOutput = [
     project: string,
-    status: bigint[]
-  ] & { project: string; status: bigint[] };
+    status: number[]
+  ] & { project: string; status: number[] };
 
   export type RegistrationStatusResponseStruct = {
     project: AddressLike;
