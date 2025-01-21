@@ -55,11 +55,16 @@ function VestingInterface() {
 
     if (!sdk) return;
 
-    // const tx = await sdk.opensea.fulfillOffer(
-    //   orderId
-    // );
-    // const data = await tx.wait();
-    // console.log(data);
+    if (!orderId) return;
+    
+    if (!orderId2) {
+      const tx = await sdk.opensea.fulfillOffer(
+        orderId
+      );
+      const data = await tx.wait();
+      console.log(data);
+      return;
+    }
 
     const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(
       [orderId, orderId2]

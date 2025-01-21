@@ -122,8 +122,6 @@ export const openseaInit: IOpenseaInit = (
       order: OrderWithCounter
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
-      console.log(`signer`, signerAddress);
-      console.log(`order`, order);
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress
@@ -184,7 +182,6 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
-      console.log(order.fulfillment_data.orders[0]);
       return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter);
     }
 
@@ -386,6 +383,17 @@ export const openseaInit: IOpenseaInit = (
           }
         })
       });
+
+      let tokenContracts = fulfillmentItems.nftFullfillments.map((item) => item.tokenContract);
+      tokenContracts = [...new Set(tokenContracts)];
+      
+      // approve the tokenContracts
+      for (let i = 0; i < tokenContracts.length; i++) {
+        const approveTx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenContracts[i] as string, await batchPurchaseContract.getAddress());
+        if (approveTx) {
+          await approveTx.wait();
+        }
+      }
 
       let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
