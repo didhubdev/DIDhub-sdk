@@ -337,6 +337,13 @@ export const openseaInit: IOpenseaInit = (
           {value: swapInfo.paymentMax}
         );
       } else {
+
+        // check approval
+        const approveTx = await projectUtils(signer).approveERC20Tokens(swapInfo.paymentToken as string, await batchPurchaseContract.getAddress(), swapInfo.paymentMax);
+        if (approveTx) {
+          await approveTx.wait();
+        }
+
         tx = await batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20(
           advancedOrders,
           [],
@@ -388,17 +395,6 @@ export const openseaInit: IOpenseaInit = (
           await signer.getAddress(),
           advancedOrders.length
         );
-
-      // const seaportContract = await getSeaportContract(signer);
-      // let tx = await seaportContract.fulfillAvailableAdvancedOrders(
-      //   advancedOrders,
-      //   [],
-      //   getOfferFulfillmentData(advancedOrders),
-      //   getConsiderationFulfillmentData(advancedOrders),
-      //   fulfillerConduitKey,
-      //   await signer.getAddress(),
-      //   advancedOrders.length
-      // );
 
       return tx;
     }

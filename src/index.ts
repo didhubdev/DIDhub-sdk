@@ -18,7 +18,7 @@ class DIDhubSDK implements IDIDhubSDK {
     private batchTransfer: IBatchTransfer;
     private ensManager: IBatchENSManager;
     private environment: "production" | "dev";
-
+    
     public utilsWithProvider: IUtils;
     
     /**
@@ -35,7 +35,7 @@ class DIDhubSDK implements IDIDhubSDK {
     ) {
 
         this.seaportSDK = new SeaportSDK(
-            signer as any
+            signer
         )
         
         if (secret === undefined) {

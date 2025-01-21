@@ -5,7 +5,7 @@ export interface IUtils {
 
     getERC20Balance: (
         paymentToken: string
-    ) => Promise<BigNumberish>
+    ) => Promise<bigint>
 
     approveERC20Tokens: (
         tokenContract: string,
