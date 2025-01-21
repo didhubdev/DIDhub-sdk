@@ -50,10 +50,19 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos = await batchMakeCommitments(domains);       
-        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
+        let commitmentStatusResult = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
+        // parse output to struct
+        const commitmentStatusResultStruct: Data.CommitmentStatusResponseStruct[] = 
+            commitmentStatusResult.map( c => {
+                return {
+                    project: c[0],
+                    status: c[1]
+                }
+            })
+
         // unwrap results to list
-        let commitmentStatus: number[] = unwrapResult(domains, commitmentStatusResult, "status");
+        let commitmentStatus: number[] = unwrapResult(domains, commitmentStatusResultStruct, "status");
         return commitmentStatus;
     }
 
