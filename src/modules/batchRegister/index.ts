@@ -38,7 +38,7 @@ export const batchRegistration: IBatchRegistration = (
     }
 
     const batchCommit = async (
-        commitmentInfos: Data.CommitmentInfoStructOutput[]
+        commitmentInfos: Data.CommitmentInfoStruct[]
     ): Promise<ContractTransactionResponse> => {
         
         const batchRegisterContract = await getBatchRegisterContract(signer);
@@ -59,7 +59,7 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos  = await batchMakeCommitments(domains);       
-        
+
         let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
         // unwrap results to list
@@ -413,7 +413,7 @@ export const batchRegistration: IBatchRegistration = (
     // GAS ESTIMATION ===========================================================
     
     const batchCommitEstimateGasFee = async(
-        commitmentInfos: Data.CommitmentInfoStructOutput[]
+        commitmentInfos: Data.CommitmentInfoStruct[]
     ): Promise<bigint> => { 
         const batchRegisterContract = await getBatchRegisterContract(signer);
         try {

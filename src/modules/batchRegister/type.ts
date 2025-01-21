@@ -58,7 +58,7 @@ export interface IBatchRegister {
      * @param domains The list of domains to check
      * @returns The list of commitment hashes grouped by project
      */
-    batchMakeCommitments: (domains: IDomainInfo[]) => Promise<Data.CommitmentInfoStructOutput[]>;
+    batchMakeCommitments: (domains: IDomainInfo[]) => Promise<Data.CommitmentInfoStruct[]>;
     
     /**
      * @dev commit the domains
@@ -67,7 +67,7 @@ export interface IBatchRegister {
      * 
      * @return The transaction object
      */
-    batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<ContractTransactionResponse>;
+    batchCommit: (commitmentInfos: Data.CommitmentInfoStruct[]) => Promise<ContractTransactionResponse>;
 
     /**
      * @dev check the availability status of the domain
@@ -226,7 +226,7 @@ export interface IBatchRegister {
      */
     estimateGas: {
 
-        batchCommit: (commitmentInfos: Data.CommitmentInfoStructOutput[]) => Promise<bigint>;
+        batchCommit: (commitmentInfos: Data.CommitmentInfoStruct[]) => Promise<bigint>;
         batchRegister: (
             requests: Data.RegistrationInfoStruct[],
             paymentToken: string,
