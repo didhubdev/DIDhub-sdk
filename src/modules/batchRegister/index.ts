@@ -55,7 +55,7 @@ export const batchRegistration: IBatchRegistration = (
         let commitmentInfosClone: Data.CommitmentInfoStruct[] = commitmentInfos.map(c => {
             return {
                 project: c.project,
-                commitments: c.commitments
+                commitments: [...c.commitments]
             }
         });
 
