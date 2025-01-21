@@ -13,7 +13,7 @@ export const batchRegistration: IBatchRegistration = (
 
     const batchMakeCommitments = async (
         domains: IDomainInfo[]
-    ): Promise<Data.CommitmentInfoStructOutput[]> => {
+    ): Promise<Data.CommitmentInfoStruct[]> => {
 
         const batchRegisterContract = await getBatchRegisterContract(signer);
         const registrationInfo  = getRegistrationInfo(
@@ -25,7 +25,16 @@ export const batchRegistration: IBatchRegistration = (
         const commitments = await batchRegisterContract.batchMakeCommitment(
             registrationInfo
         );
-        return commitments;
+
+        // clone to prevent error on modifying read only object
+        let commitmentsClone: Data.CommitmentInfoStruct[] = commitments.map(c => {
+            return {
+                project: c.project,
+                commitments: [...c.commitments]
+            }
+        });
+
+        return commitmentsClone;
     }
 
     const batchCommit = async (
@@ -51,19 +60,12 @@ export const batchRegistration: IBatchRegistration = (
         const batchRegisterContract = await getBatchRegisterContract(signer);
         let commitmentInfos  = await batchMakeCommitments(domains);       
         
-        // clone to prevent error on modifying read only object
-        let commitmentInfosClone: Data.CommitmentInfoStruct[] = commitmentInfos.map(c => {
-            return {
-                project: c.project,
-                commitments: [...c.commitments]
-            }
-        });
-
-        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfosClone);
+        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
         
         // unwrap results to list
-        let commitmentStatus: number[] = unwrapResult(domains, commitmentStatusResult, "status");
-        return commitmentStatus;
+        let commitmentStatus = unwrapResult(domains, commitmentStatusResult, "status");
+        let commitmentStatusNumber = commitmentStatus.map(s => Number(s));
+        return commitmentStatusNumber;
     }
 
     const batchCheckAvailability = async (
