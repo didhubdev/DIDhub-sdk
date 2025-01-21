@@ -122,6 +122,8 @@ export const openseaInit: IOpenseaInit = (
       order: OrderWithCounter
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
+      console.log(`signer`, signerAddress);
+      console.log(`order`, order);
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress
