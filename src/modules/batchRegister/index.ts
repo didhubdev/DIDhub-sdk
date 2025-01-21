@@ -49,9 +49,17 @@ export const batchRegistration: IBatchRegistration = (
         domains: IDomainInfo[]
     ): Promise<number[]> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
-        let commitmentInfos: Data.CommitmentInfoStruct[] = await batchMakeCommitments(domains);       
+        let commitmentInfos  = await batchMakeCommitments(domains);       
+        
+        // clone to prevent error on modifying read only object
+        let commitmentInfosClone: Data.CommitmentInfoStruct[] = commitmentInfos.map(c => {
+            return {
+                project: c.project,
+                commitments: c.commitments
+            }
+        });
 
-        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfos);
+        let commitmentStatusResult: Data.CommitmentStatusResponseStruct[] = await batchRegisterContract.batchCheckCommitments(commitmentInfosClone);
         
         // unwrap results to list
         let commitmentStatus: number[] = unwrapResult(domains, commitmentStatusResult, "status");
