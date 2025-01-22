@@ -26,6 +26,7 @@ function VestingInterface() {
 
   const [chain, setChain] = useState("POLYGON");
   const [orderId, setOrderId] = useState();
+  const [receipent, setReceipent] = useState(); 
   const [tokenAddress, setTokenAddress] = useState("0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945");
   const [tokenId, setTokenId] = useState("21804149240512519351319157421600715564218877079961204561257730983429600051210");
   const [amount, setAmount] = useState();
@@ -37,11 +38,15 @@ function VestingInterface() {
   const [amount2, setAmount2] = useState();
 
   const [sdk, setSdk] = useState();
+  const [address, setAddress] = useState();
 
   useEffect(() => {
     const metamask = window.ethereum;
     const provider = new BrowserProvider(metamask);
     provider.getSigner().then((signer) => {
+      signer.getAddress().then((address) => {
+        setAddress(address);
+      });
       const sdk = new DIDhubSDK(
         signer,
         "0x0000000000000000000000000000000000000000000000000000000000000000"
@@ -56,10 +61,13 @@ function VestingInterface() {
     if (!sdk) return;
 
     if (!orderId) return;
-    
+
+    const receipentAddress = receipent || address;
+
     if (!orderId2) {
       const tx = await sdk.opensea.fulfillOffer(
-        orderId
+        orderId,
+        receipentAddress
       );
       const data = await tx.wait();
       console.log(data);
@@ -97,7 +105,8 @@ function VestingInterface() {
 
     const tx = await sdk.opensea.fulfillOffers(
       advancedOrders,
-      tokensToTransfer
+      tokensToTransfer,
+      receipent
     );
 
     const data = await tx.wait();
@@ -106,8 +115,13 @@ function VestingInterface() {
 
 
   const fulfillListing = async () => {
+
+    const receipentAddress = receipent || address;
+
+    console.log("Receipent", receipent);
     const tx = await sdk.opensea.fulfillListing(
-      orderId
+      orderId,
+      receipentAddress
     );
     const data = await tx.wait();
     console.log(data);
@@ -121,14 +135,14 @@ function VestingInterface() {
         domainInfo: domainInfo,
         paymentToken: paymentToken,
         paymentAmount: amount,
-        endInDays: 3
+        endInSeconds: 3 * 60 * 60
       };
 
       const secondOfferData = tokenAddress2 && tokenId2 && amount2 ? {
         domainInfo: `${chain}:${tokenAddress2}:${tokenId2}`,
         paymentToken: paymentToken,
         paymentAmount: amount2,
-        endInDays: 3
+        endInSeconds: 3 * 60 * 60
       } : null;
 
     if (secondOfferData != null) {
@@ -141,7 +155,7 @@ function VestingInterface() {
         domainInfo,
         paymentToken,
         amount,
-        3
+        3 * 60 * 60
       );
       console.log(data);  
     };
@@ -154,13 +168,13 @@ function VestingInterface() {
       domainInfo: domainInfo,
       paymentToken: paymentToken,
       paymentAmount: amount,
-      endInDays: 3
+      endInSeconds: 3 * 60 * 60
     };
     const secondListingData = tokenAddress2 && tokenId2 && amount2 ? {
       domainInfo: `${chain}:${tokenAddress2}:${tokenId2}`,
       paymentToken: paymentToken,
       paymentAmount: amount2,
-      endInDays: 3
+      endInSeconds: 3 * 60 * 60
     } : null;
 
     if (secondListingData != null) {
@@ -173,7 +187,7 @@ function VestingInterface() {
         domainInfo,
         paymentToken,
         amount,
-        3
+        3 * 60 * 60
       );
       console.log(data);  
     }
@@ -343,6 +357,23 @@ function VestingInterface() {
             </Td>
           </Tr>
           
+          <Tr> RECEIPENT </Tr>
+
+          <Tr>
+            <Td>
+              <strong>Receipent</strong>
+            </Td>
+            <Td>
+              <Center>
+              <Input
+                value={receipent}
+                onChange={(event)=>setReceipent(event.target.value)}
+                defaultValue="">
+              </Input>
+              </Center>
+            </Td>
+          </Tr>
+
 
           <Tr>
             <Td>
