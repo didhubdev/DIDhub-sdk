@@ -52,7 +52,7 @@ export const openseaInit: IOpenseaInit = (
       domainInfo: string,
       paymentToken: string,
       paymentAmount: string,
-      endInDays: number,
+      endInSeconds: number,
       signerAddress: string
     ) => {
       const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
@@ -61,7 +61,7 @@ export const openseaInit: IOpenseaInit = (
 
       const now = Math.floor(Date.now() / 1000);
       const startTime = now.toString();
-      const endTime = (now + endInDays * 24 * 60 * 60).toString();
+      const endTime = (now + endInSeconds).toString();
 
       // split up into fee
       const openseaFee = 250;
@@ -104,11 +104,11 @@ export const openseaInit: IOpenseaInit = (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
-        endInDays: number
+        endInSeconds: number
     ) => {
         const signerAddress = await signer.getAddress();
         const chain = domainInfo.split(":")[0];
-        const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
+        const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress);
 
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
         
@@ -119,12 +119,14 @@ export const openseaInit: IOpenseaInit = (
     }
     
     const fulfillOrder = async (
-      order: OrderWithCounter
+      order: OrderWithCounter,
+      receipentAddress: string
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
-        accountAddress: signerAddress
+        accountAddress: signerAddress,
+        recipientAddress: receipentAddress
       });
       const tx = await executeAllFulfillActions();
       return tx;
@@ -166,15 +168,18 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const fulfillListing = async (
-      orderId: string
+      orderId: string,
+      receipent?: string
     ):Promise<ContractTransaction> => {  
       // fetch data from opensea
       const orderWithCounter = await fetchOpenseaListingOrder(orderId);
-      return await fulfillOrder(orderWithCounter);
+      let receipentAddress = receipent ? receipent : await signer.getAddress();
+      return await fulfillOrder(orderWithCounter, receipentAddress);
     }
 
     const fulfillOffer = async (
-      orderId: string
+      orderId: string,
+      receipent?: string
     ):Promise<ContractTransaction> => {  
       // fetch data from opensea
       const response = await getOpenseaOfferData(orderId, await signer.getAddress(), USE_CACHE, environment);
@@ -182,7 +187,9 @@ export const openseaInit: IOpenseaInit = (
         throw new Error(response.message);
       }
       const order = response.data;
-      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter);
+      
+      let receipentAddress = receipent ? receipent : await signer.getAddress();
+      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter, receipentAddress);
     }
 
     const getOfferFulfillmentData = (
@@ -317,10 +324,12 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillListings = async (
       advancedOrders: AdvancedOrderStruct[],
-      swapInfo: Data.SwapInfoStruct
+      swapInfo: Data.SwapInfoStruct,
+      receipent?: string
     ): Promise<ContractTransactionResponse> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
+      let receipentAddress = receipent ? receipent : await signer.getAddress();
 
       let tx; 
       if (swapInfo.paymentToken === ZERO_ADDRESS) {
@@ -331,7 +340,7 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await signer.getAddress(),
+          receipentAddress,
           advancedOrders.length,
           {value: swapInfo.paymentMax}
         );
@@ -350,7 +359,7 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           swapInfo,
           fulfillerConduitKey,
-          await signer.getAddress(),
+          receipentAddress,
           advancedOrders.length
         );
       }
@@ -358,11 +367,13 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const fulfillOffers = async (
-      advancedOrders: AdvancedOrderStruct[]
+      advancedOrders: AdvancedOrderStruct[],
+      receipent?: string
     ): Promise<ContractTransactionResponse> => {
 
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      
+      let receipentAddress = receipent ? receipent : await signer.getAddress();
+
       let fulfillmentItems: IOrderFulfillmentsStruct = {
         nftFullfillments: [],
         ftFullfillments: []
@@ -402,7 +413,7 @@ export const openseaInit: IOpenseaInit = (
           getConsiderationFulfillmentData(advancedOrders),
           fulfillmentItems,
           fulfillerConduitKey,
-          await signer.getAddress(),
+          receipentAddress,
           advancedOrders.length
         );
 
@@ -439,7 +450,7 @@ export const openseaInit: IOpenseaInit = (
       });
 
       const listingData = orderRequestData.map((order) => {
-        return _getListingData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInDays, signerAddress);
+        return _getListingData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInSeconds, signerAddress);
       });
       
       const { executeAllActions }  = await seaportSDK.createBulkOrders(
@@ -457,7 +468,7 @@ export const openseaInit: IOpenseaInit = (
       domainInfo: string,
       paymentToken: string,
       paymentAmount: string,
-      endInDays: number,
+      endInSeconds: number,
       signerAddress: string
     ): CreateOrderInput => {
       const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
@@ -466,7 +477,7 @@ export const openseaInit: IOpenseaInit = (
 
       const now = Math.floor(Date.now() / 1000);
       const startTime = now.toString();
-      const endTime = (now + endInDays * 24 * 60 * 60).toString();
+      const endTime = (now + endInSeconds).toString();
 
       // split up into fee
       const openseaFee = 250;
@@ -518,7 +529,7 @@ export const openseaInit: IOpenseaInit = (
       });
 
       const offerData = orderRequestData.map((order) => {
-        return _getOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInDays, signerAddress);
+        return _getOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInSeconds, signerAddress);
       });
       
       const { executeAllActions }  = await seaportSDK.createBulkOrders(
@@ -536,12 +547,12 @@ export const openseaInit: IOpenseaInit = (
       domainInfo: string,
       paymentToken: string,
       paymentAmount: string,
-      endInDays: number
+      endInSeconds: number
     ) => {
 
       const signerAddress = await signer.getAddress();
       const chain = domainInfo.split(":")[0];
-      const orderInput = _getOfferData(domainInfo, paymentToken, paymentAmount, endInDays, signerAddress);
+      const orderInput = _getOfferData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress);
       
       const { executeAllActions } = await seaportSDK.createOrder(orderInput,signerAddress);
       

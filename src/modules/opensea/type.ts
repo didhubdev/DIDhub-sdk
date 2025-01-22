@@ -33,7 +33,7 @@ export interface IOrderRequestData {
     domainInfo: string,
     paymentToken: string,
     paymentAmount: string,
-    endInDays: number
+    endInSeconds: number
 }
 
 export interface IOrderData {
@@ -49,14 +49,14 @@ export interface IOpensea {
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}
      * @param paymentToken the address of the payment token
      * @param paymentAmount the amount of payment token to list
-     * @param endInDays the number of days that this listing will remain valid
+     * @param endInSeconds the number of seconds that this listing will remain valid
      * @returns response object with code and message
      */
     listDomain: (
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
-        endInDays: number
+        endInSeconds: number
     ) => Promise<IDIDhubResponse>
     
     /**
@@ -75,7 +75,7 @@ export interface IOpensea {
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}
      * @param paymentToken the address of the payment token
      * @param paymentAmount the amount of payment token to list
-     * @param endInDays the number of days that this offer will remain valid
+     * @param endInSeconds the number of seconds that this offer will remain valid
      * 
      * @returns response object with code and message
      */
@@ -83,7 +83,7 @@ export interface IOpensea {
         domainInfo: string,
         paymentToken: string,
         paymentAmount: string,
-        endInDays: number
+        endInSeconds: number
     ) => Promise<IDIDhubResponse>,
 
         /**
@@ -100,22 +100,26 @@ export interface IOpensea {
      * @note This function is used to fulfill a listing on Opensea
      * 
      * @param orderId the order id of the listing
+     * @param receipent an optional receipent address, if none is given will default to the signer address
      * 
      * @returns contract transaction
      */
     fulfillListing: (
-        orderId: string
+        orderId: string,
+        receipent?: string
     ) => Promise<ContractTransaction>,
 
     /**
      * @note This function is used to fulfill an offer on Opensea
      * 
      * @param orderId the order id of the offer
+     * @param receipent an optional receipent address, if none is given will default to the signer address
      * 
      * @returns contract transaction
      */
     fulfillOffer: (
-        orderId: string
+        orderId: string,
+        receipent?: string
     ) => Promise<ContractTransaction>,
     
     /**
@@ -159,23 +163,27 @@ export interface IOpensea {
      * 
      * @param param advancedOrders the order info fetched from Opensea
      * @param swapInfo the swap info returned from getSwapInfo. This can be obtained by calling getSwapInfo function
+     * @param receipent an optional receipent address, if none is given will default to the signer address 
      * 
      * @retrybs contract transaction
      */
     fulfillListings: (
         advancedOrders: AdvancedOrderStruct[],
-        swapInfo: Data.SwapInfoStruct
+        swapInfo: Data.SwapInfoStruct,
+        receipent?: string
     ) => Promise<ContractTransactionResponse>,
 
         /**
      * @note This function is used to fulfill a list of offers on Opensea
      * 
      * @param advancedOrders the order info fetched from Opensea
+     * @param receipent an optional receipent address, if none is given will default to the signer address
      * 
      * @retrybs contract transaction
      */
     fulfillOffers: (
-        advancedOrders: AdvancedOrderStruct[]
+        advancedOrders: AdvancedOrderStruct[],
+        receipent?: string
     ) => Promise<ContractTransactionResponse>,
     
     /**
