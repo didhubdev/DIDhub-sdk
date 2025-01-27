@@ -34,7 +34,8 @@ export interface IRenewCheck {
 export interface ITokenInfo {
     name: string,
     address: string,
-    decimals: number
+    decimals: number,
+    isNativeWrappedToken?: boolean
 }
 
 export interface IBatchRegister {
@@ -209,9 +210,10 @@ export interface IBatchRegister {
     /**
      * @dev Get the list of supported tokens
      * 
+     * @param chainId The chain id
      * @return The list of supported tokens
      */
-    getSupportedTokens: () => Promise<ITokenInfo[]>;
+    getSupportedTokens: (chainId: bigint) => Promise<ITokenInfo[]>;
 
     
     /**

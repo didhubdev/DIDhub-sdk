@@ -2,6 +2,7 @@ import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { Data, IFTStruct, INFTStruct, AdvancedOrderStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { BigNumberish, BytesLike, ContractTransaction, ContractTransactionResponse, JsonRpcSigner, TransactionResponse } from "ethers";
 import { OrderWithCounter } from "@opensea/seaport-js/lib/types";
+import { ITokenInfo } from "modules/batchRegister/type";
 
 export enum ItemType {
     NATIVE = 0,
@@ -252,6 +253,22 @@ export interface IOpensea {
     checkOrderValidity: (
         orderIds: string[]
     ) => Promise<boolean[]>
+
+    /**
+     * @dev This function is used to get the opensea supported offer tokens for a given chain
+     * 
+     * @param chain the chain to get the supported tokens
+     * @returns a list of supported tokens
+     */
+    getSupportedOfferTokens: (chain: string) => Promise<ITokenInfo[]>
+
+    /**
+     * @dev This function is used to get the opensea supported listing tokens for a given chain
+     * 
+     * @param chain the chain to get the supported tokens
+     * @returns a list of supported tokens
+     */
+    getSupportedListingTokens: (chain: string) => Promise<ITokenInfo[]>
 
     estimateGas: {
         approveERC20Tokens: (

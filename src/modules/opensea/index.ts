@@ -16,6 +16,7 @@ import { utils as projectUtils } from "../utils";
 
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { AdvancedOrderStruct, FulfillmentComponentStruct } from "@opensea/seaport-js/lib/typechain-types/seaport/contracts/Seaport";
+import { ITokenInfo } from "modules/batchRegister/type";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -595,6 +596,92 @@ export const openseaInit: IOpenseaInit = (
       return tx;
     }
 
+    const getSupportedOfferTokens = async (chain: string): Promise<ITokenInfo[]> => {
+      switch (chain) {
+          case "Ethereum":
+            return [
+              {
+                name: "WETH",
+                address: "ETHEREUM:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                decimals: 18,
+                isNativeWrappedToken: true
+              }
+            ]
+          case "Polygon":
+            return [
+                {
+                    name: "WETH",
+                    address: "POLYGON:0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+                    decimals: 18,
+                    isNativeWrappedToken: false
+                }
+            ]
+          case "Arbitrum":
+            return [
+                {
+                    name: "WETH",
+                    address: "ARBITRUM:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+                    decimals: 18,
+                    isNativeWrappedToken: true
+                }
+            ]
+          case "Avalanche":
+            return [
+                {
+                    name: "WAVAX",
+                    address: "AVALANCHE:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+                    decimals: 18,
+                    isNativeWrappedToken: true
+                }
+            ]
+          default:
+              return [];
+      }
+  }
+
+  const getSupportedListingTokens = async (chain: string): Promise<ITokenInfo[]> => {
+    switch (chain) {
+        case "Ethereum":
+          return [
+            {
+              name: "ETH",
+              address: `ETHEREUM:${ZERO_ADDRESS}`,
+              decimals: 18,
+              isNativeWrappedToken: false
+            }
+          ]
+        case "Polygon":
+          return [
+              {
+                name: "POL",
+                address: `POLYGON:${ZERO_ADDRESS}`,
+                decimals: 18,
+                isNativeWrappedToken: false
+              }
+          ]
+        case "Arbitrum":
+          return [
+              {
+                  name: "ETH",
+                  address: `ARBITRUM:${ZERO_ADDRESS}`,
+                  decimals: 18,
+                  isNativeWrappedToken: false
+              }
+          ]
+        case "Avalanche":
+          return [
+              {
+                  name: "AVAX",
+                  address: `AVALANCHE:${ZERO_ADDRESS}`,
+                  decimals: 18,
+                  isNativeWrappedToken: false
+              }
+          ]
+        default:
+            return [];
+    }
+}
+
     // estimate gas ===========================================================
 
     const fulfillListingsEstimateGas = async (
@@ -720,6 +807,9 @@ export const openseaInit: IOpenseaInit = (
         approveERC20Tokens: approveERC20Tokens,
         approveERC721orERC1155Tokens: approveERC721orERC1155Tokens,
         checkOrderValidity: checkOrderValidity,
+
+        getSupportedOfferTokens: getSupportedOfferTokens,
+        getSupportedListingTokens: getSupportedListingTokens,
 
         estimateGas: {
           fulfillListings: fulfillListingsEstimateGas,

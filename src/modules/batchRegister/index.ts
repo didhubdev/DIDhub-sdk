@@ -343,47 +343,40 @@ export const batchRegistration: IBatchRegistration = (
         }
     }
 
-    const getSupportedTokens = async (): Promise<ITokenInfo[]> => {
-        // check current chain
-        const batchRegisterContract = await getBatchRegisterContract(signer);
-        const network = await signer.provider.getNetwork();
-        switch (network.chainId) {
+    const getSupportedTokens = async (chainId: bigint): Promise<ITokenInfo[]> => {
+        switch (chainId) {
+            case BigInt(1):
+                return [
+                    {
+                        name: "ETH",
+                        address: "ETHEREUM:0x0000000000000000000000000000000000000000",
+                        decimals: 18
+                    }
+                ]
             case BigInt(56):
                 return [
                     {
                         name: "BNB",
-                        address: "0x0000000000000000000000000000000000000000",
+                        address: "BNB:0x0000000000000000000000000000000000000000",
                         decimals: 18
                     },
                     {
                         name: "WBNB",
-                        address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-                        decimals: 18
+                        address: "BNB:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+                        decimals: 18,
+                        isNativeWrappedToken: true
                     },
                     {
                         name: "USDC",
-                        address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+                        address: "BNB:0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
                         decimals: 18
                     }
                 ]
             case BigInt(137):
                 return [
                     {
-                        name: "MATIC",
-                        address: "0x0000000000000000000000000000000000000000",
-                        decimals: 18
-                    }
-                ]
-            case BigInt(250):
-                return [
-                    {
-                        name: "FTM",
-                        address: "0x0000000000000000000000000000000000000000",
-                        decimals: 18
-                    },
-                    {
-                        name: "WFTM",
-                        address: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+                        name: "POL",
+                        address: "POLYGON:0x0000000000000000000000000000000000000000",
                         decimals: 18
                     }
                 ]
@@ -391,22 +384,31 @@ export const batchRegistration: IBatchRegistration = (
                 return [
                     {
                         name: "ETH",
-                        address: "0x0000000000000000000000000000000000000000",
+                        address: "ARBITRUM:0x0000000000000000000000000000000000000000",
                         decimals: 18
                     },
                     {
                         name: "WETH",
-                        address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-                        decimals: 18
+                        address: "ARBITRUM:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+                        decimals: 18,
+                        isNativeWrappedToken: true
                     },
                     {
                         name: "USDC",
-                        address: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+                        address: "ARBITRUM:0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
                         decimals: 6
                     }
                 ]
+            case BigInt(43114):
+                return [
+                    {
+                        name: "AVAX",
+                        address: "AVALANCHE:0x0000000000000000000000000000000000000000",
+                        decimals: 18
+                    }
+                ]
             default:
-                throw Error("Chain not supported");
+                return [];
         }
     }
 
