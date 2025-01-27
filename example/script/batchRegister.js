@@ -18,8 +18,8 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 // input params =================================================================
 const domains = [
     {
-        collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
-        nameKey: "ENS:eth.satoshirave133",
+        collectionInfo: "ETHEREUM:0x2A187453064356c898cAe034EAed119E1663ACb8",
+        nameKey: "Decentraland Names:eth.dcl.xxxyyyzzz",
         duration: 365 * 86500, // 365 days
     }
 ];
@@ -117,6 +117,6 @@ const estimatedGas = await sdk.register.estimateGas.batchRegister(registrationDa
 console.log("Estimated Gas", estimatedGas.toString());
 
 // // register
-// const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax, maxFeePerGas);
-// await registerTx.wait();
-// console.log(`Register transaction hash: ${registerTx.hash}`);
+const registerTx = await sdk.register.batchRegister(registrationData.requests, registrationData.paymentToken, registrationData.paymentMax, maxFeePerGas);
+await registerTx.wait();
+console.log(`Register transaction hash: ${registerTx.hash}`);

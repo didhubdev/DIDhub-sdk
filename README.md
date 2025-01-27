@@ -18,11 +18,9 @@ yarn add @didhubdev/sdk
 | --- | --- | --- | --- |
 | Batch Register | BSC | 0x35580f058022d7BA612D1ba31CedFaCC019091a9 | 10% |
 | Batch Register | ARBITRUM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
-| Batch Register | FANTOM | 0x2ce430A5e124308e3D6CAEcA392ed3AB03c74DE1 | 10% |
-| Batch Register | ETHEREUM | 0xD7356f1FC4acc3557cA5E213D3f467FdAeC0140f | 10% |
+| Batch Register | ETHEREUM | 0xdC9deeA0a7A94fd92338002fC285E03D982b75AD | 10% |
 | Batch Transfer | BSC | 0x62D09c810F0AD579E4fbcD8f60d6cD6a487e5646 | 0% |
 | Batch Transfer | ARBITRUM | 0x5950286105FEe78216EB51eBEFb8c188A42A5B1b | 0% |
-| Batch Transfer | FANTOM | 0xB6A819c02EAddbdAe4C7e9912029B77bE03A2068 | 0% |
 | Batch Transfer | ETHEREUM | 0xefb0Cf219C4FCF22132d2C3330970A1Ff29AC0B7 | 0% |
 | Batch Transfer | POLYGON | 0x9610fDdF5721e9d727d82bE318b864eC7d4967c7 | 0% |
 | Batch Transfer | AVALANCHE | 0x700d05ae51Da2C00E6FeeC912AbaF208B24De0aA | 0% |
@@ -30,7 +28,7 @@ yarn add @didhubdev/sdk
 
 # Usage
 
-This SDK primarily exposes a clean interface to the DIDhub smart contracts that enable batch operation on domain 
+This SDK primarily exposes a clean interface to the DIDhub smart contracts that enables batch operation on domain 
 registration, renewal and management for public use. These functions are already integrated into the [DIDhub official website](https://didhub.com). Detail examples are provided in the example/script folder for testing.
 
 The SDK also contains logic that involves batch list, offer and purchase of 
@@ -38,11 +36,13 @@ domains on Opensea. However such functions are currently limited for use only on
 
 ## Initalise SDK
 ```
-const sdk = new DIDhubSDK(signer, secret);
+const sdk = new DIDhubSDK(signer, env, secret);
 ```
-signer, e.g. metamask signer \
+signer: e.g. metamask signer
 
-secret is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. This variable is optional
+env: "dev" | "production" specifies where the mode is dev or production. This parameter only affects the opensea related functions, please put "production" if not sure
+
+secret: is any 32 bytes hash. It creates uncertainly in the commit process. It is recommended to generate one for each user. This variable is optional
 
 ## Inputs for Domain Name Registration
 ```
@@ -56,17 +56,21 @@ const domains = [
 const margin = 3; // 3%
 const paymentToken = ZERO_ADDRESS;
 ```
-domains is a list of domain information that contains the collectionInfo (${chain}:${contractAddress}),  nameKey, and duration. \
+domains is a list of domain information that contains the collectionInfo (${chain}:${contractAddress}),  nameKey, and duration.
+
 margin is the slipage of the swap. Put 0 if you are certain that no token swap will take place \
 paymentToken is the token to pay for the domain. Supported tokens are listed below:
+
 | chain | token symbol | address |
 | --- | --- | --- |
+| ETHEREUM | Native | 0x0000000000000000000000000000000000000000 |
 | BSC | Native | 0x0000000000000000000000000000000000000000 |
 | BSC | WBNB | 0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c |
 | BSC | USDC | 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d |
 | ARBITRUM | Native | 0x0000000000000000000000000000000000000000 |
 | ARBITRUM | WBNB | 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 |
 | ARBITRUM | USDC | 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8 |
+| POLYGON | Native | 0x0000000000000000000000000000000000000000 |
 
 ## Functions to interact with the DIDHUB batch registration contract
 
