@@ -291,12 +291,12 @@ const listingDataArray = {
 
 ### Accept Offer
 ```
-const tx = await sdk.opensea.fulfillOffer(orderId);
+const tx = await sdk.opensea.fulfillOffer(orderId, receipent);
 ```
 
 ### Fulfill Listing
 ```
-const tx = await sdk.opensea.fulfillListing(orderId);
+const tx = await sdk.opensea.fulfillListing(orderId, receipent);
 ```
 
 ### Cancel Order
@@ -322,5 +322,5 @@ const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.pa
 ```
 4. Finally, complete the transaction with the obtained in the previous functions
 ```
-const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+const purchaseTx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo, receipent);
 ```
