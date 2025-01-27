@@ -1,5 +1,5 @@
 # didhub-sdk
-DIDhub SDK
+The DIDhub SDK is developed by DIDhub to faciliate registration, renewal, trade and management of web3 domain names. It provides a unified interface for bulk operation on various blockchains, supporting projects including [Ethereum Name Service](https://ens.domains/), [.bnb Name Service](https://space.id/), [.arb Name Service](https://space.id/), [Lens Protocol](https://www.lens.xyz/), etc.
 
 # Installation
 Install with npm
