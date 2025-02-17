@@ -25,12 +25,12 @@ dotenv.config();
 function VestingInterface() {
 
   const [chain, setChain] = useState("POLYGON");
-  const [orderId, setOrderId] = useState();
+  const [orderId, setOrderId] = useState("OPENSEA:0x1b2116948817ce8caae88904a9c0a4e66ce6ea604d366f22eb7e02d41859f0a6");
   const [receipent, setReceipent] = useState(); 
   const [tokenAddress, setTokenAddress] = useState("0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945");
-  const [tokenId, setTokenId] = useState("21804149240512519351319157421600715564218877079961204561257730983429600051210");
+  const [tokenId, setTokenId] = useState("28453079821991126401685168973131321967874107147748814493140467641252827572009");
   const [amount, setAmount] = useState();
-  const [paymentToken, setPaymentToken] = useState("0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359");
+  const [paymentToken, setPaymentToken] = useState("0x0000000000000000000000000000000000000000");
 
   const [orderId2, setOrderId2] = useState();
   const [tokenAddress2, setTokenAddress2] = useState("0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945");
@@ -118,10 +118,26 @@ function VestingInterface() {
 
     const receipentAddress = receipent || address;
 
+    const advancedOrders = await sdk.opensea.getAdvancedListingOrders(
+      [orderId, orderId2]
+    );
+
+    console.log(advancedOrders);
+
+    const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, 3);
+
+    // const gas = await sdk.opensea.estimateGas.fulfillListings(
+    //   advancedOrders,
+    //   swapInfo,
+    //   receipentAddress
+    // );
+    // console.log("Gas", gas);
+    
     console.log("Receipent", receipent);
-    const tx = await sdk.opensea.fulfillListing(
-      orderId,
-      receipentAddress
+    const tx = await sdk.opensea.fulfillListings(
+        advancedOrders,
+        swapInfo,
+        receipentAddress
     );
     const data = await tx.wait();
     console.log(data);
