@@ -15,7 +15,7 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 const orderIds = [
-  "OPENSEA:0x5bd53e0dca652a6dafe351712febe7089b67b86ac539bdf9253514d4f9ef6c77"  
+  "OPENSEA:0x6e4acc41ba27eaac13468d31c837d3925a5ab9c6a990a2a963d7afe5ba9cd36f"  
 ];
 const margin = 3; // 3%
 const paymentToken = ZERO_ADDRESS;
@@ -44,6 +44,6 @@ if (paymentToken !== ZERO_ADDRESS) {
 // const gas = await sdk.opensea.estimateGas.fulfillListings(advancedOrders, swapInfo);
 // console.log("Gas", gas);
 
-// const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
-// const receipt = await tx.wait();
-// console.log("PUrchase Completed");
+const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+const receipt = await tx.wait();
+console.log("PUrchase Completed");
