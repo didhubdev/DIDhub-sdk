@@ -745,6 +745,7 @@ export const openseaInit: IOpenseaInit = (
       });
 
       const feeData = await signer.provider.getFeeData();
+      
       try {
         let estimatedGas = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders.estimateGas(
           advancedOrders,

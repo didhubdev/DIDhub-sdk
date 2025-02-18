@@ -343,9 +343,9 @@ export const batchRegistration: IBatchRegistration = (
         }
     }
 
-    const getSupportedTokens = async (chainId: bigint): Promise<ITokenInfo[]> => {
-        switch (chainId) {
-            case BigInt(1):
+    const getSupportedTokens = async (chain: string): Promise<ITokenInfo[]> => {
+        switch (chain) {
+            case "Ethereum":
                 return [
                     {
                         name: "ETH",
@@ -353,7 +353,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case BigInt(56):
+            case "BNB Chain":
                 return [
                     {
                         name: "BNB",
@@ -372,7 +372,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case BigInt(137):
+            case "Polygon":
                 return [
                     {
                         name: "POL",
@@ -380,7 +380,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 18
                     }
                 ]
-            case BigInt(42161):
+            case "Arbitrum":
                 return [
                     {
                         name: "ETH",
@@ -399,7 +399,7 @@ export const batchRegistration: IBatchRegistration = (
                         decimals: 6
                     }
                 ]
-            case BigInt(43114):
+            case "Avalanche":
                 return [
                     {
                         name: "AVAX",

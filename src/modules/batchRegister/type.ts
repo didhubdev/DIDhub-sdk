@@ -210,10 +210,10 @@ export interface IBatchRegister {
     /**
      * @dev Get the list of supported tokens
      * 
-     * @param chainId The chain id
+     * @param chain The chain name given by didhub api, i.e. "Ethereum", "Arbitrum", "Polygon", "BNB Chain"
      * @return The list of supported tokens
      */
-    getSupportedTokens: (chainId: bigint) => Promise<ITokenInfo[]>;
+    getSupportedTokens: (chain: string) => Promise<ITokenInfo[]>;
 
     
     /**
