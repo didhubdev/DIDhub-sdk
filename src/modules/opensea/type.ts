@@ -270,6 +270,13 @@ export interface IOpensea {
      */
     getSupportedListingTokens: (chain: string) => Promise<ITokenInfo[]>
 
+    /**
+     * 
+     * @param project the project name
+     * @returns creator fee of the project
+     */
+    getCreatorFee: (project: string) => Promise<number>
+    
     estimateGas: {
         approveERC20Tokens: (
             tokenAddress: string,

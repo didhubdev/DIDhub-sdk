@@ -680,9 +680,18 @@ export const openseaInit: IOpenseaInit = (
         default:
             return [];
     }
-}
+  }
 
-    // estimate gas ===========================================================
+  const getCreatorFee = async (project: string): Promise<number> => {
+    switch (project) {
+        case "Freename":
+          return 3;
+        default:
+            return 0;
+    }
+  }
+
+  // estimate gas ===========================================================
 
     const fulfillListingsEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[],
@@ -811,6 +820,8 @@ export const openseaInit: IOpenseaInit = (
 
         getSupportedOfferTokens: getSupportedOfferTokens,
         getSupportedListingTokens: getSupportedListingTokens,
+
+        getCreatorFee: getCreatorFee,
 
         estimateGas: {
           fulfillListings: fulfillListingsEstimateGas,
