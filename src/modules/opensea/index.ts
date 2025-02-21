@@ -705,7 +705,8 @@ export const openseaInit: IOpenseaInit = (
   }
 
   const getOpenseaFee = async (): Promise<number> => {
-    return await getOpenseaBasisPoints(environment);
+    const basisPoints = await getOpenseaBasisPoints(environment);
+    return basisPoints / 100;
   }
 
   // estimate gas ===========================================================
@@ -840,7 +841,7 @@ export const openseaInit: IOpenseaInit = (
 
         getCreatorFee: getCreatorFee,
         getOpenseaFee: getOpenseaFee,
-        
+
         estimateGas: {
           fulfillListings: fulfillListingsEstimateGas,
           fulfillOffers: fulfillOffersEstimateGas,
