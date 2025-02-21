@@ -113,7 +113,7 @@ export const openseaInit: IOpenseaInit = (
         const chain = domainInfo.split(":")[0];
 
         const openseaBasisPoints = await getOpenseaBasisPoints(environment);
-
+        console.log(`Basis Points, opensea: ${openseaBasisPoints}`);
         const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress, openseaBasisPoints);
 
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
@@ -539,7 +539,7 @@ export const openseaInit: IOpenseaInit = (
       });
 
       const openseaBasisPoints = await getOpenseaBasisPoints(environment);
-      
+
       const offerData = orderRequestData.map((order) => {
         return _getOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInSeconds, signerAddress, openseaBasisPoints);
       });
