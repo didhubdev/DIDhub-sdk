@@ -44,6 +44,8 @@ export const openseaInit: IOpenseaInit = (
     ): Fee | null => {
       const collectionInfo = `${chain}:${contractAddress}`;
       switch (collectionInfo) {
+        // case "":
+        //   return {}
         default:
           return null; 
       }
@@ -94,7 +96,7 @@ export const openseaInit: IOpenseaInit = (
             recipient: signerAddress,
           },
         ],
-        fees: fees,
+        // fees: fees,
         startTime: startTime,
         endTime: endTime,
         conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
