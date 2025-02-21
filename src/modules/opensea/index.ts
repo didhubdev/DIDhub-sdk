@@ -113,9 +113,8 @@ export const openseaInit: IOpenseaInit = (
         const chain = domainInfo.split(":")[0];
 
         const openseaBasisPoints = await getOpenseaBasisPoints(environment);
-        console.log(`Basis Points, opensea: ${openseaBasisPoints}`);
         const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress, openseaBasisPoints);
-
+      
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
         
         const order = await executeAllActions();
