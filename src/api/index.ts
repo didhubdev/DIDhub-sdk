@@ -36,7 +36,7 @@ export const getOpenseaBasisPoints = async (
   }
 
   const data = await response.json();
-  return parseInt(data.data.basisPoint);
+  return parseInt(data.data.basisPoints);
 }
 
 export const getOpenseaListingData = async (
