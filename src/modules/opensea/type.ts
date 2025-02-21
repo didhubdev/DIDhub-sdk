@@ -276,6 +276,13 @@ export interface IOpensea {
      * @returns creator fee of the project
      */
     getCreatorFee: (project: string) => Promise<number>
+
+
+    /**
+     * 
+     * @returns the opensea fee
+     */
+    getOpenseaFee: () => Promise<number>
     
     estimateGas: {
         approveERC20Tokens: (

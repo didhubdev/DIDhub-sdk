@@ -114,7 +114,7 @@ export const openseaInit: IOpenseaInit = (
 
         const openseaBasisPoints = await getOpenseaBasisPoints(environment);
         const listingData = _getListingData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress, openseaBasisPoints);
-      
+
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
         
         const order = await executeAllActions();
@@ -697,11 +697,15 @@ export const openseaInit: IOpenseaInit = (
 
   const getCreatorFee = async (project: string): Promise<number> => {
     switch (project) {
-        case "Freename":
-          return 3;
+        // case "Freename":
+        //   return 3;
         default:
             return 0;
     }
+  }
+
+  const getOpenseaFee = async (): Promise<number> => {
+    return await getOpenseaBasisPoints(environment);
   }
 
   // estimate gas ===========================================================
@@ -835,7 +839,8 @@ export const openseaInit: IOpenseaInit = (
         getSupportedListingTokens: getSupportedListingTokens,
 
         getCreatorFee: getCreatorFee,
-
+        getOpenseaFee: getOpenseaFee,
+        
         estimateGas: {
           fulfillListings: fulfillListingsEstimateGas,
           fulfillOffers: fulfillOffersEstimateGas,
