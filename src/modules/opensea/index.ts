@@ -65,7 +65,7 @@ export const openseaInit: IOpenseaInit = (
       const endTime = (now + endInSeconds).toString();
 
       // split up into fee
-      const openseaFee = 250;
+      const openseaFee = 50;
       const openseaRecipient = "0x0000a26b00c1f0df003000390027140000faa719";
       let fees = [
         {
@@ -481,7 +481,7 @@ export const openseaInit: IOpenseaInit = (
       const endTime = (now + endInSeconds).toString();
 
       // split up into fee
-      const openseaFee = 250;
+      const openseaFee = 50;
       const openseaRecipient = "0x0000a26b00c1f0df003000390027140000faa719";
       let fees = [
         {
