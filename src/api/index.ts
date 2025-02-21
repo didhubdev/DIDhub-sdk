@@ -11,6 +11,34 @@ const getAPIDomain = (environment: "production" | "dev") => {
     }
 }
 
+export const getOpenseaBasisPoints = async (
+  environment: "production" | "dev" = "production"
+): Promise<number> => {
+
+  const API_DOMAIN = getAPIDomain(environment);
+
+  const response = await fetch(
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/basisPoints`,
+      {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      }
+  )
+
+  if (response.status === 429) {
+    throw new Error('Too Many Requests');
+  }
+  
+  if (response.status !== 200) {
+    return 250;
+  }
+
+  const data = await response.json();
+  return data.basisPoints;
+}
+
 export const getOpenseaListingData = async (
     orderId: string,
     signer: string,
