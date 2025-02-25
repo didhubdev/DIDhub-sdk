@@ -248,7 +248,7 @@ export const getInvalidListings = async (
   const response = await fetch(
       `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}`,
       {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json"
           }
@@ -284,7 +284,7 @@ export const getInvalidOffers = async (
   const response = await fetch(
       `${API_DOMAIN}/nftmarketplace/v1/opensea/offer/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}`,
       {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json"
           }

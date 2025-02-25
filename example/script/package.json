@@ -2,9 +2,10 @@
   "name": "test",
   "license": "MIT",
   "dependencies": {
-    "@didhubdev/sdk": "1.0.40",
+    "@didhubdev/sdk": "1.0.53",
     "dotenv": "^16.1.4",
     "ethers": "6.13.5"
   },
-  "type": "module"
+  "type": "module",
+  "version": "0.0.0"
 }
