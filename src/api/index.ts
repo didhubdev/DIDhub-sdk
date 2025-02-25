@@ -233,6 +233,78 @@ export const getOrders = async (
     return data.data;
 }
 
+export const getInvalidListings = async (
+  domainInfo: string,
+  paymentToken: string,
+  paymentAmount: string,
+  environment: "production" | "dev" = "production"
+) => {
+
+  if (!paymentToken.includes(":")) {
+    throw new Error('Invalid payment token');
+  }
+  
+  const API_DOMAIN = getAPIDomain(environment);
+  const response = await fetch(
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}`,
+      {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        },
+  );
+  
+  if (response.status === 429) {
+    throw new Error('Too Many Requests');
+  }
+  
+  const data = await response.json();
+  
+  // save to cache
+  if (data.code !== 1) {
+    throw new Error(data.message);
+  }
+  
+  return data.data;
+}
+
+export const getInvalidOffers = async (
+  domainInfo: string,
+  paymentToken: string,
+  paymentAmount: string,
+  environment: "production" | "dev" = "production"
+) => {
+
+  if (!paymentToken.includes(":")) {
+    throw new Error('Invalid payment token');
+  }
+  
+  const API_DOMAIN = getAPIDomain(environment);
+  const response = await fetch(
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/offer/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}`,
+      {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        },
+  );
+  
+  if (response.status === 429) {
+    throw new Error('Too Many Requests');
+  }
+  
+  const data = await response.json();
+  
+  // save to cache
+  if (data.code !== 1) {
+    throw new Error(data.message);
+  }
+  
+  return data.data;
+}
+
 export const getOrdersValidity = async (
   orderIds: string[],
   environment: "production" | "dev" = "production"

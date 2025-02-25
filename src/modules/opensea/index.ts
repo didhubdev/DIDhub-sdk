@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { getInvalidListings, getInvalidOffers, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -424,6 +424,42 @@ export const openseaInit: IOpenseaInit = (
 
       return tx;
     }
+    
+    const cancelInvalidListings = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: bigint,
+    ): Promise<TransactionResponse | null> => {
+      
+      // check in the database that any listings below the listing amount is invalid
+      const orderIdsToCancel = await getInvalidListings(domainInfo, paymentToken, paymentAmount.toString(), environment);
+
+      // cancel these orders
+      if (orderIdsToCancel.length > 0) {
+        const tx = await cancelOrders(orderIdsToCancel);
+        return tx;
+      }
+
+      return null;
+    }
+
+    const cancelInvalidOffers = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: bigint
+    ): Promise<TransactionResponse | null> => {
+      
+      // check in the database that any listings below the listing amount is invalid
+      const orderIdsToCancel = await getInvalidOffers(domainInfo, paymentToken, paymentAmount.toString(), environment);
+
+      // cancel these orders
+      if (orderIdsToCancel.length > 0) {
+        const tx = await cancelOrders(orderIdsToCancel);
+        return tx;
+      }
+
+      return null; 
+    }
 
     const cancelOrders = async (
         orderIds: string[]
@@ -829,6 +865,8 @@ export const openseaInit: IOpenseaInit = (
         getAdvancedListingOrders: getAdvancedListingOrders,
         getAdvancedOfferOrders: getAdvancedOfferOrders,
         getSwapInfo: getSwapInfo,
+        cancelInvalidListings: cancelInvalidListings,
+        cancelInvalidOffers: cancelInvalidOffers,
         cancelOrders: cancelOrders,
         batchCheckApprovalERC721orERC1155: batchCheckApprovalERC721orERC1155,
         batchCheckApprovalERC20: batchCheckApprovalERC20,

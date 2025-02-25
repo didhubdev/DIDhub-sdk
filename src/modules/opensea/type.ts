@@ -188,6 +188,32 @@ export interface IOpensea {
     ) => Promise<ContractTransactionResponse>,
     
     /**
+     * @note This function is used to cancel listings that are unwanted on Opensea
+     * 
+     * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
+     * @param paymentToken the address of the payment token of the new listing
+     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     */
+    cancelInvalidListings : (
+        domainInfo: string,
+        paymentToken: string,
+        paymentAmount: bigint
+    ) => Promise<TransactionResponse | null>,
+
+    /**
+     * @note This function is used to cancel offers that are unwanted on Opensea
+     * 
+     * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
+     * @param paymentToken the address of the payment token of the new offer
+     * @param paymentAmount the amount of payment token to list of the new offer, in numerics
+     */
+    cancelInvalidOffers : (
+        domainInfo: string,
+        paymentToken: string,
+        paymentAmount: bigint
+    ) => Promise<TransactionResponse | null>,
+
+    /**
      * @note This function is used to cancel a list of listings on Opensea
      * 
      * @returns contract transaction
