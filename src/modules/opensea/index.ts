@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { getInvalidListings, getInvalidOffers, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -425,6 +425,24 @@ export const openseaInit: IOpenseaInit = (
       return tx;
     }
     
+    const getInvalidListings = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: bigint
+    ): Promise<string[]> => {
+      const orderIds = await getInvalidListingsAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      return orderIds;
+    }
+
+    const getInvalidOffers = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: bigint
+    ): Promise<string[]> => {
+      const orderIds = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      return orderIds;
+    }
+
     const cancelInvalidListings = async (
       domainInfo: string,
       paymentToken: string,
@@ -432,7 +450,7 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<TransactionResponse | null> => {
       
       // check in the database that any listings below the listing amount is invalid
-      const orderIdsToCancel = await getInvalidListings(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      const orderIdsToCancel = await getInvalidListingsAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
 
       // cancel these orders
       if (orderIdsToCancel.length > 0) {
@@ -450,7 +468,7 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<TransactionResponse | null> => {
       
       // check in the database that any listings below the listing amount is invalid
-      const orderIdsToCancel = await getInvalidOffers(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      const orderIdsToCancel = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
 
       // cancel these orders
       if (orderIdsToCancel.length > 0) {
@@ -865,6 +883,8 @@ export const openseaInit: IOpenseaInit = (
         getAdvancedListingOrders: getAdvancedListingOrders,
         getAdvancedOfferOrders: getAdvancedOfferOrders,
         getSwapInfo: getSwapInfo,
+        getInvalidListings: getInvalidListings,
+        getInvalidOffers: getInvalidOffers,
         cancelInvalidListings: cancelInvalidListings,
         cancelInvalidOffers: cancelInvalidOffers,
         cancelOrders: cancelOrders,

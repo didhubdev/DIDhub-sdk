@@ -188,6 +188,35 @@ export interface IOpensea {
     ) => Promise<ContractTransactionResponse>,
     
     /**
+     * @note This function is used to get the order ids of the invalid listings
+     * 
+     * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
+     * @param paymentToken the address of the payment token of the new listing
+     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     * @returns order ids of the invalid listings
+     */
+    getInvalidListings: (
+        domainInfo: string,
+        paymentToken: string,
+        paymentAmount: bigint
+    ) => Promise<string[]>,
+
+
+    /**
+     * @note This function is used to get the order ids of the invalid offers
+     * 
+     * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
+     * @param paymentToken the address of the payment token of the new listing
+     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     * @returns order ids of the invalid offers
+     */
+    getInvalidOffers: (
+        domainInfo: string,
+        paymentToken: string,
+        paymentAmount: bigint
+    ) => Promise<string[]>,
+
+    /**
      * @note This function is used to cancel listings that are unwanted on Opensea
      * 
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  

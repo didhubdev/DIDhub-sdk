@@ -15,9 +15,9 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 
-const domainInfo = "ARBITRUM:0x5d482d501b369f5ba034dec5c5fb7a50d2d6ca20:56781014848996659361942283062730746419620396074334958898263521396697877991490";
+const domainInfo = "POLYGON:0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945:85997366236755947607067999964956450388242871860011819749993866159229883053823";
 const paymentToken = `POLYGON:${ZERO_ADDRESS}`;
-const paymentAmount = BigInt(1);
+const paymentAmount = BigInt(100);
 // =============================================================================
 
 // instantiate SDK
@@ -25,7 +25,10 @@ console.log("Instantiating SDK...");
 const sdk = new DIDhubSDK(signer, "dev", secret);
 console.log("SDK Instantiated");
 
-
 const tx = await sdk.opensea.cancelInvalidListings(domainInfo, paymentToken, paymentAmount);
-const receipt = await tx.wait();
-console.log("Cancel Completed");
+if (!tx) {
+    console.log("No invalid listings found");
+} else {
+    const receipt = await tx.wait();
+    console.log("Cancel Completed");
+}

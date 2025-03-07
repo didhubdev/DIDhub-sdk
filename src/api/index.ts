@@ -238,7 +238,7 @@ export const getInvalidListings = async (
   paymentToken: string,
   paymentAmount: string,
   environment: "production" | "dev" = "production"
-) => {
+): Promise<string[]> => {
 
   if (!paymentToken.includes(":")) {
     throw new Error('Invalid payment token');
@@ -274,7 +274,7 @@ export const getInvalidOffers = async (
   paymentToken: string,
   paymentAmount: string,
   environment: "production" | "dev" = "production"
-) => {
+): Promise<string[]> => {
 
   if (!paymentToken.includes(":")) {
     throw new Error('Invalid payment token');
