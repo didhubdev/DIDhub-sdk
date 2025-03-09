@@ -162,11 +162,13 @@ function VestingInterface() {
       } : null;
 
     if (secondOfferData != null) {
+      console.log("bulk offer domain")
       const data = await sdk.opensea.bulkOfferDomain(
         [firstOfferData, secondOfferData]
       );
       console.log(data);
     } else {
+      console.log("single domain", domainInfo, paymentToken, amount);
       const data = await sdk.opensea.offerDomain(
         domainInfo,
         paymentToken,

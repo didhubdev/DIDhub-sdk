@@ -32,9 +32,14 @@ export const openseaInit: IOpenseaInit = (
         contractAddress: string
     ): number => {
         if (contractAddress === ZERO_ADDRESS) {
-            return ItemType.NATIVE;
-        } else {
-            return ItemType.ERC721;
+          return ItemType.NATIVE;
+        } else if (
+          contractAddress === "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401" ||
+          contractAddress === "0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401".toLowerCase()
+        ) {
+          return ItemType.ERC1155;
+        }else {
+          return ItemType.ERC721;
         }
     }
 
