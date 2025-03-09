@@ -198,7 +198,7 @@ export interface IOpensea {
     getInvalidListings: (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: bigint
+        paymentAmount: number
     ) => Promise<string[]>,
 
 
@@ -213,7 +213,7 @@ export interface IOpensea {
     getInvalidOffers: (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: bigint
+        paymentAmount: number
     ) => Promise<string[]>,
 
     /**
@@ -226,7 +226,7 @@ export interface IOpensea {
     cancelInvalidListings : (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: bigint
+        paymentAmount: number
     ) => Promise<TransactionResponse | null>,
 
     /**
@@ -239,7 +239,7 @@ export interface IOpensea {
     cancelInvalidOffers : (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: bigint
+        paymentAmount: number
     ) => Promise<TransactionResponse | null>,
 
     /**
