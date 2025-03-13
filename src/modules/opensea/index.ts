@@ -136,7 +136,8 @@ export const openseaInit: IOpenseaInit = (
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress,
-        recipientAddress: receipentAddress
+        recipientAddress: receipentAddress,
+        exactApproval: true
       });
       const tx = await executeAllFulfillActions();
       return tx;
