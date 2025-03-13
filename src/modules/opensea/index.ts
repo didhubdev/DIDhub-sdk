@@ -133,12 +133,14 @@ export const openseaInit: IOpenseaInit = (
       receipentAddress: string
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
-      const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
+      const { executeAllActions: executeAllFulfillActions, actions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress,
         recipientAddress: receipentAddress,
-        exactApproval: true
+        exactApproval: true,
+        conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
       });
+      console.log("actions", actions.length);
       const tx = await executeAllFulfillActions();
       return tx;
     }
