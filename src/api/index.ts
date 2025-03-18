@@ -1,4 +1,5 @@
 import { OrderWithCounter } from '@opensea/seaport-js/lib/types';
+import { OpenseaException, OrderDataException, RateLimitException } from '../error';
 import fetch from 'cross-fetch';
 
 let cache: Record<string, OrderWithCounter> = {};
@@ -28,7 +29,7 @@ export const getOpenseaBasisPoints = async (
   )
 
   if (response.status === 429) {
-    throw new Error('Too Many Requests');
+    throw new RateLimitException('Too Many Requests', '429');
   }
   
   if (response.status !== 200) {
@@ -64,14 +65,18 @@ export const getOpenseaListingData = async (
     )
 
     if (response.status === 429) {
-      throw new Error('Too Many Requests');
+      throw new RateLimitException('Too Many Requests', '429');
+    }
+
+    if (response.status !== 200 ) {
+      throw new OpenseaException("Opensea API returns an error", "400")
     }
 
     const data = await response.json();
 
     // save to cache
     if (data.code !== 1) {
-      throw new Error(data.message);
+      throw new OrderDataException(data.message, "400");
     } else {
       cache[orderId + signer] = data;
     }
@@ -103,14 +108,18 @@ export const getOpenseaOfferData = async (
     )
 
     if (response.status === 429) {
-      throw new Error('Too Many Requests');
+      throw new RateLimitException('Too Many Requests', '429');
+    }
+
+    if (response.status !== 200 ) {
+      throw new OpenseaException("Opensea API returns an error", "400")
     }
 
     const data = await response.json();
 
     // save to cache
     if (data.code !== 1) {
-      throw new Error(data.message);
+      throw new OrderDataException(data.message, "400");
     } else {
       cache[orderId + signer] = data;
     }
@@ -146,14 +155,18 @@ export const postOpenseaOfferData = async (
     )
 
     if (response.status === 429) {
-      throw new Error('Too Many Requests');
+      throw new RateLimitException('Too Many Requests', '429');
+    }
+
+    if (response.status !== 200 ) {
+      throw new OpenseaException("Opensea API returns an error", "400")
     }
 
     const data = await response.json();
 
     // save to cache
     if (data.code !== 1) {
-      throw new Error(data.message);
+      throw new OrderDataException(data.message, "400");
     }
 
     return data;
@@ -187,14 +200,18 @@ export const postOpenseaListingData = async (
       )
 
     if (response.status === 429) {
-      throw new Error('Too Many Requests');
+      throw new RateLimitException('Too Many Requests', '429');
+    }
+
+    if (response.status !== 200 ) {
+      throw new OpenseaException("Opensea API returns an error", "400")
     }
 
     const data = await response.json();
 
     // save to cache
     if (data.code !== 1) {
-      throw new Error(data.message);
+      throw new OrderDataException(data.message, "400");
     }
 
     return data;
@@ -220,14 +237,18 @@ export const getOrders = async (
     );
     
     if (response.status === 429) {
-      throw new Error('Too Many Requests');
+      throw new RateLimitException('Too Many Requests', '429');
     }
-    
+
+    if (response.status !== 200 ) {
+      throw new OpenseaException("Opensea API returns an error", "400")
+    }
+
     const data = await response.json();
     
     // save to cache
     if (data.code !== 1) {
-      throw new Error(data.message);
+      throw new OrderDataException(data.message, "400");
     }
     
     return data.data;
@@ -256,14 +277,18 @@ export const getInvalidListings = async (
   );
   
   if (response.status === 429) {
-    throw new Error('Too Many Requests');
+    throw new RateLimitException('Too Many Requests', '429');
   }
-  
+
+  if (response.status !== 200 ) {
+    throw new OpenseaException("Opensea API returns an error", "400")
+  }
+
   const data = await response.json();
   
   // save to cache
   if (data.code !== 1) {
-    throw new Error(data.message);
+    throw new OrderDataException(data.message, "400");
   }
   
   return data.data;
@@ -292,14 +317,18 @@ export const getInvalidOffers = async (
   );
   
   if (response.status === 429) {
-    throw new Error('Too Many Requests');
+    throw new RateLimitException('Too Many Requests', '429');
   }
-  
+
+  if (response.status !== 200 ) {
+    throw new OpenseaException("Opensea API returns an error", "400")
+  }
+
   const data = await response.json();
   
   // save to cache
   if (data.code !== 1) {
-    throw new Error(data.message);
+    throw new OrderDataException(data.message, "400");
   }
   
   return data.data;
@@ -325,14 +354,18 @@ export const getOrdersValidity = async (
   );
   
   if (response.status === 429) {
-    throw new Error('Too Many Requests');
+    throw new RateLimitException('Too Many Requests', '429');
+  }
+
+  if (response.status !== 200 ) {
+    throw new OpenseaException("Opensea API returns an error", "400")
   }
   
   const data = await response.json();
   
   // save to cache
   if (data.code !== 1) {
-    throw new Error(data.message);
+    throw new OrderDataException(data.message, "400");
   }
   
   return data.data;
