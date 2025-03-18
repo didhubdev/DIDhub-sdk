@@ -160,10 +160,12 @@ export const postOpenseaOfferData = async (
 
     // save to cache
     if (response.status === 401) {
-      console.log(response);
       const data = await response.json();
-      console.log(data);
-      throw new OrderDataException(response.statusText, "401");
+      let errorString = "";
+      data.message.forEach((o: any) => {
+        errorString += o.key + ": " + o.message + "\n";
+      });
+      throw new OrderDataException(errorString, "401");
     }
         
     if (response.status !== 200 ) {
