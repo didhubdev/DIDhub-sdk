@@ -158,17 +158,18 @@ export const postOpenseaOfferData = async (
       throw new RateLimitException('Too Many Requests', '429');
     }
 
+    // save to cache
+    if (response.status === 401) {
+      console.log(response);
+      throw new OrderDataException(response.statusText, "401");
+    }
+        
     if (response.status !== 200 ) {
       throw new OpenseaException("Opensea API returns an error", "400")
     }
 
     const data = await response.json();
-
-    // save to cache
-    if (data.code !== 1) {
-      throw new OrderDataException(data.message, "400");
-    }
-
+    
     return data;
 }
 
