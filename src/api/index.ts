@@ -163,7 +163,7 @@ export const postOpenseaOfferData = async (
       const data = await response.json();
       let errorString = "";
       data.message.forEach((o: any) => {
-        errorString += o.key + ": " + o.message + "\n";
+        errorString += o.key + ": " + o.error + "\n";
       });
       throw new OrderDataException(errorString, "401");
     }
