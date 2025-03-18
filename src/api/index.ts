@@ -161,6 +161,8 @@ export const postOpenseaOfferData = async (
     // save to cache
     if (response.status === 401) {
       console.log(response);
+      const data = await response.json();
+      console.log(data);
       throw new OrderDataException(response.statusText, "401");
     }
         
@@ -169,7 +171,7 @@ export const postOpenseaOfferData = async (
     }
 
     const data = await response.json();
-    
+
     return data;
 }
 
