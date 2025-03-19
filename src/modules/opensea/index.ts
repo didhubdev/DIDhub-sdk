@@ -446,7 +446,8 @@ export const openseaInit: IOpenseaInit = (
       paymentToken: string,
       paymentAmount: number
     ): Promise<string[]> => {
-      const orderIds = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      const signerAddress = await signer.getAddress();
+      const orderIds = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), signerAddress, environment);
       return orderIds;
     }
 
@@ -474,8 +475,10 @@ export const openseaInit: IOpenseaInit = (
       paymentAmount: number
     ): Promise<TransactionResponse | null> => {
       
+      const signerAddress = await signer.getAddress();
+
       // check in the database that any listings below the listing amount is invalid
-      const orderIdsToCancel = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), environment);
+      const orderIdsToCancel = await getInvalidOffersAPI(domainInfo, paymentToken, paymentAmount.toString(), signerAddress, environment);
 
       // cancel these orders
       if (orderIdsToCancel.length > 0) {

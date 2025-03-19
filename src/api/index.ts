@@ -165,6 +165,7 @@ export const postOpenseaOfferData = async (
       data.message.forEach((o: any) => {
         errorString += o.key + ": " + o.error + "\n";
       });
+      errorString = errorString.slice(0, -1);
       throw new OrderDataException(errorString, "401");
     }
         
@@ -303,6 +304,7 @@ export const getInvalidOffers = async (
   domainInfo: string,
   paymentToken: string,
   paymentAmount: string,
+  maker: string,
   environment: "production" | "dev" = "production"
 ): Promise<string[]> => {
 
@@ -312,7 +314,7 @@ export const getInvalidOffers = async (
   
   const API_DOMAIN = getAPIDomain(environment);
   const response = await fetch(
-      `${API_DOMAIN}/nftmarketplace/v1/opensea/offer/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}`,
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/offer/cancel?domainInfo=${domainInfo}&paymentToken=${paymentToken}&paymentAmount=${paymentAmount}&maker=${maker}`,
       {
           method: "GET",
           headers: {
