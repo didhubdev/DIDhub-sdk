@@ -5,7 +5,7 @@ import { IBatchRegister, IDomainInfo, IBatchRegistration, IPurchaseCheck, IToken
 import { getPriceRequest, getRegistrationInfo, unwrapResult, getRenewInfo } from '../../utils';
 import { BigNumberish, ContractTransactionResponse, JsonRpcSigner, ethers } from 'ethers';
 import { ZERO_ADDRESS } from '../../config';
-import { executeTransaction } from 'error';
+import { executeTransaction } from '../../error';
 
 export const batchRegistration: IBatchRegistration = (
     signer:  JsonRpcSigner,
