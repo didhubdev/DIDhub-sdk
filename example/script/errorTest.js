@@ -29,7 +29,7 @@ const sdk = new DIDhubSDK(signer, 'dev');
 //     }
 // ]
 
-const data = await sdk.opensea.estimateGas.cancelOrders(
+const data = await sdk.opensea.cancelOrders(
     ["OPENSEA:0xc2d92521dcb48da90d38f447f2f4a701c9e376058bdd11fd0ea6b21a30c1220e"]
 );
 

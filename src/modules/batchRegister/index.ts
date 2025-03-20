@@ -43,15 +43,9 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<ContractTransactionResponse> => {
         
         const batchRegisterContract = await getBatchRegisterContract(signer);
-        const feeData = await signer.provider.getFeeData()
-        const estimatedGas = await batchRegisterContract.batchCommit.estimateGas(commitmentInfos);
         const tx = await executeTransaction(
             batchRegisterContract.batchCommit(
-                commitmentInfos,
-                {
-                    gasLimit: estimatedGas * BigInt(120) / BigInt(100),
-                    gasPrice: feeData.gasPrice!
-                }
+                commitmentInfos
             )
         )
         return tx;
@@ -304,24 +298,14 @@ export const batchRegistration: IBatchRegistration = (
     ): Promise<ContractTransactionResponse> => {
 
         const batchRegisterContract = await getBatchRegisterContract(signer);
-        const feeData = await signer.provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
-            const estimatedGas = await batchRegisterContract.batchRegister.estimateGas(requests, {value: paymentMax});
             const tx = await executeTransaction(
-                batchRegisterContract.batchRegister(requests, {
-                    value: paymentMax,
-                    gasLimit: estimatedGas * BigInt(120) / BigInt(100),
-                    gasPrice: feeData.gasPrice!
-                })
+                batchRegisterContract.batchRegister(requests, {value: paymentMax})
             );
             return tx;
         } else {
-            const estimatedGas = await batchRegisterContract.batchRegisterERC20.estimateGas(requests, paymentToken, paymentMax);
             const tx = await executeTransaction(
-                batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax, {
-                    gasLimit: estimatedGas * BigInt(120) / BigInt(100),
-                    gasPrice: feeData.gasPrice!
-                })
+                batchRegisterContract.batchRegisterERC20(requests, paymentToken, paymentMax)
             );
             return tx;
         }
@@ -333,24 +317,16 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<ContractTransactionResponse> => {
         const batchRegisterContract = await getBatchRegisterContract(signer);
-        const feeData = await signer.provider.getFeeData();
         if (paymentToken == ZERO_ADDRESS) {
-            const estimatedGas = await batchRegisterContract.batchRenew.estimateGas(requests, {value: paymentMax});
             const tx = await executeTransaction(
                 batchRegisterContract.batchRenew(requests, {
                     value: paymentMax,
-                    gasLimit: estimatedGas * BigInt(120) / BigInt(100),
-                    gasPrice: feeData.gasPrice!
                 })
             );
             return tx;
         } else {
-            const estimatedGas = await batchRegisterContract.batchRenewERC20.estimateGas(requests, paymentToken, paymentMax);
             const tx = await executeTransaction(
-                batchRegisterContract.batchRenewERC20(requests, paymentToken, paymentMax, {
-                    gasLimit: estimatedGas * BigInt(120) / BigInt(100),
-                    gasPrice: feeData.gasPrice!
-                })
+                batchRegisterContract.batchRenewERC20(requests, paymentToken, paymentMax)
             );
             return tx;
         }
