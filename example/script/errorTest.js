@@ -20,17 +20,11 @@ const seconds = 10 * 60;
 // instantiate SDK
 const sdk = new DIDhubSDK(signer, 'dev');
 
-const offerItemList = [
-    {
-        domainInfo: "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:82680855839883466377211380904049433708862793209978755245806227344788314668872",
-        paymentToken: paymentToken,
-        paymentAmount: paymentAmount,
-        endInSeconds: seconds
-    }
-]
-
-const data = await sdk.opensea.bulkOfferDomain(
-    offerItemList
-);
-
-console.log(data);
+// const offerItemList = [
+//     {
+//         domainInfo: "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:82680855839883466377211380904049433708862793209978755245806227344788314668872",
+//         paymentToken: paymentToken,
+//         paymentAmount: paymentAmount,
+//         endInSeconds: seconds
+//     }
+// ]
