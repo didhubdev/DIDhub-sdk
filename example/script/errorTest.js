@@ -9,11 +9,11 @@ const provider = new ethers.JsonRpcProvider(process.env.POLYGON_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // you cannot offer native tokens 0x0000000000000000000000000000000000000000
-const paymentToken = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
+const paymentToken = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase();
 // const paymentToken = "0x0000000000000000000000000000000000000000"
 
 // required to be greater than 0;
-const paymentAmount = "400000000000000";
+const paymentAmount = "300000000000000";
 
 const seconds = 10 * 60;
 
@@ -22,16 +22,10 @@ const sdk = new DIDhubSDK(signer, 'dev');
 
 const offerItemList = [
     {
-        domainInfo: "POLYGON:0xa9a6a3626993d487d2dbda3173cf58ca1a9d9e9f:51018332471729072686741156727101328764561454116139309942829108293103691142900",
+        domainInfo: "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:82680855839883466377211380904049433708862793209978755245806227344788314668872",
         paymentToken: paymentToken,
         paymentAmount: paymentAmount,
         endInSeconds: seconds
-    },
-    {
-        domainInfo: "POLYGON:0xa9a6a3626993d487d2dbda3173cf58ca1a9d9e9f:51018332471729072686741156727101328764561454116139309942829108293103691142900",
-        paymentToken: paymentToken,
-        paymentAmount: paymentAmount,
-        endInSeconds: 599
     }
 ]
 

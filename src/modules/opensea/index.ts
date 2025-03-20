@@ -17,6 +17,7 @@ import { utils as projectUtils } from "../utils";
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { AdvancedOrderStruct, FulfillmentComponentStruct } from "@opensea/seaport-js/lib/typechain-types/seaport/contracts/Seaport";
 import { ITokenInfo } from "modules/batchRegister/type";
+import { ContractTransactionException } from "error";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -140,8 +141,14 @@ export const openseaInit: IOpenseaInit = (
         exactApproval: true,
         conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
       });
-      const tx = await executeAllFulfillActions();
-      return tx;
+      
+      try {
+        const tx = await executeAllFulfillActions();
+        return tx;  
+      } catch (error: any) {
+        throw new ContractTransactionException(error.toString(), "800");
+      }
+
     }
 
     const checkOrderValidity = async (
@@ -614,8 +621,8 @@ export const openseaInit: IOpenseaInit = (
       
       const orders = await executeAllActions();
       const data = await postOpenseaOfferData(orders, chain, environment);
-
       return data;
+
     }
 
     const offerDomain = async (
