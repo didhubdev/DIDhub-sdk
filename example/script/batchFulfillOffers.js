@@ -55,6 +55,10 @@ const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(orderIds);
 // console.log("Approvals", approvals2);
 
 // fulfill Offers
-const tx = await sdk.opensea.fulfillOffers(advancedOrders);
+// const tx = await sdk.opensea.fulfillOffers(advancedOrders);
+// const receipt = await tx.wait();
+// console.log("Purchase Completed");
+
+const tx = await sdk.opensea.fulfillOffer("");
 const receipt = await tx.wait();
 console.log("Purchase Completed");
