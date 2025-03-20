@@ -1,3 +1,4 @@
+import { ContractTransactionResponse } from "ethers";
 
 
 export enum ErrorName {
@@ -54,4 +55,24 @@ export class ContractTransactionException extends Error {
       this.errorCode = errorCode;
       Object.setPrototypeOf(this, ContractTransactionException.prototype);
     }
+}
+
+export async function executeTransaction<T>(
+  txPromise: Promise<T>
+): Promise<T> {
+
+  let tx: T;
+
+  // First, try to send the transaction
+  try {
+    tx = await txPromise;
+    if (!tx) {
+      throw new Error("Transaction submission returned null or undefined");
+    }
+  } catch (submissionError: any) {
+    console.error("Error during transaction submission:", submissionError);
+    throw new ContractTransactionException(submissionError?.toString(), "800");
+  }
+
+  return tx;
 }

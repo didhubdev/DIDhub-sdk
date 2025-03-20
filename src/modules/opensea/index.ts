@@ -17,7 +17,7 @@ import { utils as projectUtils } from "../utils";
 import { Seaport as SeaportSDK } from "@opensea/seaport-js";
 import { AdvancedOrderStruct, FulfillmentComponentStruct } from "@opensea/seaport-js/lib/typechain-types/seaport/contracts/Seaport";
 import { ITokenInfo } from "modules/batchRegister/type";
-import { ContractTransactionException } from "../../error";
+import { executeTransaction } from "../../error";
 
 export const openseaInit: IOpenseaInit = (
     seaportSDK: InstanceType<typeof SeaportSDK>,
@@ -134,6 +134,7 @@ export const openseaInit: IOpenseaInit = (
       receipentAddress: string
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
+      
       const { executeAllActions: executeAllFulfillActions } = await seaportSDK.fulfillOrder({
         order,
         accountAddress: signerAddress,
@@ -142,13 +143,10 @@ export const openseaInit: IOpenseaInit = (
         conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
       });
 
-      try {
-        const tx = await executeAllFulfillActions();
-        return tx;  
-      } catch (error: any) {
-        throw new ContractTransactionException(error.toString(), "800");
-      }
-
+      const tx = await executeTransaction(
+        executeAllFulfillActions()
+      );
+      return tx;
     }
 
     const checkOrderValidity = async (
@@ -166,6 +164,7 @@ export const openseaInit: IOpenseaInit = (
       if (response.code !== 1) {
         throw new Error(response.message);
       }
+      
       const order = response.data;
       return order.fulfillment_data.orders[0];
     }
@@ -352,37 +351,47 @@ export const openseaInit: IOpenseaInit = (
 
       let tx; 
       if (swapInfo.paymentToken === ZERO_ADDRESS) {
-        tx = await batchPurchaseContract.fulfillAvailableAdvancedListingOrders(
-          advancedOrders,
-          [],
-          getOfferFulfillmentData(advancedOrders),
-          getConsiderationFulfillmentData(advancedOrders),
-          swapInfo,
-          fulfillerConduitKey,
-          receipentAddress,
-          advancedOrders.length,
-          {value: swapInfo.paymentMax}
-        );
+
+        tx = executeTransaction(
+          batchPurchaseContract.fulfillAvailableAdvancedListingOrders(
+            advancedOrders,
+            [],
+            getOfferFulfillmentData(advancedOrders),
+            getConsiderationFulfillmentData(advancedOrders),
+            swapInfo,
+            fulfillerConduitKey,
+            receipentAddress,
+            advancedOrders.length,
+            {value: swapInfo.paymentMax}
+          )
+        )
+
       } else {
 
         // check approval
-        const approveTx = await projectUtils(signer).approveERC20Tokens(swapInfo.paymentToken as string, await batchPurchaseContract.getAddress(), swapInfo.paymentMax);
+        const approveTx = await executeTransaction(
+          projectUtils(signer).approveERC20Tokens(swapInfo.paymentToken as string, await batchPurchaseContract.getAddress(), swapInfo.paymentMax)
+        );
+        
         if (approveTx) {
           await approveTx.wait();
         }
 
-        tx = await batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20(
-          advancedOrders,
-          [],
-          getOfferFulfillmentData(advancedOrders),
-          getConsiderationFulfillmentData(advancedOrders),
-          swapInfo,
-          fulfillerConduitKey,
-          receipentAddress,
-          advancedOrders.length
+        tx = await executeTransaction(
+          batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20(
+            advancedOrders,
+            [],
+            getOfferFulfillmentData(advancedOrders),
+            getConsiderationFulfillmentData(advancedOrders),
+            swapInfo,
+            fulfillerConduitKey,
+            receipentAddress,
+            advancedOrders.length
+          )
         );
       }
       return tx;
+      
     }
 
     const fulfillOffers = async (
@@ -417,15 +426,19 @@ export const openseaInit: IOpenseaInit = (
       let tokenContracts = fulfillmentItems.nftFullfillments.map((item) => item.tokenContract);
       tokenContracts = [...new Set(tokenContracts)];
       
+
       // approve the tokenContracts
       for (let i = 0; i < tokenContracts.length; i++) {
-        const approveTx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenContracts[i] as string, await batchPurchaseContract.getAddress());
+        const approveTx = await executeTransaction(
+          projectUtils(signer).approveAllERC721or1155Tokens(tokenContracts[i] as string, await batchPurchaseContract.getAddress())
+        );
         if (approveTx) {
           await approveTx.wait();
         }
       }
 
-      let tx = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
+      let tx = await executeTransaction(
+        batchPurchaseContract.fulfillAvailableAdvancedOfferOrders(
           advancedOrders,
           [],
           getOfferFulfillmentData(advancedOrders),
@@ -434,9 +447,10 @@ export const openseaInit: IOpenseaInit = (
           fulfillerConduitKey,
           receipentAddress,
           advancedOrders.length
-        );
+        )
+      );
 
-      return tx;
+      return tx
     }
     
     const getInvalidListings = async (
@@ -505,11 +519,14 @@ export const openseaInit: IOpenseaInit = (
             throw new Error("No existing orders found");
         }
         const signerAddress = await signer.getAddress();
+        
         const transaction = seaportSDK.cancelOrders(
           orderComponents,
             signerAddress
         );
-        const tx = await transaction.transact();
+        const tx = await executeTransaction(
+          transaction.transact()
+        );
         return tx;
     }
 
@@ -538,7 +555,9 @@ export const openseaInit: IOpenseaInit = (
         signerAddress
       );
       
-      const orders = await executeAllActions();
+      const orders = await executeTransaction(
+        executeAllActions()
+      );
       const data = await postOpenseaListingData(orders, chain, environment);
 
       return data;
@@ -619,7 +638,9 @@ export const openseaInit: IOpenseaInit = (
         signerAddress
       );
       
-      const orders = await executeAllActions();
+      const orders = await executeTransaction(
+        executeAllActions()
+      );
       const data = await postOpenseaOfferData(orders, chain, environment);
       return data;
 
@@ -641,7 +662,9 @@ export const openseaInit: IOpenseaInit = (
       
       const { executeAllActions } = await seaportSDK.createOrder(orderInput,signerAddress);
       
-      const order = await executeAllActions();
+      const order = await executeTransaction(
+        executeAllActions()
+      );
       const data = await postOpenseaOfferData([order], chain, environment);
       
       return data;
@@ -651,7 +674,9 @@ export const openseaInit: IOpenseaInit = (
       tokens: INFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const approvals = await batchPurchaseContract.batchCheckApprovalERC721orERC1155(tokens);
+      const approvals = await executeTransaction(
+        batchPurchaseContract.batchCheckApprovalERC721orERC1155(tokens)
+      );
       return approvals;
     }
 
@@ -659,7 +684,9 @@ export const openseaInit: IOpenseaInit = (
       tokens: IFTStruct[]
     ) => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const approvals = await batchPurchaseContract.batchCheckApprovalERC20(tokens);
+      const approvals = await executeTransaction(
+        batchPurchaseContract.batchCheckApprovalERC20(tokens)
+      );
       return approvals;
     }
 
@@ -667,7 +694,9 @@ export const openseaInit: IOpenseaInit = (
       tokenAddress: string
     ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const tx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress());
+      const tx = await executeTransaction(
+        projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress())
+      );
       return tx;
     }
 
@@ -676,7 +705,9 @@ export const openseaInit: IOpenseaInit = (
       tokenAmount: BigNumberish
     ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const tx = await projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount);
+      const tx = await executeTransaction(
+        projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount)
+      );
       return tx;
     }
 
