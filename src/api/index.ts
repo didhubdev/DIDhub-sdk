@@ -13,7 +13,9 @@ const getAPIDomain = (environment: "production" | "dev") => {
 }
 
 const apiErrorHandler = async (response: Response) => {
-  if (response.status === 401) {
+  if (response.status === 429) {
+    throw new RateLimitException('Too Many Requests', '429');
+  } else if (response.status === 401) {
     const data = await response.json();
     let errorString = "";
     data.message.forEach((o: any) => {
@@ -24,6 +26,8 @@ const apiErrorHandler = async (response: Response) => {
   } else if (response.status === 402 ) {
     const data = await response.json();
     throw new OrderDataException(data.message, "402");
+  } else if (response.status !== 200 ) {
+    throw new OpenseaException('Unknown Error', "400");
   }
 }
 
