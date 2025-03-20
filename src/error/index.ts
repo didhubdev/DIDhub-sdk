@@ -1,4 +1,3 @@
-import { ContractTransactionResponse } from "ethers";
 
 
 export enum ErrorName {
@@ -70,8 +69,8 @@ export async function executeTransaction<T>(
       throw new Error("Transaction submission returned null or undefined");
     }
   } catch (submissionError: any) {
-    console.error("Error during transaction submission:", submissionError);
-    throw new ContractTransactionException(submissionError?.toString(), "800");
+    const informativeMessage = submissionError?.message?.split(" (action=")[0];
+    throw new ContractTransactionException(informativeMessage, "800");
   }
 
   return tx;
