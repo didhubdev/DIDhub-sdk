@@ -20,7 +20,7 @@ const paymentToken = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
 // =============================================================================
 
 // instantiate SDK
-const sdk = new DIDhubSDK(signer, secret);
+const sdk = new DIDhubSDK(signer, "dev", secret);
 
 const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(orderIds);
 
@@ -59,6 +59,6 @@ const advancedOrders = await sdk.opensea.getAdvancedOfferOrders(orderIds);
 // const receipt = await tx.wait();
 // console.log("Purchase Completed");
 
-const tx = await sdk.opensea.fulfillOffer("");
+const tx = await sdk.opensea.fulfillOffer("OPENSEA:0xeeb87207c56d5e05b810ec6824c8d1149e15ce72ea5e429d3fc6c02e352a5564");
 const receipt = await tx.wait();
 console.log("Purchase Completed");

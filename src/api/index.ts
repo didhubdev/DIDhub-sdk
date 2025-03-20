@@ -12,6 +12,21 @@ const getAPIDomain = (environment: "production" | "dev") => {
     }
 }
 
+const apiErrorHandler = async (response: Response) => {
+  if (response.status === 401) {
+    const data = await response.json();
+    let errorString = "";
+    data.message.forEach((o: any) => {
+      errorString += o.key + ": " + o.error + "\n";
+    });
+    errorString = errorString.slice(0, -1);
+    throw new OrderDataException(errorString, "401");
+  } else if (response.status === 402 ) {
+    const data = await response.json();
+    throw new OrderDataException(data.message, "402");
+  }
+}
+
 export const getOpenseaBasisPoints = async (
   environment: "production" | "dev" = "production"
 ): Promise<number> => {
@@ -64,22 +79,10 @@ export const getOpenseaListingData = async (
         }
     )
 
-    if (response.status === 429) {
-      throw new RateLimitException('Too Many Requests', '429');
-    }
-
-    if (response.status !== 200 ) {
-      throw new OpenseaException("Opensea API returns an error", "400")
-    }
+    await apiErrorHandler(response);
 
     const data = await response.json();
-
-    // save to cache
-    if (data.code !== 1) {
-      throw new OrderDataException(data.message, "400");
-    } else {
-      cache[orderId + signer] = data;
-    }
+    cache[orderId + signer] = data;
 
     return data;
 };
@@ -107,22 +110,10 @@ export const getOpenseaOfferData = async (
         }
     )
 
-    if (response.status === 429) {
-      throw new RateLimitException('Too Many Requests', '429');
-    }
-
-    if (response.status !== 200 ) {
-      throw new OpenseaException("Opensea API returns an error", "400")
-    }
+    await apiErrorHandler(response);
 
     const data = await response.json();
-
-    // save to cache
-    if (data.code !== 1) {
-      throw new OrderDataException(data.message, "400");
-    } else {
-      cache[orderId + signer] = data;
-    }
+    cache[orderId + signer] = data;
 
     return data;
 }
@@ -154,24 +145,7 @@ export const postOpenseaOfferData = async (
       },
     )
 
-    if (response.status === 429) {
-      throw new RateLimitException('Too Many Requests', '429');
-    }
-
-    // save to cache
-    if (response.status === 401) {
-      const data = await response.json();
-      let errorString = "";
-      data.message.forEach((o: any) => {
-        errorString += o.key + ": " + o.error + "\n";
-      });
-      errorString = errorString.slice(0, -1);
-      throw new OrderDataException(errorString, "401");
-    }
-        
-    if (response.status !== 200 ) {
-      throw new OpenseaException("Opensea API returns an error", "400")
-    }
+    await apiErrorHandler(response);
 
     const data = await response.json();
 
@@ -205,21 +179,8 @@ export const postOpenseaListingData = async (
         },
       )
 
-    if (response.status === 429) {
-      throw new RateLimitException('Too Many Requests', '429');
-    }
-
-    if (response.status !== 200 ) {
-      throw new OpenseaException("Opensea API returns an error", "400")
-    }
-
+    await apiErrorHandler(response);
     const data = await response.json();
-
-    // save to cache
-    if (data.code !== 1) {
-      throw new OrderDataException(data.message, "400");
-    }
-
     return data;
 }
 
@@ -242,21 +203,8 @@ export const getOrders = async (
           },
     );
     
-    if (response.status === 429) {
-      throw new RateLimitException('Too Many Requests', '429');
-    }
-
-    if (response.status !== 200 ) {
-      throw new OpenseaException("Opensea API returns an error", "400")
-    }
-
+    await apiErrorHandler(response);
     const data = await response.json();
-    
-    // save to cache
-    if (data.code !== 1) {
-      throw new OrderDataException(data.message, "400");
-    }
-    
     return data.data;
 }
 
@@ -281,22 +229,9 @@ export const getInvalidListings = async (
           }
         },
   );
-  
-  if (response.status === 429) {
-    throw new RateLimitException('Too Many Requests', '429');
-  }
 
-  if (response.status !== 200 ) {
-    throw new OpenseaException("Opensea API returns an error", "400")
-  }
-
+  await apiErrorHandler(response);
   const data = await response.json();
-  
-  // save to cache
-  if (data.code !== 1) {
-    throw new OrderDataException(data.message, "400");
-  }
-  
   return data.data;
 }
 
@@ -323,21 +258,8 @@ export const getInvalidOffers = async (
         },
   );
   
-  if (response.status === 429) {
-    throw new RateLimitException('Too Many Requests', '429');
-  }
-
-  if (response.status !== 200 ) {
-    throw new OpenseaException("Opensea API returns an error", "400")
-  }
-
-  const data = await response.json();
-  
-  // save to cache
-  if (data.code !== 1) {
-    throw new OrderDataException(data.message, "400");
-  }
-  
+  await apiErrorHandler(response);
+  const data = await response.json();  
   return data.data;
 }
 
@@ -360,20 +282,8 @@ export const getOrdersValidity = async (
         },
   );
   
-  if (response.status === 429) {
-    throw new RateLimitException('Too Many Requests', '429');
-  }
-
-  if (response.status !== 200 ) {
-    throw new OpenseaException("Opensea API returns an error", "400")
-  }
+  await apiErrorHandler(response);
   
   const data = await response.json();
-  
-  // save to cache
-  if (data.code !== 1) {
-    throw new OrderDataException(data.message, "400");
-  }
-  
   return data.data;
 }

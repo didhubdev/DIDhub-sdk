@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { DIDhubSDK } from "@didhubdev/sdk";
 import dotenv from "dotenv";
 dotenv.config();
@@ -23,17 +24,21 @@ const listingItemList = [
     }
 ]
 
-if (listingItemList.length > 1) {
-  const data = await sdk.opensea.bulkListDomain(
-    listingItemList
-  );
-  console.log(data);
-} else if (listingItemList.length === 1) {
-  const data = await sdk.opensea.listDomain(
-    ...listingItemList[0]
-  );
-  console.log(data);  
-}
+// if (listingItemList.length > 1) {
+//   const data = await sdk.opensea.bulkListDomain(
+//     listingItemList
+//   );
+//   console.log(data);
+// } else if (listingItemList.length === 1) {
+//   const data = await sdk.opensea.listDomain(
+//     ...listingItemList[0]
+//   );
+//   console.log(data);  
+// }
+
+const data = await sdk.opensea.bulkListDomain(
+  listingItemList
+);
 
 // cancel prevous listings if the current one is higher
 
