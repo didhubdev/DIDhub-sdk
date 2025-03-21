@@ -192,13 +192,13 @@ export interface IOpensea {
      * 
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
      * @param paymentToken the address of the payment token of the new listing
-     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     * @param paymentAmount the amount of payment token to list of the new listing, in string
      * @returns order ids of the invalid listings
      */
     getInvalidListings: (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: number
+        paymentAmount: string
     ) => Promise<string[]>,
 
 
@@ -207,13 +207,13 @@ export interface IOpensea {
      * 
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
      * @param paymentToken the address of the payment token of the new listing
-     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     * @param paymentAmount the amount of payment token to list of the new listing, in string
      * @returns order ids of the invalid offers
      */
     getInvalidOffers: (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: number
+        paymentAmount: string
     ) => Promise<string[]>,
 
     /**
@@ -221,12 +221,12 @@ export interface IOpensea {
      * 
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
      * @param paymentToken the address of the payment token of the new listing
-     * @param paymentAmount the amount of payment token to list of the new listing, in numerics
+     * @param paymentAmount the amount of payment token to list of the new listing, in string
      */
     cancelInvalidListings : (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: number
+        paymentAmount: string
     ) => Promise<TransactionResponse | null>,
 
     /**
@@ -234,12 +234,12 @@ export interface IOpensea {
      * 
      * @param domainInfo a string in the format of {chain}:{contractAddress}:{tokenId}  
      * @param paymentToken the address of the payment token of the new offer
-     * @param paymentAmount the amount of payment token to list of the new offer, in numerics
+     * @param paymentAmount the amount of payment token to list of the new offer, in string
      */
     cancelInvalidOffers : (
         domainInfo: string,
         paymentToken: string,
-        paymentAmount: number
+        paymentAmount: string
     ) => Promise<TransactionResponse | null>,
 
     /**
