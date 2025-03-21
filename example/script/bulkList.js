@@ -24,6 +24,11 @@ const listingItemList = [
     }
 ]
 
+const data = await sdk.opensea.bulkListDomain(
+  listingItemList
+);
+
+
 // if (listingItemList.length > 1) {
 //   const data = await sdk.opensea.bulkListDomain(
 //     listingItemList
@@ -35,10 +40,6 @@ const listingItemList = [
 //   );
 //   console.log(data);  
 // }
-
-const data = await sdk.opensea.bulkListDomain(
-  listingItemList
-);
 
 // cancel prevous listings if the current one is higher
 

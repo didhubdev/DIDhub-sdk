@@ -1,5 +1,6 @@
 import { DIDhubSDK } from "@didhubdev/sdk";
 import dotenv from "dotenv";
+import { ethers } from "ethers";
 dotenv.config();
 
 // note this code probably cannot be run off browser with metamask, as it requires mannual signature
@@ -9,34 +10,36 @@ const provider = new ethers.JsonRpcProvider(process.env.POLYGON_URL);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // you cannot offer native tokens 0x0000000000000000000000000000000000000000
-const paymentToken = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
+const paymentToken = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
 // required to be greater than 0;
-const paymentAmount = "10000000";
-const seconds = 3 * 86400;
+const paymentAmount = "100000000000000";
+const seconds = 7 * 30 * 86400;
 
 // instantiate SDK
 const sdk = new DIDhubSDK(signer);
 
 const offerItemList = [
     {
-        domainInfo: "ARBITRUM:0x5d482d501b369f5ba034dec5c5fb7a50d2d6ca20:44757220479873475499417394956709258049408853905933600993750279449126336807650",
+        domainInfo: "POLYGON:0xa9a6a3626993d487d2dbda3173cf58ca1a9d9e9f:51018332471729072686741156727101328764561454116139309942829108293103691142900",
         paymentToken: paymentToken,
         paymentAmount: paymentAmount,
         endInSeconds: seconds
     }
 ]
 
-if (offerItemList.length > 1) {
-  const data = await sdk.opensea.bulkOfferDomain(
-    offerItemList
-  );
-  console.log(data);
-} else if (offerItemList.length === 1) {
-  const data = await sdk.opensea.bulkOfferDomain(
-    ...offerItemList[0]
-  );
-  console.log(data);  
-}
+const data = await sdk.opensea.bulkOfferDomain(
+  offerItemList
+);
+
+// if (offerItemList.length > 1) {
+
+//   console.log(data);
+// } else if (offerItemList.length === 1) {
+//   const data = await sdk.opensea.bulkOfferDomain(
+//     ...offerItemList[0]
+//   );
+//   console.log(data);  
+// }
 
 
 // cancel prevous listings if the current one is higher
