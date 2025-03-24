@@ -91,6 +91,59 @@ export const getOpenseaListingData = async (
     return data;
 };
 
+export const getSeaportListingData = async (
+  orderIds: string[],
+  signer: string,
+  useCache: boolean = true,
+  environment: "production" | "dev" = "production"
+): Promise<OrderWithCounter[]> => {
+  
+  let orderData = [];
+  let missingOrderIds = [];
+
+  // read from cache
+  if (useCache) {
+    for (let i = 0; i < orderIds.length; i++) {
+      if (cache[orderIds[i] + signer]) {
+        orderData.push(cache[orderIds[i] + signer]);
+      } else {
+        orderData.push(null);
+        missingOrderIds.push(orderIds[i]);
+      }
+    }
+  }
+
+  const API_DOMAIN = getAPIDomain(environment);
+
+  const orderString = missingOrderIds.join(",");
+  const response = await fetch(
+      `${API_DOMAIN}/nftmarketplace/v1/opensea/listing?orderId=${orderString}&signer=${signer}`,
+      {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      }
+  )
+
+  await apiErrorHandler(response);
+
+  const data = await response.json();
+  let counter = 0;
+
+  for (let i = 0; i < data.data.length; i++) {
+    cache[missingOrderIds[i] + signer] = data.data[i];
+
+    while (orderData[counter] !== null && counter < orderData.length) {
+      counter++;
+    }
+    orderData[counter] = data.data[i];
+
+  }
+
+  return orderData;
+};
+
 export const getOpenseaOfferData = async (
     orderId: string,
     signer: string,

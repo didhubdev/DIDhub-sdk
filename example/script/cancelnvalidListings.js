@@ -15,9 +15,9 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 
-const domainInfo = "POLYGON:0xe7e7ead361f3aacd73a61a9bd6c10ca17f38e945:85997366236755947607067999964956450388242871860011819749993866159229883053823";
+const domainInfo = "POLYGON:0xa9a6a3626993d487d2dbda3173cf58ca1a9d9e9f:90332032219905137231330041530355047592553662674176468327035269520525908421041";
 const paymentToken = `POLYGON:${ZERO_ADDRESS}`;
-const paymentAmount = BigInt(100000);
+const paymentAmount = "10120000000000000000";
 // =============================================================================
 
 // instantiate SDK
@@ -27,6 +27,7 @@ console.log("SDK Instantiated");
 
 const orders = await sdk.opensea.getInvalidListings(domainInfo, paymentToken, paymentAmount);
 console.log(orders);
+
 // const tx = await sdk.opensea.cancelInvalidListings(domainInfo, paymentToken, paymentAmount);
 // if (!tx) {
 //     console.log("No invalid listings found");

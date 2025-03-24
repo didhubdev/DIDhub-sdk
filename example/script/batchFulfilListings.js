@@ -15,7 +15,7 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 const orderIds = [
-  "OPENSEA:0x6e4acc41ba27eaac13468d31c837d3925a5ab9c6a990a2a963d7afe5ba9cd36f"  
+  "OPENSEA:0xdc71793d185c935135110652743a27cd646d69e724ce1bd6716c927d1b60e71a"  
 ];
 const margin = 3; // 3%
 const paymentToken = ZERO_ADDRESS;
@@ -28,22 +28,22 @@ const sdk = new DIDhubSDK(signer, secret);
 console.log("SDK Instantiated");
 
 const advancedOrders = await sdk.opensea.getAdvancedListingOrders(orderIds);
-
+console.log(advancedOrders);
 console.log("Fetching Swap Info...");
 const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, margin);
 
 // approval needed if the paymentToken is not native token
-if (paymentToken !== ZERO_ADDRESS) {    
-    // check and approve
-    console.log('Checking Approval');
-    const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
-    if (approveTx) await approveTx.wait();
-    console.log(`Approved ERC20 Tokens`);
-}
+// if (paymentToken !== ZERO_ADDRESS) {    
+//     // check and approve
+//     console.log('Checking Approval');
+//     const approveTx = await sdk.opensea.approveERC20Tokens(paymentToken, swapInfo.paymentMax);
+//     if (approveTx) await approveTx.wait();
+//     console.log(`Approved ERC20 Tokens`);
+// }
 
-// const gas = await sdk.opensea.estimateGas.fulfillListings(advancedOrders, swapInfo);
-// console.log("Gas", gas);
+// // const gas = await sdk.opensea.estimateGas.fulfillListings(advancedOrders, swapInfo);
+// // console.log("Gas", gas);
 
-const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
-const receipt = await tx.wait();
-console.log("PUrchase Completed");
+// const tx = await sdk.opensea.fulfillListings(advancedOrders, swapInfo);
+// const receipt = await tx.wait();
+// console.log("PUrchase Completed");

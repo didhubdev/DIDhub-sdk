@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -294,8 +294,11 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<AdvancedOrderStruct[]> => {
       let advancedOrders = [];
       
-      for (let i = 0; i < orderIds.length; i++) {
-        const orderWithCounter = await fetchOpenseaListingOrder(orderIds[i]);
+      const signerAddress = await signer.getAddress();
+      const orderWithCounters = await getSeaportListingData(orderIds, signerAddress, USE_CACHE, environment);
+      
+      for (let i = 0; i < orderWithCounters.length; i++) {
+        const orderWithCounter = orderWithCounters[i];
         const {
           counter: counter,
           ...params

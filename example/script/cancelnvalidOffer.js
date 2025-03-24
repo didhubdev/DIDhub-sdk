@@ -15,9 +15,9 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 
-const domainInfo = "ETHEREUM:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:79233663829379634837589865448569342784712482819484549289560981379859480642508";
-const paymentToken = `ETHEREUM:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2`;
-const paymentAmount = 0.003;
+const domainInfo = "POLYGON:0xa9a6a3626993d487d2dbda3173cf58ca1a9d9e9f:51018332471729072686741156727101328764561454116139309942829108293103691142900";
+const paymentToken = `POLYGON:0x7ceb23fd6bc0add59e62ac25578270cff1b9f619`;
+const paymentAmount = "310000000000000";
 // =============================================================================
 
 // instantiate SDK
