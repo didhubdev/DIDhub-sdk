@@ -115,7 +115,7 @@ export const getSeaportListingData = async (
 
   const API_DOMAIN = getAPIDomain(environment);
 
-  const orderString = missingOrderIds.join(",");
+  const orderString = missingOrderIds.join("&orderIds=");
   const response = await fetch(
       `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/batch?orderIds=${orderString}&signer=${signer}`,
       {
