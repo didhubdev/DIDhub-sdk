@@ -115,30 +115,32 @@ export const getSeaportListingData = async (
 
   const API_DOMAIN = getAPIDomain(environment);
 
-  const orderString = missingOrderIds.join("&orderIds=");
-  const response = await fetch(
-      `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/batch?orderIds=${orderString}&signer=${signer}`,
-      {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-          }
+  if (missingOrderIds.length === 0) {
+    const orderString = missingOrderIds.join("&orderIds=");
+    const response = await fetch(
+        `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/batch?orderIds=${orderString}&signer=${signer}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+    )
+  
+    await apiErrorHandler(response);
+  
+    const data = await response.json();
+
+    let counter = 0;
+    
+    for (let i = 0; i < data.data.length; i++) {
+      cache[missingOrderIds[i] + signer] = data.data[i];
+  
+      while (orderData[counter] !== null && counter < orderData.length) {
+        counter++;
       }
-  )
-
-  await apiErrorHandler(response);
-
-  const data = await response.json();
-  let counter = 0;
-
-  for (let i = 0; i < data.data.length; i++) {
-    cache[missingOrderIds[i] + signer] = data.data[i];
-
-    while (orderData[counter] !== null && counter < orderData.length) {
-      counter++;
+      orderData[counter] = data.data[i];  
     }
-    orderData[counter] = data.data[i];
-
   }
 
   return orderData;
