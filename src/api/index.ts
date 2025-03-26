@@ -115,7 +115,7 @@ export const getSeaportListingData = async (
 
   const API_DOMAIN = getAPIDomain(environment);
 
-  if (missingOrderIds.length === 0) {
+  if (missingOrderIds.length > 0) {
     const orderString = missingOrderIds.join("&orderIds=");
     const response = await fetch(
         `${API_DOMAIN}/nftmarketplace/v1/opensea/listing/batch?orderIds=${orderString}&signer=${signer}`,
@@ -132,7 +132,7 @@ export const getSeaportListingData = async (
     const data = await response.json();
 
     let counter = 0;
-    
+
     for (let i = 0; i < data.data.length; i++) {
       cache[missingOrderIds[i] + signer] = data.data[i];
   
