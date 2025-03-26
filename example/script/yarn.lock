@@ -14,10 +14,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@didhubdev/sdk@1.0.79":
-  version "1.0.79"
-  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-1.0.79.tgz#bb04eed5025d742364cde5a44c8dae19617e93df"
-  integrity sha512-nhyYAjN8fFyglhzA8C4ouq5s0CD5sONEl6P/pgv/x9HMkkQWdQTva8TVxWP77Ne/y3pSffOFVbmKNuJAFIhnnA==
+"@didhubdev/sdk@1.0.80":
+  version "1.0.80"
+  resolved "https://registry.yarnpkg.com/@didhubdev/sdk/-/sdk-1.0.80.tgz#88d4600196cbbda203bb9a29dd762172e4199541"
+  integrity sha512-alusNAXzPrLapm77aNnQ3oRxl52Da2srUY/ZMEGyS8N7Zqab1Frg94rtXaf+KTPmvz3FzXbhxt4hdR7BjouI6g==
   dependencies:
     "@opensea/seaport-js" "^4.0.4"
     cross-fetch "^4.0.0"

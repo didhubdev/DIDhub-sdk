@@ -406,11 +406,11 @@ export const batchRegistration: IBatchRegistration = (
     const batchCommitEstimateGasFee = async(
         commitmentInfos: Data.CommitmentInfoStruct[]
     ): Promise<bigint> => { 
-        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const numberOfCommits = commitmentInfos.length;
         try {
-            const estimatedGas = await batchRegisterContract.batchCommit.estimateGas(commitmentInfos);
+            const estimatedGas = BigInt(31000) * BigInt(numberOfCommits);
             const feeData = await signer.provider.getFeeData();  
-            return estimatedGas * feeData.gasPrice!;    
+            return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);
         }
@@ -422,11 +422,9 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const numberOfRequests = requests.length;
         try {
-            let estimatedGas = paymentToken == ZERO_ADDRESS ?
-            await batchRegisterContract.batchRegister.estimateGas(requests, {value: paymentMax}) :
-            await batchRegisterContract.batchRegisterERC20.estimateGas(requests, paymentToken, paymentMax);
+            let estimatedGas = BigInt(250000) * BigInt(numberOfRequests);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);
@@ -439,11 +437,9 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        const batchRegisterContract = await getBatchRegisterContract(signer);
+        const numberOfRequests = requests.length;
         try {
-            let estimatedGas = paymentToken == ZERO_ADDRESS ? 
-            await batchRegisterContract.batchRenew.estimateGas(requests, {value: paymentMax}): 
-            await batchRegisterContract.batchRenewERC20.estimateGas(requests, paymentToken, paymentMax);
+            let estimatedGas = BigInt(120000) * BigInt(numberOfRequests);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);

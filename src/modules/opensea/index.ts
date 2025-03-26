@@ -820,32 +820,11 @@ export const openseaInit: IOpenseaInit = (
       advancedOrders: AdvancedOrderStruct[],
       swapInfo: Data.SwapInfoStruct
     ): Promise<bigint> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(signer);
       const feeData = await signer.provider.getFeeData();
+      const numberOfOrders = advancedOrders.length;
       try {
-        let estimatedGas = swapInfo.paymentToken === ZERO_ADDRESS ?
-        await batchPurchaseContract.fulfillAvailableAdvancedListingOrders.estimateGas(
-          advancedOrders,
-          [],
-          getOfferFulfillmentData(advancedOrders),
-          getConsiderationFulfillmentData(advancedOrders),
-          swapInfo,
-          fulfillerConduitKey,
-          await signer.getAddress(),
-          advancedOrders.length,
-          {value: swapInfo.paymentMax}
-        ) :
-        await batchPurchaseContract.fulfillAvailableAdvancedListingOrdersERC20.estimateGas(
-          advancedOrders,
-          [],
-          getOfferFulfillmentData(advancedOrders),
-          getConsiderationFulfillmentData(advancedOrders),
-          swapInfo,
-          fulfillerConduitKey,
-          await signer.getAddress(),
-          advancedOrders.length
-        );
-      return estimatedGas * feeData.gasPrice!;
+        let estimatedGas = BigInt(200000) * BigInt(numberOfOrders);
+        return estimatedGas * feeData.gasPrice!;
       } catch {
         return BigInt(0);
       }
@@ -853,43 +832,12 @@ export const openseaInit: IOpenseaInit = (
 
     const fulfillOffersEstimateGas = async (
       advancedOrders: AdvancedOrderStruct[]
-    ): Promise<bigint> => {
-      const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      
-      let fulfillmentItems: IOrderFulfillmentsStruct = {
-        nftFullfillments: [],
-        ftFullfillments: []
-      }
-      advancedOrders.forEach((order) => {
-        order.parameters.consideration.forEach(c=> {
-          if (c.itemType === ItemType.ERC20) {
-            fulfillmentItems.ftFullfillments.push({
-              tokenContract: c.token,
-              amount: c.startAmount
-            });
-          } else if (c.itemType === ItemType.ERC721 || c.itemType === ItemType.ERC1155) {
-            fulfillmentItems.nftFullfillments.push({
-              tokenContract: c.token,
-              tokenId: c.identifierOrCriteria
-            });
-          }
-        })
-      });
-
+    ): Promise<bigint> => {      
       const feeData = await signer.provider.getFeeData();
-      
+      const numberOfOrders = advancedOrders.length;
       try {
-        let estimatedGas = await batchPurchaseContract.fulfillAvailableAdvancedOfferOrders.estimateGas(
-          advancedOrders,
-          [],
-          getOfferFulfillmentData(advancedOrders),
-          getConsiderationFulfillmentData(advancedOrders),
-          fulfillmentItems,
-          fulfillerConduitKey,
-          await signer.getAddress(),
-          advancedOrders.length
-        );
-      return estimatedGas * feeData.gasPrice!;
+        let estimatedGas = BigInt(200000) * BigInt(numberOfOrders);
+        return estimatedGas * feeData.gasPrice!;
       } catch {
         return BigInt(0);
       }
