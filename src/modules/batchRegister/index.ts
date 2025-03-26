@@ -406,7 +406,10 @@ export const batchRegistration: IBatchRegistration = (
     const batchCommitEstimateGasFee = async(
         commitmentInfos: Data.CommitmentInfoStruct[]
     ): Promise<bigint> => { 
-        const numberOfCommits = commitmentInfos.length;
+        let numberOfCommits = 0;
+        commitmentInfos.forEach(c => {
+            numberOfCommits += c.commitments.length;
+        });
         try {
             const estimatedGas = BigInt(31000) * BigInt(numberOfCommits);
             const feeData = await signer.provider.getFeeData();  
@@ -422,9 +425,12 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        const numberOfRequests = requests.length;
+        let numberOfDomains = 0;
+        requests.forEach(r => {
+            numberOfDomains += r.domains.length;
+        });
         try {
-            let estimatedGas = BigInt(250000) * BigInt(numberOfRequests);
+            let estimatedGas = BigInt(250000) * BigInt(numberOfDomains);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);
@@ -437,9 +443,12 @@ export const batchRegistration: IBatchRegistration = (
         paymentMax: BigNumberish
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        const numberOfRequests = requests.length;
+        let numberOfDomains = 0;
+        requests.forEach(r => {
+            numberOfDomains += r.domains.length;
+        });
         try {
-            let estimatedGas = BigInt(120000) * BigInt(numberOfRequests);
+            let estimatedGas = BigInt(120000) * BigInt(numberOfDomains);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);
