@@ -38,6 +38,7 @@ function VestingInterface() {
   const [amount2, setAmount2] = useState();
 
   const [sdk, setSdk] = useState();
+  const [signer, setSigner] = useState();
   const [address, setAddress] = useState();
 
   useEffect(() => {
@@ -45,6 +46,7 @@ function VestingInterface() {
     const provider = new BrowserProvider(metamask);
     provider.getSigner().then((signer) => {
       signer.getAddress().then((address) => {
+        setSigner(signer);
         setAddress(address);
       });
       const sdk = new DIDhubSDK(
@@ -70,7 +72,6 @@ function VestingInterface() {
         receipentAddress
       );
       const data = await tx.wait();
-      console.log(data);
       return;
     }
 
@@ -113,6 +114,23 @@ function VestingInterface() {
     console.log(data);
   };
 
+  const fulfillListingGasEst = async () => {
+
+    const receipentAddress = receipent || address;
+
+    const advancedOrders = await sdk.opensea.getAdvancedListingOrders(
+      [orderId, orderId2]
+    );
+
+    const swapInfo = await sdk.opensea.getSwapInfo(advancedOrders, paymentToken, 3);
+    
+    const gas = await sdk.opensea.estimateGas.fulfillListings(
+        advancedOrders,
+        swapInfo,
+        receipentAddress
+    );
+    console.log(gas);
+  };
 
   const fulfillListing = async () => {
 
@@ -446,6 +464,16 @@ function VestingInterface() {
                 isDisabled={false}
               >
                 Cancel Order
+              </Button>
+            </Td>
+            <Td>
+              <Button
+                onClick={fulfillListingGasEst}
+                colorScheme="green"
+                ml={6}
+                isDisabled={false}
+              >
+                Gas Price
               </Button>
             </Td>
           </Tr>

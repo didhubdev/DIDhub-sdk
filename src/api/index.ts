@@ -59,6 +59,12 @@ export const getOpenseaBasisPoints = async (
   return parseInt(data.data.basisPoints);
 }
 
+export const getDIDhubBasisPoints = async (
+  environment: "production" | "dev" = "production"
+) => {
+  return 50;
+}
+
 export const getOpenseaListingData = async (
     orderId: string,
     signer: string,

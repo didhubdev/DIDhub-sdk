@@ -19,7 +19,12 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 const domains = [
     {
         collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
-        nameKey: "ENS:eth.123456789kasdfalj",
+        nameKey: "ENS:eth.123456789kasdfaljsd",
+        duration: 28 * 86500, // 365 days
+    },
+    {
+        collectionInfo: "ETHEREUM:0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401",
+        nameKey: "ENS:eth.123456789kasdfaljsd",
         duration: 28 * 86500, // 365 days
     }
 ];
@@ -77,30 +82,30 @@ if (commitmentStatus.filter(n=>n!=2&&n!=4).length > 0) {
     const estimatedGas = await sdk.register.estimateGas.batchCommit(commitmentInfos);
     console.log("Estimated Gas", estimatedGas.toString());
 
-    const commitTx = await sdk.register.batchCommit(commitmentInfos);
-    await commitTx.wait();
+    // const commitTx = await sdk.register.batchCommit(commitmentInfos);
+    // await commitTx.wait();
 
     // wait some time (20 seconds should be sufficient for bsc)
-    const timeZero = Math.floor(Date.now() / 1000);
-    while (true) {
-        console.log("Waiting for 5 seconds for the commitment to be mined...");
-        await new Promise(resolve => setTimeout(resolve, 5000));
+    // const timeZero = Math.floor(Date.now() / 1000);
+    // while (true) {
+    //     console.log("Waiting for 5 seconds for the commitment to be mined...");
+    //     await new Promise(resolve => setTimeout(resolve, 5000));
         
-        const totalWaitedTime = Math.floor(Date.now() / 1000) - timeZero;
-        console.log(`Total waited time: ${totalWaitedTime} seconds`);
+    //     const totalWaitedTime = Math.floor(Date.now() / 1000) - timeZero;
+    //     console.log(`Total waited time: ${totalWaitedTime} seconds`);
 
-        // get commitment status
-        console.log('Fetching Commit Status Again')
-        const commitmentStatusAgain = await sdk.register.batchCheckCommitment(domainsAvailable);
-        console.log(commitmentStatusAgain);
+    //     // get commitment status
+    //     console.log('Fetching Commit Status Again')
+    //     const commitmentStatusAgain = await sdk.register.batchCheckCommitment(domainsAvailable);
+    //     console.log(commitmentStatusAgain);
         
-        if (commitmentStatusAgain.filter(n=>n!=2&&n!=4).length === 0) {
-            break;
-        }
-    }
+    //     if (commitmentStatusAgain.filter(n=>n!=2&&n!=4).length === 0) {
+    //         break;
+    //     }
+    // }
 }
 
-console.log("Commitment Done");
+// console.log("Commitment Done");
 
 // // get price info for purchase
 // console.log("Getting price info for purchase...");
