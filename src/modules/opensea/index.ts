@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { postDIDhubListingData, getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -82,7 +82,7 @@ export const openseaInit: IOpenseaInit = (
       let basisPoints = platform === "OpenSea" ?
         await getOpenseaBasisPoints(environment) :
         await getDIDhubBasisPoints(environment);
-      
+
       let fees = [
         {
           basisPoints: basisPoints,
@@ -571,7 +571,9 @@ export const openseaInit: IOpenseaInit = (
       const orders = await executeTransaction(
         executeAllActions()
       );
-      const data = await postOpenseaListingData(orders, chain, environment);
+      const data = platform === "OpenSea" ?
+        await postOpenseaListingData(orders, chain, environment) :
+        await postDIDhubListingData(orders, chain, environment);
 
       return data;
     }
