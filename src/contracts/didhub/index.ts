@@ -37,6 +37,8 @@ export const getBatchPurchaseContract = async (signer: JsonRpcSigner): Promise<B
     switch (network.chainId) {
         case BigInt(1):
             return BatchPurchase__factory.connect(CONTRACTS.DIDHUB.BATCH_PURCHASE.ETHEREUM, signer)
+        case BigInt(56):
+            return BatchPurchase__factory.connect(CONTRACTS.DIDHUB.BATCH_PURCHASE.BNB, signer)
         case BigInt(137):
             return BatchPurchase__factory.connect(CONTRACTS.DIDHUB.BATCH_PURCHASE.POLYGON, signer)
         case BigInt(42161):

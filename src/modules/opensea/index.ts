@@ -351,7 +351,7 @@ export const openseaInit: IOpenseaInit = (
       }
       return advancedOrders;
     }
-
+    
     const fulfillListings = async (
       advancedOrders: AdvancedOrderStruct[],
       swapInfo: Data.SwapInfoStruct,
