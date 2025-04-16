@@ -227,17 +227,14 @@ export interface IBatchRegister {
      * @dev A set of functions to estimate the gas cost of the transactions
      */
     estimateGas: {
-
-        batchCommit: (commitmentInfos: Data.CommitmentInfoStruct[]) => Promise<bigint>;
+        batchCommit: (
+            domainCount: number
+        ) => Promise<bigint>;
         batchRegister: (
-            requests: Data.RegistrationInfoStruct[],
-            paymentToken: string,
-            paymentMax: BigNumberish
+            domainCount: number
         ) => Promise<bigint>;
         batchRenew: (
-            requests: Data.RenewInfoStruct[],
-            paymentToken: string,
-            paymentMax: BigNumberish
+            domainCount: number
         ) => Promise<bigint>;
         approveERC20Tokens: (
             paymentToken: string,

@@ -404,14 +404,10 @@ export const batchRegistration: IBatchRegistration = (
     // GAS ESTIMATION ===========================================================
     
     const batchCommitEstimateGasFee = async(
-        commitmentInfos: Data.CommitmentInfoStruct[]
+        domainCount: number
     ): Promise<bigint> => { 
-        let numberOfCommits = 0;
-        commitmentInfos.forEach(c => {
-            numberOfCommits += c.commitments.length;
-        });
         try {
-            const estimatedGas = BigInt(31000) * BigInt(numberOfCommits);
+            const estimatedGas = BigInt(31000) * BigInt(domainCount);
             const feeData = await signer.provider.getFeeData();  
             return estimatedGas * feeData.gasPrice!;
         } catch {
@@ -420,17 +416,11 @@ export const batchRegistration: IBatchRegistration = (
     }
 
     const batchRegisterEstimateGasFee = async (
-        requests: Data.RegistrationInfoStruct[],
-        paymentToken: string,
-        paymentMax: BigNumberish
+        domainCount: number
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        let numberOfDomains = 0;
-        requests.forEach(r => {
-            numberOfDomains += r.domains.length;
-        });
         try {
-            let estimatedGas = BigInt(250000) * BigInt(numberOfDomains);
+            let estimatedGas = BigInt(250000) * BigInt(domainCount);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);
@@ -438,17 +428,11 @@ export const batchRegistration: IBatchRegistration = (
     }
 
     const batchRenewEstimateGasFee = async (
-        requests: Data.RenewInfoStruct[],
-        paymentToken: string,
-        paymentMax: BigNumberish
+        domainCount: number
     ): Promise<bigint> => {
         const feeData = await signer.provider.getFeeData();
-        let numberOfDomains = 0;
-        requests.forEach(r => {
-            numberOfDomains += r.domains.length;
-        });
         try {
-            let estimatedGas = BigInt(120000) * BigInt(numberOfDomains);
+            let estimatedGas = BigInt(120000) * BigInt(domainCount);
             return estimatedGas * feeData.gasPrice!;
         } catch {
             return BigInt(0);

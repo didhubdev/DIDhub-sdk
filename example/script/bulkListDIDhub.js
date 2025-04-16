@@ -9,7 +9,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const paymentToken = "0x0000000000000000000000000000000000000000";
 // required to be greater than 0;
-const paymentAmount = "100000000000000000000000";
+const paymentAmount = "100000000000000";
 const seconds = 6000;
 
 // instantiate SDK
@@ -23,7 +23,7 @@ const listingItemList = [
         endInSeconds: seconds
     },
     {
-        domainInfo: "BNB:0x2723522702093601e6360cae665518c4f63e9da6:1136982",
+        domainInfo: "BNB:0xe3b1d32e43ce8d658368e2cbff95d57ef39be8a6:49656641397756061427599558930439699923854501080639995265230186499699621911561",
         paymentToken: paymentToken,
         paymentAmount: paymentAmount,
         endInSeconds: seconds
