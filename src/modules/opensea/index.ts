@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { postDIDhubListingData, getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData, postDIDhubOfferData } from "../../api";
+import { postDIDhubListingData, getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData, postDIDhubOfferData, getSeaportOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -154,7 +154,7 @@ export const openseaInit: IOpenseaInit = (
       if (itemRoyalty) {
         fees.push(itemRoyalty);
       }
-      
+
       return {
         offer: [
           {
@@ -388,8 +388,12 @@ export const openseaInit: IOpenseaInit = (
     ): Promise<AdvancedOrderStruct[]> => {
       let advancedOrders = [];
       
-      for (let i = 0; i < orderIds.length; i++) {
-        const {orderWithCounter, extraData} = await fetchOpenseaOfferOrder(orderIds[i]);
+      const signerAddress = await signer.getAddress();
+      const orderWithCounters = await getSeaportOfferData(orderIds, signerAddress, USE_CACHE, environment);
+
+      for (let i = 0; i < orderWithCounters.length; i++) {
+        
+        const orderWithCounter = orderWithCounters[i];
         const {
           counter: counter,
           ...params
@@ -404,10 +408,12 @@ export const openseaInit: IOpenseaInit = (
           "numerator": 1,
           "denominator": 1,
           "signature": orderWithCounter.signature,
-          "extraData": extraData,
+          "extraData": "0x",
           "fee": feePercentage
         });
+
       }
+      
       return advancedOrders;
     }
     
@@ -469,7 +475,7 @@ export const openseaInit: IOpenseaInit = (
       advancedOrders: AdvancedOrderStruct[],
       receipent?: string
     ): Promise<ContractTransactionResponse> => {
-
+      
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
       let receipentAddress = receipent ? receipent : await signer.getAddress();
 
