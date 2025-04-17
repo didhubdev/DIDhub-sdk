@@ -2,6 +2,7 @@ import { ERC20__factory, ERC721__factory, getBatchRegisterContract, getWrapToken
 import { BigNumberish, ContractTransactionResponse, JsonRpcSigner} from "ethers";
 import { IUtils } from "./type";
 import { MockERC20 } from "contracts/tokens/ERC20";
+import { executeTransaction } from "error";
 
 export const utils = (signer: JsonRpcSigner) => {
 
@@ -25,7 +26,9 @@ export const utils = (signer: JsonRpcSigner) => {
         const erc20Contract: MockERC20 = ERC20__factory.connect(tokenContract, signer);
         const allowance = await erc20Contract.allowance(signerAddress, to);
         if (allowance < BigInt(amount)) {
-            const tx = await erc20Contract.approve(to, amount);
+            const tx = await executeTransaction(
+                erc20Contract.approve(to, amount)
+            );
             return tx;
         }
         return null;
@@ -39,7 +42,9 @@ export const utils = (signer: JsonRpcSigner) => {
         const erc721Contract = ERC721__factory.connect(tokenContract, signer);
         const isApprovedForAll = await erc721Contract.isApprovedForAll(signerAddress, operator);
         if (!isApprovedForAll) {
-            const tx = await erc721Contract.setApprovalForAll(operator, true);
+            const tx = await executeTransaction(
+                erc721Contract.setApprovalForAll(operator, true)
+            );
             return tx;
         }
         return null;

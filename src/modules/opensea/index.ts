@@ -446,9 +446,7 @@ export const openseaInit: IOpenseaInit = (
       } else {
 
         // check approval
-        const approveTx = await executeTransaction(
-          projectUtils(signer).approveERC20Tokens(swapInfo.paymentToken as string, await batchPurchaseContract.getAddress(), swapInfo.paymentMax)
-        );
+        const approveTx = await projectUtils(signer).approveERC20Tokens(swapInfo.paymentToken as string, await batchPurchaseContract.getAddress(), swapInfo.paymentMax);
         
         if (approveTx) {
           await approveTx.wait();
@@ -506,9 +504,7 @@ export const openseaInit: IOpenseaInit = (
 
       // approve the tokenContracts
       for (let i = 0; i < tokenContracts.length; i++) {
-        const approveTx = await executeTransaction(
-          projectUtils(signer).approveAllERC721or1155Tokens(tokenContracts[i] as string, await batchPurchaseContract.getAddress())
-        );
+        const approveTx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenContracts[i] as string, await batchPurchaseContract.getAddress())
         if (approveTx) {
           await approveTx.wait();
         }
@@ -778,9 +774,7 @@ export const openseaInit: IOpenseaInit = (
       tokenAddress: string
     ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const tx = await executeTransaction(
-        projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress())
-      );
+      const tx = await projectUtils(signer).approveAllERC721or1155Tokens(tokenAddress, await batchPurchaseContract.getAddress());
       return tx;
     }
 
@@ -789,9 +783,7 @@ export const openseaInit: IOpenseaInit = (
       tokenAmount: BigNumberish
     ): Promise<ContractTransactionResponse | null> => {
       const batchPurchaseContract = await getBatchPurchaseContract(signer);
-      const tx = await executeTransaction(
-        projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount)
-      );
+      const tx = await projectUtils(signer).approveERC20Tokens(tokenAddress, await batchPurchaseContract.getAddress(), tokenAmount);
       return tx;
     }
 
