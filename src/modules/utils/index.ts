@@ -2,7 +2,7 @@ import { ERC20__factory, ERC721__factory, getBatchRegisterContract, getWrapToken
 import { BigNumberish, ContractTransactionResponse, JsonRpcSigner} from "ethers";
 import { IUtils } from "./type";
 import { MockERC20 } from "contracts/tokens/ERC20";
-import { executeTransaction } from "error";
+import { executeTransaction } from "../../error";
 
 export const utils = (signer: JsonRpcSigner) => {
 
