@@ -9,7 +9,7 @@ import {
 } from "./type"
 
 import { ContractTransaction, BigNumberish, JsonRpcSigner, AddressLike, ContractTransactionResponse, TransactionResponse } from "ethers";
-import { postDIDhubListingData, getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData } from "../../api";
+import { postDIDhubListingData, getDIDhubBasisPoints, getInvalidListings as getInvalidListingsAPI, getInvalidOffers as getInvalidOffersAPI, getOpenseaBasisPoints, getOpenseaListingData, getOpenseaOfferData, getOrders, getOrdersValidity, getSeaportListingData, postOpenseaListingData, postOpenseaOfferData, postDIDhubOfferData } from "../../api";
 import { getBatchPurchaseContract } from "../../contracts";
 import { Data, IFTStruct, INFTStruct, IOrderFulfillmentsStruct } from "../../contracts/didhub/batchPurchase/BatchPurchase";
 import { utils as projectUtils } from "../utils";
@@ -117,6 +117,66 @@ export const openseaInit: IOpenseaInit = (
       }
     }
 
+    const _getSeaportOfferData = async (
+      domainInfo: string,
+      paymentToken: string,
+      paymentAmount: string,
+      endInSeconds: number,
+      signerAddress: string,
+      platform: "OpenSea" | "DIDhub" = "OpenSea",
+    ) => {
+      const [chain, contractAddress, tokenIdDec] = domainInfo.split(":");
+
+      const itemType = getItemType(contractAddress);
+
+      const now = Math.floor(Date.now() / 1000);
+      const startTime = now.toString();
+      const endTime = (now + endInSeconds).toString();
+
+      // split up into fee
+      const feeRecipient = platform === "OpenSea" ?
+        "0x0000a26b00c1f0df003000390027140000faa719" :
+        "0x4779Acd566f5B52a4F7C088c750820edb36b17F7";
+
+      // get basis points
+      let basisPoints = platform === "OpenSea" ?
+        await getOpenseaBasisPoints(environment) :
+        await getDIDhubBasisPoints(environment);
+
+      let fees = [
+        {
+          basisPoints: basisPoints,
+          recipient: feeRecipient,
+        }
+      ]
+
+      const itemRoyalty = getRoyalty(chain, contractAddress);
+      if (itemRoyalty) {
+        fees.push(itemRoyalty);
+      }
+
+      return {
+        consideration: [
+          {
+            itemType: itemType,
+            token: contractAddress,
+            identifier: tokenIdDec,
+          },
+        ],
+        offer: [
+          {
+            amount: paymentAmount,
+            token: paymentToken,
+            recipient: signerAddress,
+          },
+        ],
+        fees: fees,
+        startTime: startTime,
+        endTime: endTime,
+        conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
+      }
+    }
+
     const listDomain = async (
         domainInfo: string,
         paymentToken: string,
@@ -127,7 +187,6 @@ export const openseaInit: IOpenseaInit = (
         const signerAddress = await signer.getAddress();
         const chain = domainInfo.split(":")[0];
 
-        const openseaBasisPoints = await getOpenseaBasisPoints(environment);
         const listingData = await _getSeaportListingData(domainInfo, paymentToken, paymentAmount, endInSeconds, signerAddress, platform);
 
         const { executeAllActions } = await seaportSDK.createOrder(listingData, signerAddress);
@@ -632,6 +691,7 @@ export const openseaInit: IOpenseaInit = (
 
     const bulkOfferDomain = async (
       orderRequestData: IOrderRequestData[],
+      platform: "DIDhub" | "OpenSea" = "OpenSea"
     ) => {
       const signerAddress = await signer.getAddress();
       // ensure that all domains are from the same chain
@@ -641,12 +701,13 @@ export const openseaInit: IOpenseaInit = (
           throw new Error("All domains must be from the same chain");
         }
       });
+      let offerData = [];
 
-      const openseaBasisPoints = await getOpenseaBasisPoints(environment);
-
-      const offerData = orderRequestData.map((order) => {
-        return _getOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInSeconds, signerAddress, openseaBasisPoints);
-      });
+      for (let i = 0; i < orderRequestData.length; i++) {
+        const order = orderRequestData[i];
+        const data = await _getSeaportOfferData(order.domainInfo, order.paymentToken, order.paymentAmount, order.endInSeconds, signerAddress, platform);
+        offerData.push(data);
+      }
       
       const { executeAllActions }  = await seaportSDK.createBulkOrders(
         offerData,
@@ -656,7 +717,9 @@ export const openseaInit: IOpenseaInit = (
       const orders = await executeTransaction(
         executeAllActions()
       );
-      const data = await postOpenseaOfferData(orders, chain, environment);
+      const data = platform === "OpenSea" ?
+        await postOpenseaOfferData(orders, chain, environment) :
+        await postDIDhubOfferData(orders, chain, environment);
       return data;
 
     }

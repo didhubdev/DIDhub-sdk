@@ -217,6 +217,40 @@ export const postOpenseaOfferData = async (
     return data;
 }
 
+export const postDIDhubOfferData = async (
+  orders: OrderWithCounter[],
+  chain: string,
+  environment: "production" | "dev" = "production"
+) => {
+
+  let orderData = orders.map((o) => {
+    return {
+      parameters: o.parameters,
+      signature: o.signature,
+      protocolAddress: "0x0000000000000068f116a894984e2db1123eb395",
+      chain: chain
+    }
+  });
+
+  const API_DOMAIN = getAPIDomain(environment);
+  const response = await fetch(
+    `${API_DOMAIN}/nftmarketplace/v1/didhub/offer`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({orders: orderData})
+    },
+  )
+
+  await apiErrorHandler(response);
+
+  const data = await response.json();
+
+  return data;
+}
+
 export const postOpenseaListingData = async (
     order: OrderWithCounter[],
     chain: string,
