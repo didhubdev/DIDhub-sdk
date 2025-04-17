@@ -154,21 +154,21 @@ export const openseaInit: IOpenseaInit = (
       if (itemRoyalty) {
         fees.push(itemRoyalty);
       }
-
+      
       return {
+        offer: [
+          {
+            amount: paymentAmount,
+            token: paymentToken,
+          },
+        ],
         consideration: [
           {
             itemType: itemType,
             token: contractAddress,
             identifier: tokenIdDec,
-          },
-        ],
-        offer: [
-          {
-            amount: paymentAmount,
-            token: paymentToken,
             recipient: signerAddress,
-          },
+          }
         ],
         fees: fees,
         startTime: startTime,
