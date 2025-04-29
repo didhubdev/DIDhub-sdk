@@ -888,13 +888,12 @@ export const openseaInit: IOpenseaInit = (
   }
 
   // estimate gas ===========================================================
-
+    
     const fulfillListingsEstimateGas = async (
-      advancedOrders: AdvancedOrderStruct[],
-      swapInfo: Data.SwapInfoStruct
+      listingLength: number
     ): Promise<bigint> => {
       const feeData = await signer.provider.getFeeData();
-      const numberOfOrders = advancedOrders.length;
+      const numberOfOrders = listingLength;
       try {
         let estimatedGas = BigInt(200000) * BigInt(numberOfOrders);
         return estimatedGas * feeData.gasPrice!;
@@ -904,10 +903,10 @@ export const openseaInit: IOpenseaInit = (
     }
 
     const fulfillOffersEstimateGas = async (
-      advancedOrders: AdvancedOrderStruct[]
+      offerLength: number
     ): Promise<bigint> => {      
       const feeData = await signer.provider.getFeeData();
-      const numberOfOrders = advancedOrders.length;
+      const numberOfOrders = offerLength;
       try {
         let estimatedGas = BigInt(200000) * BigInt(numberOfOrders);
         return estimatedGas * feeData.gasPrice!;

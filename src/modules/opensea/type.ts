@@ -348,11 +348,10 @@ export interface IOpensea {
             tokenAddress: string
         ) => Promise<bigint>,
         fulfillListings: (
-            advancedOrders: AdvancedOrderStruct[],
-            swapInfo: Data.SwapInfoStruct
+            listingLength: number
         ) => Promise<bigint>,
         fulfillOffers: (
-            advancedOrders: AdvancedOrderStruct[]
+            offerLength: number
         ) => Promise<bigint>
     }
 }

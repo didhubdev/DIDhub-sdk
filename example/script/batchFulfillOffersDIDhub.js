@@ -14,8 +14,8 @@ const secret = "0x8a2b7c04ef98fce0301c40fd14227061129cdc3e5f03e6dfc16f088c57c85d
 
 // input params =================================================================
 const orderIds = [
-    "DIDHUB:0x9bc9aad972c3542e2999bd6fb5965e12e462e8d7efe3f05d11843e5e4093e767",
-    "DIDHUB:0x23f173a6a59a0805d4747d885834f25ff84f681003fa500392fabbeb47a391ea"
+    "DIDHUB:0x9bf3c07a568f933f79366fef96920e8aa854084ac4abe1d0180a912304231ed8",
+    "DIDHUB:0x9b85b5bde0238f5ac64e917bda1dd83eef310f3563cc7389e5b57cd7873daa51"
 ];
 const margin = 1; // 3%
 const paymentToken = ZERO_ADDRESS;
