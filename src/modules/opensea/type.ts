@@ -64,10 +64,12 @@ export interface IOpensea {
      * @note This function is used to list a list of domains on Opensea 
      * 
      * @param orderRequestData a list of order request data
+     * @param platform the platform to list the domains on. Default is Opensea
      * @returns response object with code and message
      */
     bulkListDomain: (
-        orderRequestData: IOrderRequestData[]  
+        orderRequestData: IOrderRequestData[],
+        platform: "DIDhub" | "OpenSea"
     ) => Promise<IDIDhubResponse>
 
     /**
@@ -91,10 +93,12 @@ export interface IOpensea {
      * @note This function is used to offer a list of domains on Opensea 
      * 
      * @param orderRequestData a list of order request data
+     * @param platform the platform to offer the domains on. Default is Opensea
      * @returns response object with code and message
      */
     bulkOfferDomain: (
-        orderRequestData: IOrderRequestData[]  
+        orderRequestData: IOrderRequestData[]  ,
+        platform: "DIDhub" | "OpenSea"
     ) => Promise<IDIDhubResponse>
 
     /**
