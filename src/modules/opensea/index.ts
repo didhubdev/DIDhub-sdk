@@ -199,7 +199,8 @@ export const openseaInit: IOpenseaInit = (
     
     const fulfillOrder = async (
       order: OrderWithCounter,
-      receipentAddress: string
+      receipentAddress: string,
+      extraData: string | undefined = undefined // important do not remove
     ): Promise<ContractTransaction> => {
       const signerAddress = await signer.getAddress();
       
@@ -208,8 +209,11 @@ export const openseaInit: IOpenseaInit = (
         accountAddress: signerAddress,
         recipientAddress: receipentAddress,
         exactApproval: true,
+        extraData: extraData,
         conduitKey: seaportSDK.OPENSEA_CONDUIT_KEY
       });
+
+      // const tx = await actions[0].transactionMethods.buildTransaction({gasLimit: 1000000});
 
       const tx = await executeTransaction(
         executeAllFulfillActions()
@@ -275,7 +279,8 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       
       let receipentAddress = receipent ? receipent : await signer.getAddress();
-      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter, receipentAddress);
+      const extraData = order.fulfillment_data.transaction.input_data.orders[0].extraData;
+      return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter, receipentAddress, extraData);
     }
 
     const getOfferFulfillmentData = (
