@@ -69,7 +69,7 @@ export async function executeTransaction<T>(
       throw new Error("Transaction submission returned null or undefined");
     }
   } catch (submissionError: any) {
-    console.log("Transaction submission error:", submissionError?.message);
+    // console.log("Transaction submission error:", submissionError?.message);
     const informativeMessage = submissionError?.message?.split(" (action=")[0];
     throw new ContractTransactionException(informativeMessage, "800");
   }
