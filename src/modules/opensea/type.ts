@@ -326,6 +326,14 @@ export interface IOpensea {
     getSupportedListingTokens: (chain: string) => Promise<ITokenInfo[]>
 
     /**
+     * @dev This function is used to get the opensea supported marketplaces for a given chain
+     * 
+     * @param chain the chain to get the supported tokens
+     * @returns a list of supported tokens
+     */
+    getSupportedMarketplaces: (chain: string) => Promise<string[]>
+
+    /**
      * 
      * @param project the project name
      * @returns creator fee of the project

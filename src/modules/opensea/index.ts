@@ -830,6 +830,23 @@ export const openseaInit: IOpenseaInit = (
       }
   }
 
+  const getSupportedMarketplaces = async (chain: string) => {
+    switch (chain) {
+        case "Ethereum":
+          return ["OpenSea", "DIDhub"]
+        case "Polygon":
+          return ["OpenSea", "DIDhub"]
+        case "Arbitrum":
+          return ["OpenSea"]
+        case "Avalanche":
+          return ["OpenSea"]
+        case "BNB Chain":
+          return ["DIDhub"]
+        default:
+            return [];
+    }
+  }
+
   const getSupportedListingTokens = async (chain: string): Promise<ITokenInfo[]> => {
     switch (chain) {
         case "Ethereum":
@@ -888,7 +905,7 @@ export const openseaInit: IOpenseaInit = (
   }
 
   // estimate gas ===========================================================
-    
+
     const fulfillListingsEstimateGas = async (
       listingLength: number
     ): Promise<bigint> => {
@@ -967,6 +984,7 @@ export const openseaInit: IOpenseaInit = (
 
         getSupportedOfferTokens: getSupportedOfferTokens,
         getSupportedListingTokens: getSupportedListingTokens,
+        getSupportedMarketplaces: getSupportedMarketplaces,
 
         getCreatorFee: getCreatorFee,
         getOpenseaFee: getOpenseaFee,
