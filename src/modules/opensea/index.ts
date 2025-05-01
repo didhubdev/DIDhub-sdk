@@ -279,7 +279,8 @@ export const openseaInit: IOpenseaInit = (
       const order = response.data;
       
       let receipentAddress = receipent ? receipent : await signer.getAddress();
-      const extraData = order.fulfillment_data.transaction.input_data.orders[0].extraData;
+      const orders = order.fulfillment_data.transaction.input_data.orders;
+      const extraData = orders ? orders[0].extraData : undefined;
       return await fulfillOrder(order.fulfillment_data.orders[0] as OrderWithCounter, receipentAddress, extraData);
     }
 
